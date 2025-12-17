@@ -1,0 +1,230 @@
+from PySide6 import QtWidgets, QtCore
+from colorama import Fore
+from datetime import datetime
+from time import sleep
+import global_vars 
+import os
+import pandas as pd
+from my_threads.functions import check_files_modified
+from openpyxl import load_workbook, styles
+from my_threads.functions import all_control_elements_off, all_control_elements_on, get_md_files_opened, get_files_and_sheets_from_pyperclip
+
+class HeadersFillerThread(QtCore.QThread):
+ 
+    mysignal = QtCore.Signal(str)
+    def on_signal(self,mysignal):          
+        global_vars.ui.info_label.setText(mysignal)
+
+
+    def __init__ (self, parent=None):
+        QtCore.QThread.__init__(self, parent)
+        self.message_title = "Заполняем заголовки"         
+
+           
+    def check_md_files_available(self):
+        """
+        Перед началом обработки проверяем чтобы не было 
+        открытых размеченных файлов
+        """
+
+        self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                            f"проверяем, чтобы не было открытых файлов из папки .Размеченные")
+
+        md_folder = os.path.join(global_vars.project_folder,'.Размеченные')
+        md_files = list(os.walk(md_folder))[0][2]
+        
+        opened_md_files = [md_file[2:] for md_file in md_files if md_file[0]=='~']
+
+
+        self.err_list = []
+        if opened_md_files:
+            
+            for file in opened_md_files:
+                self.err_list.append(f'{file}, Файл из папки .Размеченные открыт на рабочем столе. Его нужно закрыть!')
+                os.startfile(os.path.join(md_folder, file))
+
+            if self.err_list:
+                self.error_message = (
+                    "Некоторые файлы из папки .Размеченные,\n"
+                    "открыты на рабочем столе.")
+                
+            return False
+        return True
+            
+
+
+
+
+    def run(self):
+        self.error_message = ""
+        self.warning_message = ""
+        self.info_message = "" 
+
+        self.is_src_files_modifyed = check_files_modified('.Исходники')
+        self.is_md_files_modifyed = check_files_modified('.Размеченные')
+
+        if self.is_src_files_modifyed:
+            global_vars.ui.info_label.setStyleSheet('color: red')
+            self.error_message = ('В папку .Исходники были добавлены новые файлы или\n'
+                                  'некоторые файлы в ней были пересохранены или удалены.\n'
+                                  'Нажмите кнопку "Просмотерь разметку"!')
+
+            # global_vars.ui.info_label.setText(self.error_message)
+            return
+        
+        if self.is_md_files_modifyed:
+            global_vars.ui.info_label.setStyleSheet('color: red')
+            self.error_message = ('Файлы в папке .Размеченные были изменены.\n'
+                                  'Нажмите кнопку "Просмотерь разметку"!!')
+            return
+        
+        md_files_opened = get_md_files_opened()
+        if md_files_opened:
+            self.error_message = (
+                f"Некоторые размеченные файлы открыты на рабочем столе!\n"
+                f"{'\n'.join(md_files_opened)}"
+                )
+
+            for md_file in md_files_opened:
+                os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
+                while True:
+                    sleep(0.5)
+                    if os.path.exists(os.path.join(global_vars.project_folder, '.Размеченные', f"~${md_file}")):
+                        break                                     
+            return
+
+          
+
+        files_sheets_list = get_files_and_sheets_from_pyperclip()
+        files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
+        files_list.sort()
+
+        file_preceding = ""
+        need_to_save = False
+
+        for file_sheet_number, file_sheet_list in enumerate(files_sheets_list, 1):
+            print(Fore.MAGENTA, file_sheet_list,  Fore.RESET)
+            file = file_sheet_list[0]
+
+            if file != file_preceding:
+
+                if need_to_save:
+                    self.mysignal.emit(
+                        f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
+                        f'{files_list.index(file)} из {len(files_list)}. '
+                        f'Сохраняем с заполненными заголовками: "{file}"')
+                    sleep(0.01)
+
+                    # print(Fore.GREEN, 'Мы тут', Fore.RESET)
+                    wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
+
+                file_preceding = file
+                need_to_save = False
+
+                self.mysignal.emit(
+                    f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
+                    f'{files_list.index(file)+1} из {len(files_list)}. '
+                    f'Загружаем для заполнения заголовков: "{file}"')
+                sleep(0.01)
+                
+                wb = load_workbook(os.path.join(global_vars.project_folder, '.Размеченные', file))
+        
+
+            sheet_name = file_sheet_list[1]
+            ws = wb[sheet_name]
+
+            self.mysignal.emit(
+                f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_sheet_number} из {len(files_sheets_list)}. "
+                f"Заполняем заголовки в: {file} в листе: {file_sheet_list[0]}.")
+            sleep(0.01)
+
+            # Загружаем данные с листа в датафрейм
+            data = []
+            for row in ws.iter_rows(values_only=True):
+                data.append(list(row))
+            df = pd.DataFrame(data)
+
+
+            # Если лист пустой, то пропускаем
+            if df.empty:
+                continue
+
+            # Если заголовок уже есть, то пропускаем
+            header_df = df.iloc[:2]
+            header_df = header_df.fillna("")
+            if not (header_df.applymap(lambda x: isinstance(x, str) and len(x) == 0)).all().all():
+                print('Заголовок уже есть!')
+                continue
+                
+            print(f"Файл {file} лист {file_sheet_list} Заголовка нет. будем заполнять")          
+            # получаем номер строки с заголовком
+            header_df = df[df[0]=='h']
+
+
+            if not header_df.empty:
+                header_cells = header_df.iloc[0][2:]
+            else:
+                continue
+
+            col = 3
+            # print(Fore.YELLOW, header_cells, Fore.RESET)
+            for header_cell in header_cells:
+                ws.cell(row=1, column=col, value=header_cell)
+                ws.cell(row=1, column=col).alignment = styles.Alignment(wrap_text=False, horizontal="center", vertical="center")
+                col += 1
+            need_to_save = True
+            # wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))                      
+
+        if need_to_save:
+            self.mysignal.emit(
+                f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
+                f'{files_list.index(file)+1} из {len(files_list)}. '
+                f'Сохраняем с заполненными заголовками: "{file}"')
+            wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
+        else:
+            wb.close()
+
+           
+
+
+    def on_clicked(self):
+        self.start() # Запускаем поток  
+     
+
+
+    def on_started(self): # Вызывается при запуске потока
+        all_control_elements_off()
+        # global_vars.ui.pushButtonChooseProjectFolder.setEnabled(False)   
+        global_vars.ui.info_label.setStyleSheet('color: blue')        
+
+
+    def on_finished(self): # Вызывается при завершении потока
+        global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)
+        all_control_elements_on()
+
+
+        if self.error_message:
+            global_vars.ui.info_label.setStyleSheet('color: red')             
+            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                                              f"{self.error_message.replace('\n',' ')}")
+            QtWidgets.QMessageBox.critical(None,
+                                           self.message_title,
+                                           self.error_message,
+                                           buttons=QtWidgets.QMessageBox.StandardButton.Ok)
+            #refresh_files_info('.Исходники')        
+            #refresh_files_info('.Размеченные')             
+
+        elif self.warning_message:
+            global_vars.ui.info_label.setStyleSheet('color: red')             
+            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                                              f"{self.warning_message.replace('\n',' ')}")
+            
+            QtWidgets.QMessageBox.warning(None,
+                                           self.message_title,
+                                           self.warning_message,
+                                           buttons=QtWidgets.QMessageBox.StandardButton.Ok)             
+        else:
+            global_vars.ui.info_label.setStyleSheet('color: green')             
+            global_vars.ui.info_label.setText(
+                f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                f"Заголовки заполнены.")

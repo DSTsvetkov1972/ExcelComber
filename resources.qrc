@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/app_icon.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file alias="keys_manager/private_key.pem">keys_manager/private_key.pem</file>
+    </qresource>    
+</RCC>
