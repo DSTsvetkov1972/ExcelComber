@@ -13,7 +13,7 @@ class XLS_TO_xlsxThread(QtCore.QThread):
 
     def __init__ (self, parent=None):
         QtCore.QThread.__init__(self, parent) 
-        self.message_title = "Обработка"
+        self.message_title = "Конвертация файлов xls в xlsx"
      
         
     def convert_xls_to_xlsx(self, file_to_convert):
