@@ -62,9 +62,9 @@ class OpenChoosedFilesThread(QtCore.QThread):
                 os.startfile(file_to_start)
                 
                 while True:
-                    sleep(0.5)
-                    print('Открываем', os.path.join(folder, f"~${file}"))
-                    print(os.path.exists(os.path.join(folder, f"~${file}")))
+                    sleep(0.05)
+                    # print('Открываем', os.path.join(folder, f"~${file}"))
+                    # print(os.path.exists(os.path.join(folder, f"~${file}")))
                     if os.path.exists(os.path.join(folder, f"~${file}")):
                         break
         else:

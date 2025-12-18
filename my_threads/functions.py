@@ -25,6 +25,7 @@ from PySide6.QtCore import QFile, QIODevice
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 import base64
+from time import sleep 
 
 import resources_rc
 
@@ -729,3 +730,22 @@ def is_excel_file_open(filename):
             continue
             
     return False#, None
+
+
+def open_or_show_file(file_name='markup.xlsx'):
+    global_vars.ui.info_label.setStyleSheet('color: blue')             
+    global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                                        f"{file_name} открываем или помещаем поверх всех окон.")
+
+    if os.path.exists(os.path.join(global_vars.project_folder, file_name)):
+        os.startfile(os.path.join(global_vars.project_folder, file_name))
+
+    while True:
+        sleep(0.1)
+        if os.path.exists(os.path.join(global_vars.project_folder, f'~${file_name}')):
+            break
+
+    global_vars.ui.info_label.setStyleSheet('color: green')             
+    global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                                        f"{file_name} открыт и помещён поверх всех окон.")    
+        

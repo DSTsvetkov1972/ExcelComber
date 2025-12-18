@@ -88,7 +88,7 @@ class HeadersFillerThread(QtCore.QThread):
             for md_file in md_files_opened:
                 os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
                 while True:
-                    sleep(0.5)
+                    sleep(0.05)
                     if os.path.exists(os.path.join(global_vars.project_folder, '.Размеченные', f"~${md_file}")):
                         break                                     
             return

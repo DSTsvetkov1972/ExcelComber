@@ -14,7 +14,7 @@ from openpyxl.worksheet.datavalidation import DataValidationList
 from datetime import datetime
 from my_threads.functions import all_control_elements_off, all_control_elements_on
 from my_threads.functions import value_searcher, marking_checker
-from my_threads.functions import init_project, refresh_files_info, clean_process_folder, check_files_modified, is_excel_file_open
+from my_threads.functions import init_project, refresh_files_info, clean_process_folder, check_files_modified, is_excel_file_open, open_or_show_file
 from my_threads.functions import get_range_info, set_range_border
 from my_threads.functions import set_markup_in_db, get_markup_from_db
 
@@ -82,7 +82,7 @@ class ProcessingThread(QtCore.QThread):
 
         if self.check_src_files_available_err_list:
             self.check_src_files_available_error_message = (
-                "Некоторых файлы из папки .Исходники,\n"
+                "Некоторые файлы из папки .Исходники,\n"
                 "открыты на рабочем столе.\n")
         else:
             self.check_src_files_available_error_message =  ''  
@@ -656,8 +656,8 @@ class ProcessingThread(QtCore.QThread):
                     self.warning_message = ('Некоторые файлы в папке .Исходники\n'
                                             'были пересохранены.\n'
                                             'Если их нужно переразметить,\n'
-                                            'удалите md-файлы из папки .Размеченные!\n'
-                                            'Отркыть папку .Размеченные на рабочем столе?')
+                                            'удалите md-файлы из папки .Размеченные!'
+                                            )
                           
                     self.wrn_list.append((f"md_{file_modified}", 'Файл в .Исходниках поменялся, если его нужно переразметить, удалите md-файл из папки .Размеченные'))
 
@@ -716,53 +716,59 @@ class ProcessingThread(QtCore.QThread):
 
     def on_finished(self): # Вызывается при завершении потока
 
-
-
         if self.error_message:
             global_vars.ui.info_label.setStyleSheet('color: red')             
             global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                               f"{self.error_message.replace('\n',' ')}")
-            QtWidgets.QMessageBox.critical(None,
-                                           self.message_title,
-                                           self.error_message,
-                                           buttons=QtWidgets.QMessageBox.StandardButton.Ok)
+            
+            QtWidgets.QMessageBox.critical(
+                None,
+                self.message_title,
+                self.error_message,
+                buttons=QtWidgets.QMessageBox.StandardButton.Ok
+                )
+            
             refresh_files_info('.Исходники')        
             refresh_files_info('.Размеченные')
+
+            global_vars.ui.info_label.setStyleSheet('color: blue')             
+            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                                              f"Поднимаем markup.xlsx поверх всех окон.")
+
+            open_or_show_file(file_name='markup.xlsx')
             
-            if os.path.exists(os.path.join(global_vars.project_folder, "markup.xlsx")):
-                os.startfile(os.path.join(global_vars.project_folder, "markup.xlsx"))         
 
         elif self.warning_message:
             global_vars.ui.info_label.setStyleSheet('color: red')             
             global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                               f"{self.warning_message.replace('\n',' ')}")
             
-            if 'Некоторые файлы в папке .Исходники' not in self.warning_message:
-                QtWidgets.QMessageBox.warning(
-                    None,
-                    self.message_title,
-                    self.warning_message,
-                    buttons=QtWidgets.QMessageBox.StandardButton.Ok
-                    )  
-            else:
-                msg = QtWidgets.QMessageBox.warning(
-                    None,
-                    self.message_title,
-                    self.warning_message,
-                    buttons=QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No
-                    )
+            QtWidgets.QMessageBox.warning(
+                None,
+                self.message_title,
+                self.warning_message,
+                buttons=QtWidgets.QMessageBox.StandardButton.Ok
+                )  
             
-                if  msg == 16384:  
-                    os.startfile(os.path.join(global_vars.project_folder, '.Размеченные'))    
+            open_or_show_file(file_name='markup.xlsx')
+
+
+            # if 'Некоторые файлы в папке .Исходники' in self.warning_message:
+            #     msg = QtWidgets.QMessageBox.warning(
+            #         None,
+            #         self.message_title,
+            #         'Открыть папку .Размеченные?',
+            #         buttons=QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No
+            #         )
+            #     
+            #     if  msg == 16384:  
+            #         os.startfile(os.path.join(global_vars.project_folder, '.Размеченные'))    
+
+             
 
         else:
-            if os.path.exists(os.path.join(global_vars.project_folder, "markup.xlsx")):
-                os.startfile(os.path.join(global_vars.project_folder, "markup.xlsx"))
+            open_or_show_file(file_name='markup.xlsx')
 
-            while True:
-                sleep(1)
-                if os.path.exists(os.path.join(global_vars.project_folder, '~$markup.xlsx')):
-                    break
             global_vars.ui.pushButtonConcat.setEnabled(True)    
 
 

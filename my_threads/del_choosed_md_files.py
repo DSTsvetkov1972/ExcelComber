@@ -19,15 +19,15 @@ class DelChoosedMDFilesThread(QtCore.QThread):
         self.warning_message = ""
         self.info_message = ""   
 
-        if is_excel_file_open("markup.xlsx"):
+        if is_excel_file_open("errors.xlsx"):
             global_vars.ui.info_label.setStyleSheet('color: red')             
-            global_vars.ui.info_label.setText('Закройте файл markup.xlsx перед тем как запустить обработку.')   
-            self.warning_message =('Файл markup.xlsx уже открыт на рабочем столе.\n'
+            global_vars.ui.info_label.setText('Закройте файл errors.xlsx перед тем как запустить обработку.')   
+            self.warning_message =('Файл errors.xlsx открыт на рабочем столе.\n'
                                    'Закройте его и снова попробуйте удалить файлы!')
             return 
 
         df = pd.DataFrame(['что-то пошло не так'])
-        df.to_excel(os.path.join(global_vars.project_folder, 'markup.xlsx'), index=None, header=None)
+        df.to_excel(os.path.join(global_vars.project_folder, 'errors.xlsx'), index=None, header=None)
 
     
 
@@ -54,7 +54,7 @@ class DelChoosedMDFilesThread(QtCore.QThread):
         if self.err_list:
 
             df = pd.DataFrame(self.err_list, index=None)
-            df.to_excel(os.path.join(global_vars.project_folder, 'markup.xlsx'), index=None, header=None)
+            df.to_excel(os.path.join(global_vars.project_folder, 'errors.xlsx'), index=None, header=None)
 
             
 
@@ -98,7 +98,7 @@ class DelChoosedMDFilesThread(QtCore.QThread):
                                            self.message_title,
                                            self.error_message,
                                            buttons=QtWidgets.QMessageBox.StandardButton.Ok)
-            os.startfile(os.path.join(global_vars.project_folder, "markup.xlsx"))
+            os.startfile(os.path.join(global_vars.project_folder, "errors.xlsx"))
         elif self.warning_message:
             global_vars.ui.info_label.setStyleSheet('color: red')             
             global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
