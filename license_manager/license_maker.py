@@ -90,7 +90,7 @@ def save_encrypted_dict_to_file(encrypted_data, filename="encrypted_data.bin"):
 if __name__ == "__main__":
 
     data_dict = {
-        'user': 'ПАО "Трансконтейнер"',
+        'user': 'Автор',
         'trial_finish': f"{datetime(2025, 12, 17)}"}
 
     public_key_pem = os.path.join(os.getcwd(),'keys_manager', 'public_key.pem')
