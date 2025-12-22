@@ -45,11 +45,11 @@ class RenameColumnThread(QtCore.QThread):
             # global_vars.ui.info_label.setText(self.error_message)
             return
         
-        if self.is_md_files_modifyed:
-            global_vars.ui.info_label.setStyleSheet('color: red')
-            self.error_message = ('Файлы в папке .Размеченные были изменены.\n'
-                                  'Нажмите кнопку "Просмотерь разметку"!!')
-            return
+        #if self.is_md_files_modifyed:
+        #    global_vars.ui.info_label.setStyleSheet('color: red')
+        #    self.error_message = ('Файлы в папке .Размеченные были изменены.\n'
+        #                          'Нажмите кнопку "Просмотерь разметку"!!')
+        #    return
 
         if global_vars.ui.lineEditOldColumnNameInHeader.text() == '' and global_vars.ui.lineEditNewColumnNameInHeader.text() == '':
             self.error_message = "Выберите что на что нужно поменять!"
@@ -68,9 +68,9 @@ class RenameColumnThread(QtCore.QThread):
                 f"{'\n'.join(md_files_opened)}"
                 )
 
-            for md_file in md_files_opened:
-                os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
-            return
+            #for md_file in md_files_opened:
+            #    os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
+            #return
         
         self.error_message = ""
         self.warning_message = ""
@@ -172,14 +172,13 @@ class RenameColumnThread(QtCore.QThread):
                 self.error_message,
                 buttons=QtWidgets.QMessageBox.StandardButton.Ok)
             return
-
-
-            
+    
         #if self.warning_message:
         #    QtWidgets.QMessageBox.warning(None,
         #        self.message_title,
         #        self.warning_message,
         #        buttons=QtWidgets.QMessageBox.StandardButton.Ok)
+
         else:
             global_vars.ui.info_label.setStyleSheet('color: green')
             global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} Изменение комментариев завершено.")
