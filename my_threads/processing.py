@@ -635,9 +635,9 @@ class ProcessingThread(QtCore.QThread):
             global_vars.ui.info_label.setText('Закройте файл markup.xlsx перед тем как запустить обработку.')   
             self.warning_message ='Файл markup.xlsx уже открыт на рабочем столе.\nЗакройте его и заново нажмите кнопку "Просмотреть разметку"'
             return 
-        else:
-            df = pd.DataFrame(['Что-то пошло не так'], index=None)
-            df.to_excel(os.path.join(global_vars.project_folder, 'markup.xlsx'), index=None, header=None) 
+        # else:
+        #     df = pd.DataFrame(['Что-то пошло не так'], index=None)
+        #     df.to_excel(os.path.join(global_vars.project_folder, 'markup.xlsx'), index=None, header=None) 
            
         self.err_list = [] 
 
