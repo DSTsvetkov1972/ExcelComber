@@ -153,7 +153,7 @@ class Ui_MainWindow(object):
             global_vars.ui.lineEditOldRemTitle.setText("Какое примечание нужно заменить:")
 
             global_vars.ui.lineEditNewRemTitle.setStyleSheet('border: none; background-color: rgba(0, 0, 0, 0.0); color: grey; font-weight: 500')
-            global_vars.ui.lineEditNewRemTitle.setText("Новый примечание:")
+            global_vars.ui.lineEditNewRemTitle.setText("Новое примечание:")
 
 
 
@@ -164,7 +164,7 @@ class Ui_MainWindow(object):
             global_vars.ui.lineEditOldRemTitle.setText("Старый примечание (совпадает с новым):")
 
             global_vars.ui.lineEditNewRemTitle.setStyleSheet('border: none; background-color: rgba(0, 0, 0, 0.0); color: red; font-weight: 500')
-            global_vars.ui.lineEditNewRemTitle.setText("Новый примечание (совпадает со старым):")
+            global_vars.ui.lineEditNewRemTitle.setText("Новое примечание (совпадает со старым):")
 
 
         else:
@@ -173,7 +173,7 @@ class Ui_MainWindow(object):
             global_vars.ui.lineEditOldRemTitle.setText("Примечание которое нужно заменить:")
 
             global_vars.ui.lineEditNewRemTitle.setStyleSheet('border: none; background-color: rgba(0, 0, 0, 0.0); color: green; font-weight: 500')
-            global_vars.ui.lineEditNewRemTitle.setText("Новый примечание:")
+            global_vars.ui.lineEditNewRemTitle.setText("Новое примечание:")
 
 
 
@@ -437,7 +437,7 @@ class Ui_MainWindow(object):
         self.lineEditNewRemTitle = QLineEdit(self.centralWidget)
         self.lineEditNewRemTitle.setEnabled(False)
         self.lineEditNewRemTitle.setStyleSheet('border: none; background-color: rgba(0, 0, 0, 0.0); font-weight: 500')
-        self.lineEditNewRemTitle.setText("Новый примечание:")
+        self.lineEditNewRemTitle.setText("Новое примечание:")
         self.lineEditNewRemTitle.setAlignment(Qt.AlignLeft)
         self.verticalLayoutRightTop.addWidget(self.lineEditNewRemTitle)
 
