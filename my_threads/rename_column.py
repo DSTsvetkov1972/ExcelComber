@@ -68,7 +68,7 @@ class RenameColumnThread(QtCore.QThread):
         
         
         self.error_message = ""
-        self.warning_message = ""
+        self.warning_message = "Не удалось найти ни одного заголовка для изменения!"
         self.info_message = "" 
 
         if global_vars.ui.radioButtonOldInTopHeader.isChecked():
@@ -147,6 +147,7 @@ class RenameColumnThread(QtCore.QThread):
                     ws.cell(row=old_header_row_number, column=col_number, value='')                
                     ws.cell(row=new_header_row_number, column=col_number, value=global_vars.ui.lineEditNewColumnNameInHeader.text())
                     need_to_save = True
+                    self.warning_message = ""
 
 
         if need_to_save:
@@ -181,14 +182,17 @@ class RenameColumnThread(QtCore.QThread):
                 buttons=QtWidgets.QMessageBox.StandardButton.Ok)
             return
     
-        #if self.warning_message:
-        #    QtWidgets.QMessageBox.warning(None,
-        #        self.message_title,
-        #        self.warning_message,
-        #        buttons=QtWidgets.QMessageBox.StandardButton.Ok)
+        if self.warning_message:
+            global_vars.ui.info_label.setStyleSheet('color: red')            
+            global_vars.ui.info_label.setText(self.warning_message)
+
+            QtWidgets.QMessageBox.warning(None,
+                self.message_title,
+                self.warning_message,
+                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
 
         else:
             global_vars.ui.info_label.setStyleSheet('color: green')
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} Изменение комментариев завершено.")
+            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} Изменение заголовком завершено.")
 
 
