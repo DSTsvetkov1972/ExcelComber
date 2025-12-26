@@ -247,7 +247,7 @@ class Ui_MainWindow(object):
         # **********************************************************************************************
 
         self.verticalLayoutWidgetCenterTop = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetCenterTop.setGeometry(QRect(360, 41, 320, 100))
+        self.verticalLayoutWidgetCenterTop.setGeometry(QRect(360, 42, 320, 98))
         #self.verticalLayoutWidgetCenterTop.setStyleSheet("border: 2px solid blue; border-radius: 8px; background-color: #f0f0f0;")
 
         self.verticalLayoutCenterTop = QVBoxLayout(self.verticalLayoutWidgetCenterTop)
@@ -282,7 +282,7 @@ class Ui_MainWindow(object):
         # CENTER-MIDDLE-1
         # **********************************************************************************************
         self.verticalLayoutWidgetCenterMiddle1 = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetCenterMiddle1.setGeometry(QRect(360, 150, 260, 20))
+        self.verticalLayoutWidgetCenterMiddle1.setGeometry(QRect(360, 146, 260, 20))
         
         self.verticalLayoutCenterMiddle1 = QHBoxLayout(self.verticalLayoutWidgetCenterMiddle1)
         self.verticalLayoutCenterMiddle1.setContentsMargins(10, 0, 0, 0)
@@ -320,7 +320,7 @@ class Ui_MainWindow(object):
         # CENTER-MIDDLE-2
         # **********************************************************************************************
         self.verticalLayoutWidgetCenterMiddle2 = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetCenterMiddle2.setGeometry(QRect(360, 166, 320, 50))
+        self.verticalLayoutWidgetCenterMiddle2.setGeometry(QRect(360, 161, 320, 60))
         
         self.verticalLayoutCenterMiddle2 = QVBoxLayout(self.verticalLayoutWidgetCenterMiddle2)
         self.verticalLayoutCenterMiddle2.setContentsMargins(10, 0, 0, 0)
@@ -348,7 +348,7 @@ class Ui_MainWindow(object):
         # CENTER-MIDDLE-3
         # **********************************************************************************************
         self.verticalLayoutWidgetCenterMiddle3 = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetCenterMiddle3.setGeometry(QRect(360, 216, 260, 20))
+        self.verticalLayoutWidgetCenterMiddle3.setGeometry(QRect(360, 212, 260, 20))
         
         self.verticalLayoutCenterMiddle3 = QHBoxLayout(self.verticalLayoutWidgetCenterMiddle3)
         self.verticalLayoutCenterMiddle3.setContentsMargins(10, 0, 0, 0)
@@ -387,7 +387,7 @@ class Ui_MainWindow(object):
         # CENTER-BOTTOM
         # **********************************************************************************************----
         self.verticalLayoutWidgetCenterBottom = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetCenterBottom.setGeometry(QRect(360, 226, 320, 60))
+        self.verticalLayoutWidgetCenterBottom.setGeometry(QRect(360, 232, 320, 46))
 
         self.verticalLayoutCenterBottom = QVBoxLayout(self.verticalLayoutWidgetCenterBottom)
         self.verticalLayoutCenterBottom.setContentsMargins(10, 0, 0, 0)        
