@@ -33,8 +33,13 @@ class RenameColumnThread(QtCore.QThread):
 
     def run(self):
 
+        print(global_vars.ui.lineEditOldColumnNameInHeader.text())
+        print(global_vars.ui.lineEditNewColumnNameInHeader.text())
+        print(global_vars.ui.radioButtonOldInTopHeader.isChecked())
+        print(global_vars.ui.radioButtonNewInTopHeader.isChecked())
+
         self.is_src_files_modifyed = check_files_modified('.Исходники')
-        self.is_md_files_modifyed = check_files_modified('.Размеченные')
+        # self.is_md_files_modifyed = check_files_modified('.Размеченные')
 
         if self.is_src_files_modifyed:
             global_vars.ui.info_label.setStyleSheet('color: red')
@@ -61,16 +66,6 @@ class RenameColumnThread(QtCore.QThread):
             self.error_message = "Новое значение такое же как старое в той же строке заголовка!"
             return
         
-        md_files_opened = get_md_files_opened()
-        if md_files_opened:
-            self.error_message = (
-                f"Некоторые размеченные файлы открыты на рабочем столе!\n"
-                f"{'\n'.join(md_files_opened)}"
-                )
-
-            #for md_file in md_files_opened:
-            #    os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
-            #return
         
         self.error_message = ""
         self.warning_message = ""
@@ -88,7 +83,20 @@ class RenameColumnThread(QtCore.QThread):
 
         files_sheets_list = get_files_and_sheets_from_pyperclip()
         files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
-        files_list.sort() 
+        files_list.sort()
+
+        md_files_opened = get_md_files_opened()
+        if md_files_opened:
+            md_files_opened_to_close = [file for file in md_files_opened if file in files_list]
+            self.error_message = (
+                f"Не можем поменять заголовки в следующих файлах\n"
+                f"так как они открыты на рабочем столе:\n"
+                f"{'\n'.join(md_files_opened_to_close)}"
+                )
+
+            #for md_file in md_files_opened:
+            #    os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
+            return
 
         file_preceding = ""
         need_to_save = False

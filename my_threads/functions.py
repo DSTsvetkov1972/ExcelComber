@@ -499,6 +499,7 @@ def get_files_and_sheets_from_pyperclip():
 
 
 def get_md_files_opened():
+    #print('get_md_files_opened')
     md_folder = os.path.join(global_vars.project_folder, '.Размеченные')
     md_files_list = list(os.walk(md_folder))
     #print(md_files_list)
@@ -506,7 +507,7 @@ def get_md_files_opened():
     if md_files_list:
         if len(md_files_list[0]) == 3:
             md_files = md_files_list[0][2]
-            
+            #print(list([file[2:] for file in md_files if file[0] == '~']))
             return (list([file[2:] for file in md_files if file[0] == '~']))
 
 def get_range_info(cell_range):
