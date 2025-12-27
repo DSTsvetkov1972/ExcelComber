@@ -14,7 +14,7 @@ from openpyxl.worksheet.datavalidation import DataValidationList
 from datetime import datetime
 from my_threads.functions import all_control_elements_off, all_control_elements_on
 from my_threads.functions import value_searcher, marking_checker
-from my_threads.functions import init_project, refresh_files_info, clean_process_folder, check_files_modified, is_excel_file_open, open_or_show_file
+from my_threads.functions import init_project, refresh_files_info, clean_process_folder, check_files_modified, check_excel_file_is_open, open_or_show_file
 from my_threads.functions import get_range_info, set_range_border
 from my_threads.functions import set_markup_in_db, get_markup_from_db
 
@@ -630,7 +630,7 @@ class ProcessingThread(QtCore.QThread):
             os.path.exists(os.path.join(global_vars.project_folder, "~$markup.xlsx"))):
             os.remove(os.path.join(global_vars.project_folder, "~$markup.xlsx"))
 
-        if is_excel_file_open("markup.xlsx"):
+        if check_excel_file_is_open("markup.xlsx"):
             global_vars.ui.info_label.setStyleSheet('color: red')             
             global_vars.ui.info_label.setText('Закройте файл markup.xlsx перед тем как запустить обработку.')   
             self.warning_message ='Файл markup.xlsx уже открыт на рабочем столе.\nЗакройте его и заново нажмите кнопку "Просмотреть разметку"'

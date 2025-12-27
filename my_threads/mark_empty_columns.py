@@ -16,14 +16,14 @@ import os
 import pyperclip
 import pandas as pd
 from datetime import datetime
-from my_threads.functions import get_files_and_sheets_from_pyperclip, get_md_files_opened,all_control_elements_on, all_control_elements_off, check_files_modified
+from my_threads.functions import get_files_and_sheets_from_pyperclip, all_control_elements_on, all_control_elements_off, check_files_modified, check_excel_file_is_open
 from time import sleep
 
 
 class MarkEmptyColumnsThread(QtCore.QThread):
     def __init__ (self, md_files=False, parent=None):
         QtCore.QThread.__init__(self, parent)
-        self.message_title = "Заменяем заголовки в выбранных листах"
+        self.message_title = "Помечаем непустые колонки"
         self.md_files = md_files
 
     mysignal = QtCore.Signal(str)
@@ -49,28 +49,31 @@ class MarkEmptyColumnsThread(QtCore.QThread):
             # global_vars.ui.info_label.setText(self.error_message)
             return
         
-        if self.is_md_files_modifyed:
-            global_vars.ui.info_label.setStyleSheet('color: red')
-            self.error_message = ('Файлы в папке .Размеченные были изменены.\n'
-                                  'Нажмите кнопку "Просмотерь разметку"!!')
-            return
+        #if self.is_md_files_modifyed:
+        #    global_vars.ui.info_label.setStyleSheet('color: red')
+        #    self.error_message = ('Файлы в папке .Размеченные были изменены.\n'
+        #                          'Нажмите кнопку "Просмотерь разметку"!!')
+        #    return
         
-        md_files_opened = get_md_files_opened()
-        if md_files_opened:
-            self.error_message = (
-                f"Некоторые размеченные файлы открыты на рабочем столе!\n"
-                f"{'\n'.join(md_files_opened)}"
-                )
-
-            for md_file in md_files_opened:
-                os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
-            return
-
-          
+        
 
         files_sheets_list = get_files_and_sheets_from_pyperclip()
         files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
         files_list.sort()
+
+        md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+        if md_files_opened:
+            self.warning_message = (
+                f"Некоторые размеченные файлы открыты на рабочем столе!\n"
+                f"{'\n'.join(md_files_opened)}"
+                )
+
+            #for md_file in md_files_opened:
+            #    os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
+            return
+
+
+
 
         file_preceding = ""
         need_to_save = False
@@ -183,6 +186,17 @@ class MarkEmptyColumnsThread(QtCore.QThread):
                 self.error_message,
                 buttons=QtWidgets.QMessageBox.StandardButton.Ok)
             return
+        
+
+        if self.warning_message:
+            global_vars.ui.info_label.setStyleSheet('color: red')            
+            global_vars.ui.info_label.setText(self.warning_message)
+
+            QtWidgets.QMessageBox.warning(
+                None,
+                self.message_title,
+                self.warning_message,
+                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
 
         else:
             global_vars.ui.info_label.setStyleSheet('color: green')

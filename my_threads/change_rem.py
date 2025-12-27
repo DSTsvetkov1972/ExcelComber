@@ -11,7 +11,7 @@ import os
 import pyperclip
 import pandas as pd
 from datetime import datetime
-from my_threads.functions import get_md_files_opened, get_files_and_sheets_from_pyperclip, check_files_modified
+from my_threads.functions import get_files_and_sheets_from_pyperclip, check_files_modified, check_excel_file_is_open
 from time import sleep
 
 
@@ -29,7 +29,7 @@ class ChangeRemThread(QtCore.QThread):
 
     def run(self):
         self.error_message = ""
-        self.warning_message = ""
+        self.warning_message = "Не удалось найти ни одного комментария для изменения!"
         self.info_message = "" 
 
         self.is_src_files_modifyed = check_files_modified('.Исходники')
@@ -53,23 +53,24 @@ class ChangeRemThread(QtCore.QThread):
         if global_vars.ui.lineEditOldRem.text() == global_vars.ui.lineEditNewRem.text():
             self.error_message = "Старый комментарий такой же как новый!"
             return
-        
-        md_files_opened = get_md_files_opened()
-        if md_files_opened:
-            self.error_message = (
-                f"Некоторые размеченные файлы открыты на рабочем столе!\n"
-                f"{'\n'.join(md_files_opened)}"
-                )
-
-            for md_file in md_files_opened:
-                os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
-            return
-        
+    
 
 
         files_sheets_list = get_files_and_sheets_from_pyperclip()
         files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
         files_list.sort()        
+
+        md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+        if md_files_opened:
+            self.warning_message = (
+                f"Некоторые размеченные файлы открыты на рабочем столе!\n"
+                f"{'\n'.join(md_files_opened)}"
+                )
+
+            #for md_file in md_files_opened:
+            #    os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
+            return
+
 
         file_preceding = ""
         need_to_save = False
@@ -122,6 +123,7 @@ class ChangeRemThread(QtCore.QThread):
             if rem_in_sheet == global_vars.ui.lineEditOldRem.text():
                 ws['A1'].value = global_vars.ui.lineEditNewRem.text()
                 need_to_save = True
+                self.warning_message = ""
 
 
         if need_to_save:
@@ -161,12 +163,17 @@ class ChangeRemThread(QtCore.QThread):
             return
 
 
+        if self.warning_message:
+            QtWidgets.QMessageBox.warning(None,
+                self.message_title,
+                self.warning_message,
+                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
             
-        #if self.warning_message:
-        #    QtWidgets.QMessageBox.warning(None,
-        #        self.message_title,
-        #        self.warning_message,
-        #        buttons=QtWidgets.QMessageBox.StandardButton.Ok)
+            global_vars.ui.info_label.setStyleSheet('color: red')
+            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {self.warning_message}.")
+            
+            return
+        
         else:
             global_vars.ui.info_label.setStyleSheet('color: green')
             global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} Изменение комментариев завершено.")

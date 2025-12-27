@@ -5,7 +5,7 @@ import os
 import pyperclip
 import pandas as pd
 from datetime import datetime
-from my_threads.functions import get_files_and_sheets_from_pyperclip, all_control_elements_on, all_control_elements_off, is_excel_file_open
+from my_threads.functions import get_files_and_sheets_from_pyperclip, all_control_elements_on, all_control_elements_off, check_excel_file_is_open
 
 
 
@@ -19,7 +19,7 @@ class DelChoosedMDFilesThread(QtCore.QThread):
         self.warning_message = ""
         self.info_message = ""   
 
-        if is_excel_file_open("errors.xlsx"):
+        if check_excel_file_is_open("errors.xlsx"):
             global_vars.ui.info_label.setStyleSheet('color: red')             
             global_vars.ui.info_label.setText('Закройте файл errors.xlsx перед тем как запустить обработку.')   
             self.warning_message =('Файл errors.xlsx открыт на рабочем столе.\n'

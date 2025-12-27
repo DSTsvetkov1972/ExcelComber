@@ -15,7 +15,7 @@ import os
 import pyperclip
 import pandas as pd
 from datetime import datetime
-from my_threads.functions import get_files_and_sheets_from_pyperclip, get_md_files_opened,all_control_elements_on, all_control_elements_off, check_files_modified
+from my_threads.functions import get_files_and_sheets_from_pyperclip, all_control_elements_on, all_control_elements_off, check_files_modified, check_excel_file_is_open
 from time import sleep
 
 
@@ -84,18 +84,18 @@ class RenameColumnThread(QtCore.QThread):
         files_sheets_list = get_files_and_sheets_from_pyperclip()
         files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
         files_list.sort()
+        print('A')
+        md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+        print(files_list)
+        print(md_files_opened)
 
-        md_files_opened = get_md_files_opened()
         if md_files_opened:
-            md_files_opened_to_close = [file for file in md_files_opened if file in files_list]
-            self.error_message = (
+            self.warning_message = (
                 f"Не можем поменять заголовки в следующих файлах\n"
                 f"так как они открыты на рабочем столе:\n"
-                f"{'\n'.join(md_files_opened_to_close)}"
+                f"{'\n'.join(md_files_opened)}"
                 )
-
-            #for md_file in md_files_opened:
-            #    os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
+            print('B')
             return
 
         file_preceding = ""
@@ -176,7 +176,8 @@ class RenameColumnThread(QtCore.QThread):
             global_vars.ui.info_label.setStyleSheet('color: red')            
             global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
 
-            QtWidgets.QMessageBox.critical(None,
+            QtWidgets.QMessageBox.critical(
+                None,
                 self.message_title,
                 self.error_message,
                 buttons=QtWidgets.QMessageBox.StandardButton.Ok)
@@ -186,10 +187,12 @@ class RenameColumnThread(QtCore.QThread):
             global_vars.ui.info_label.setStyleSheet('color: red')            
             global_vars.ui.info_label.setText(self.warning_message)
 
-            QtWidgets.QMessageBox.warning(None,
+            QtWidgets.QMessageBox.warning(
+                None,
                 self.message_title,
                 self.warning_message,
                 buttons=QtWidgets.QMessageBox.StandardButton.Ok)
+
 
         else:
             global_vars.ui.info_label.setStyleSheet('color: green')

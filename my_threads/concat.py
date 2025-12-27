@@ -8,7 +8,7 @@ from time import sleep
 from my_threads.functions import check_files_modified
 from openpyxl import load_workbook, styles
 from openpyxl.utils.cell import get_column_letter
-from my_threads.functions import all_control_elements_off, all_control_elements_on, is_excel_file_open
+from my_threads.functions import all_control_elements_off, all_control_elements_on, check_excel_file_is_open
 
 class ConcatThread(QtCore.QThread):
  
@@ -173,7 +173,7 @@ class ConcatThread(QtCore.QThread):
         self.is_src_files_modifyed = check_files_modified('.Исходники')
         self.is_md_files_modifyed = check_files_modified('.Размеченные')
 
-        if is_excel_file_open("result.xlsx"):
+        if check_excel_file_is_open("result.xlsx"):
             global_vars.ui.info_label.setStyleSheet('color: red') 
             self.error_message = 'Закройте файл result.xlsx и снова нажмите "Объединить"'                
             global_vars.ui.info_label.setText(self.error_message)
@@ -181,7 +181,7 @@ class ConcatThread(QtCore.QThread):
             return
         
         # if os.path.exists(os.path.join(global_vars.project_folder, "~$result.csv")):
-        if is_excel_file_open("result.csv"):            
+        if check_excel_file_is_open("result.csv"):            
             global_vars.ui.info_label.setStyleSheet('color: red') 
             self.error_message = 'Файл result.csv занят другим приложением и не может быть перезаприсан!'                
             global_vars.ui.info_label.setText(self.error_message)

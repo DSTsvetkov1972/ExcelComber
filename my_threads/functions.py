@@ -498,17 +498,7 @@ def get_files_and_sheets_from_pyperclip():
         return []
 
 
-def get_md_files_opened():
-    #print('get_md_files_opened')
-    md_folder = os.path.join(global_vars.project_folder, '.Размеченные')
-    md_files_list = list(os.walk(md_folder))
-    #print(md_files_list)
 
-    if md_files_list:
-        if len(md_files_list[0]) == 3:
-            md_files = md_files_list[0][2]
-            #print(list([file[2:] for file in md_files if file[0] == '~']))
-            return (list([file[2:] for file in md_files if file[0] == '~']))
 
 def get_range_info(cell_range):
     """
@@ -706,7 +696,7 @@ def get_markup_from_db(db, file):
 
         return res            
 
-def is_excel_file_open(filename):
+def check_excel_file_is_open(filename):
     """
     Проверяет, открыт ли файл Excel в системе
     """
@@ -731,6 +721,21 @@ def is_excel_file_open(filename):
             continue
             
     return False#, None
+
+"""
+def get_md_files_opened():
+    #print('get_md_files_opened')
+    md_folder = os.path.join(global_vars.project_folder, '.Размеченные')
+    md_files_list = list(os.walk(md_folder))
+    #print(md_files_list)
+
+    if md_files_list:
+        if len(md_files_list[0]) == 3:
+            md_files = md_files_list[0][2]
+            #print(list([file[2:] for file in md_files if file[0] == '~']))
+            return (list([file[2:] for file in md_files if file[0] == '~']))
+"""        
+   
 
 
 def open_or_show_file(file_name='markup.xlsx'):

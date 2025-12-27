@@ -7,7 +7,7 @@ import os
 import pandas as pd
 from my_threads.functions import check_files_modified
 from openpyxl import load_workbook, styles
-from my_threads.functions import all_control_elements_off, all_control_elements_on, get_md_files_opened, get_files_and_sheets_from_pyperclip
+from my_threads.functions import all_control_elements_off, all_control_elements_on, get_files_and_sheets_from_pyperclip, check_excel_file_is_open
 
 class HeadersFillerThread(QtCore.QThread):
  
@@ -20,40 +20,7 @@ class HeadersFillerThread(QtCore.QThread):
         QtCore.QThread.__init__(self, parent)
         self.message_title = "Заполняем заголовки"         
 
-           
-    def check_md_files_available(self):
-        """
-        Перед началом обработки проверяем чтобы не было 
-        открытых размеченных файлов
-        """
-
-        self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                            f"проверяем, чтобы не было открытых файлов из папки .Размеченные")
-
-        md_folder = os.path.join(global_vars.project_folder,'.Размеченные')
-        md_files = list(os.walk(md_folder))[0][2]
-        
-        opened_md_files = [md_file[2:] for md_file in md_files if md_file[0]=='~']
-
-
-        self.err_list = []
-        if opened_md_files:
-            
-            for file in opened_md_files:
-                self.err_list.append(f'{file}, Файл из папки .Размеченные открыт на рабочем столе. Его нужно закрыть!')
-                os.startfile(os.path.join(md_folder, file))
-
-            if self.err_list:
-                self.error_message = (
-                    "Некоторые файлы из папки .Размеченные,\n"
-                    "открыты на рабочем столе.")
-                
-            return False
-        return True
-            
-
-
-
+       
 
     def run(self):
         self.error_message = ""
@@ -78,26 +45,27 @@ class HeadersFillerThread(QtCore.QThread):
         #                          'Нажмите кнопку "Просмотерь разметку"!!')
         #    return
         
-        md_files_opened = get_md_files_opened()
-        if md_files_opened:
-            self.error_message = (
-                f"Некоторые размеченные файлы открыты на рабочем столе!\n"
-                f"{'\n'.join(md_files_opened)}"
-                )
-
-            for md_file in md_files_opened:
-                os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
-                while True:
-                    sleep(0.05)
-                    if os.path.exists(os.path.join(global_vars.project_folder, '.Размеченные', f"~${md_file}")):
-                        break                                     
-            return
-
-          
+         
 
         files_sheets_list = get_files_and_sheets_from_pyperclip()
         files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
         files_list.sort()
+
+        md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+        if md_files_opened:
+            self.warning_message = (
+                f"Некоторые размеченные файлы открыты на рабочем столе!\n"
+                f"{'\n'.join(md_files_opened)}"
+                )
+
+            #for md_file in md_files_opened:
+            #    os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
+            #    while True:
+            #        sleep(0.05)
+            #        if os.path.exists(os.path.join(global_vars.project_folder, '.Размеченные', f"~${md_file}")):
+            #            break                                     
+            return
+
 
         file_preceding = ""
         need_to_save = False
