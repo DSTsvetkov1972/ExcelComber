@@ -722,19 +722,26 @@ def check_excel_file_is_open(filename):
             
     return False#, None
 
-"""
-def get_md_files_opened():
-    #print('get_md_files_opened')
-    md_folder = os.path.join(global_vars.project_folder, '.Размеченные')
-    md_files_list = list(os.walk(md_folder))
-    #print(md_files_list)
 
-    if md_files_list:
-        if len(md_files_list[0]) == 3:
-            md_files = md_files_list[0][2]
-            #print(list([file[2:] for file in md_files if file[0] == '~']))
-            return (list([file[2:] for file in md_files if file[0] == '~']))
-"""        
+def pop_up_files(message_title, warning_message, md_files_opened, folder = ''):
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle(message_title)
+            msg_box.setText(warning_message)
+            msg_box.setStandardButtons(QMessageBox.Yes|QMessageBox.No )
+
+            # Меняем стандартные подписи
+            msg_box.button(QMessageBox.Yes).setText("Показать поверх других окон?")
+            msg_box.button(QMessageBox.No).setText("Нет")
+            result = msg_box.exec()
+ 
+            print(result)
+            if result == QMessageBox.StandardButton.Yes:
+
+                for file in md_files_opened:
+                    os.startfile(os.path.join(global_vars.project_folder, folder, file))
+
+      
    
 
 

@@ -7,7 +7,7 @@ import os
 import pandas as pd
 from my_threads.functions import check_files_modified
 from openpyxl import load_workbook, styles
-from my_threads.functions import all_control_elements_off, all_control_elements_on, get_files_and_sheets_from_pyperclip, check_excel_file_is_open
+from my_threads.functions import all_control_elements_off, all_control_elements_on, get_files_and_sheets_from_pyperclip, check_excel_file_is_open, pop_up_files
 
 class HeadersFillerThread(QtCore.QThread):
  
@@ -51,11 +51,11 @@ class HeadersFillerThread(QtCore.QThread):
         files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
         files_list.sort()
 
-        md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
-        if md_files_opened:
+        self.md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+        if self.md_files_opened:
             self.warning_message = (
                 f"Некоторые размеченные файлы открыты на рабочем столе!\n"
-                f"{'\n'.join(md_files_opened)}"
+                f"{'\n'.join(self.md_files_opened)}"
                 )
 
             #for md_file in md_files_opened:
@@ -167,32 +167,34 @@ class HeadersFillerThread(QtCore.QThread):
 
 
     def on_finished(self): # Вызывается при завершении потока
-        global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)
-        all_control_elements_on()
+        if self.warning_message:
+
+            pop_up_files(self.message_title, self.warning_message, self.md_files_opened, '.Размеченные')
+
+            global_vars.ui.info_label.setStyleSheet('color: red')
+            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {self.warning_message.replace('\n',' ')}.")
+            all_control_elements_on()
+            return
+
 
 
         if self.error_message:
-            global_vars.ui.info_label.setStyleSheet('color: red')             
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                                              f"{self.error_message.replace('\n',' ')}")
-            QtWidgets.QMessageBox.critical(None,
-                                           self.message_title,
-                                           self.error_message,
-                                           buttons=QtWidgets.QMessageBox.StandardButton.Ok)
-            #refresh_files_info('.Исходники')        
-            #refresh_files_info('.Размеченные')             
 
-        elif self.warning_message:
-            global_vars.ui.info_label.setStyleSheet('color: red')             
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                                              f"{self.warning_message.replace('\n',' ')}")
+            QtWidgets.QMessageBox.critical(None,
+                self.message_title,
+                self.error_message,
+                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
             
-            QtWidgets.QMessageBox.warning(None,
-                                           self.message_title,
-                                           self.warning_message,
-                                           buttons=QtWidgets.QMessageBox.StandardButton.Ok)             
+            global_vars.ui.info_label.setStyleSheet('color: red')            
+            global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
+
+            all_control_elements_on()
+            return
+       
         else:
             global_vars.ui.info_label.setStyleSheet('color: green')             
             global_vars.ui.info_label.setText(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                 f"Заголовки заполнены.")
+            
+            all_control_elements_on()

@@ -11,7 +11,7 @@ import os
 import pyperclip
 import pandas as pd
 from datetime import datetime
-from my_threads.functions import get_files_and_sheets_from_pyperclip, check_files_modified, check_excel_file_is_open
+from my_threads.functions import get_files_and_sheets_from_pyperclip, check_files_modified, check_excel_file_is_open, pop_up_files, all_control_elements_off, all_control_elements_on
 from time import sleep
 
 
@@ -28,8 +28,8 @@ class ChangeRemThread(QtCore.QThread):
         global_vars.ui.info_label.setText(mysignal)
 
     def run(self):
-        self.error_message = ""
-        self.warning_message = "Не удалось найти ни одного комментария для изменения!"
+        self.error_message = "Не удалось найти ни одного комментария для изменения!"
+        self.warning_message = ""
         self.info_message = "" 
 
         self.is_src_files_modifyed = check_files_modified('.Исходники')
@@ -60,11 +60,15 @@ class ChangeRemThread(QtCore.QThread):
         files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
         files_list.sort()        
 
-        md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
-        if md_files_opened:
+        self.md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+
+        print(files_list)
+        print(self.md_files_opened)
+
+        if self.md_files_opened:
             self.warning_message = (
                 f"Некоторые размеченные файлы открыты на рабочем столе!\n"
-                f"{'\n'.join(md_files_opened)}"
+                f"{'\n'.join(self.md_files_opened)}"
                 )
 
             #for md_file in md_files_opened:
@@ -123,7 +127,7 @@ class ChangeRemThread(QtCore.QThread):
             if rem_in_sheet == global_vars.ui.lineEditOldRem.text():
                 ws['A1'].value = global_vars.ui.lineEditNewRem.text()
                 need_to_save = True
-                self.warning_message = ""
+                self.error_message = ""
 
 
         if need_to_save:
@@ -145,35 +149,37 @@ class ChangeRemThread(QtCore.QThread):
         self.old_rem = global_vars.ui.lineEditOldRem.text()
         self.new_rem = global_vars.ui.lineEditNewRem.text()
 
-        if self.old_rem == self.new_rem:
-            print('aaaaa')
+        all_control_elements_off()
 
 
 
     def on_finished(self): # Вызывается при завершении потока
+
+        if self.warning_message:
+
+            pop_up_files(self.message_title, self.warning_message, self.md_files_opened, '.Размеченные')
+
+            global_vars.ui.info_label.setStyleSheet('color: red')
+            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {self.warning_message.replace('\n',' ')}.")
+            all_control_elements_on()
+            return
+
+
+
         if self.error_message:
-      
-            global_vars.ui.info_label.setStyleSheet('color: red')            
-            global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
 
             QtWidgets.QMessageBox.critical(None,
                 self.message_title,
                 self.error_message,
                 buttons=QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-
-
-        if self.warning_message:
-            QtWidgets.QMessageBox.warning(None,
-                self.message_title,
-                self.warning_message,
-                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
             
-            global_vars.ui.info_label.setStyleSheet('color: red')
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {self.warning_message}.")
-            
+            global_vars.ui.info_label.setStyleSheet('color: red')            
+            global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
+
+            all_control_elements_on()
             return
         
         else:
             global_vars.ui.info_label.setStyleSheet('color: green')
             global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} Изменение комментариев завершено.")
+            all_control_elements_on()

@@ -15,7 +15,7 @@ import os
 import pyperclip
 import pandas as pd
 from datetime import datetime
-from my_threads.functions import get_files_and_sheets_from_pyperclip, all_control_elements_on, all_control_elements_off, check_files_modified, check_excel_file_is_open
+from my_threads.functions import get_files_and_sheets_from_pyperclip, all_control_elements_on, all_control_elements_off, check_files_modified, check_excel_file_is_open, pop_up_files
 from time import sleep
 
 
@@ -67,8 +67,8 @@ class RenameColumnThread(QtCore.QThread):
             return
         
         
-        self.error_message = ""
-        self.warning_message = "Не удалось найти ни одного заголовка для изменения!"
+        self.error_message = "Не удалось найти ни одного заголовка для изменения!"
+        self.warning_message = ""
         self.info_message = "" 
 
         if global_vars.ui.radioButtonOldInTopHeader.isChecked():
@@ -84,16 +84,15 @@ class RenameColumnThread(QtCore.QThread):
         files_sheets_list = get_files_and_sheets_from_pyperclip()
         files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
         files_list.sort()
-        print('A')
-        md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
-        print(files_list)
-        print(md_files_opened)
 
-        if md_files_opened:
+        self.md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+
+
+        if self.md_files_opened:
             self.warning_message = (
                 f"Не можем поменять заголовки в следующих файлах\n"
                 f"так как они открыты на рабочем столе:\n"
-                f"{'\n'.join(md_files_opened)}"
+                f"{'\n'.join(self.md_files_opened)}"
                 )
             print('B')
             return
@@ -147,7 +146,7 @@ class RenameColumnThread(QtCore.QThread):
                     ws.cell(row=old_header_row_number, column=col_number, value='')                
                     ws.cell(row=new_header_row_number, column=col_number, value=global_vars.ui.lineEditNewColumnNameInHeader.text())
                     need_to_save = True
-                    self.warning_message = ""
+                    self.error_message = ""
 
 
         if need_to_save:
@@ -170,32 +169,35 @@ class RenameColumnThread(QtCore.QThread):
 
 
     def on_finished(self): # Вызывается при завершении потока
-        all_control_elements_on()
-        if self.error_message:
-      
-            global_vars.ui.info_label.setStyleSheet('color: red')            
-            global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
+        
+        if self.warning_message:
 
-            QtWidgets.QMessageBox.critical(
-                None,
+            pop_up_files(self.message_title, self.warning_message, self.md_files_opened, '.Размеченные')
+
+            global_vars.ui.info_label.setStyleSheet('color: red')
+            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {self.warning_message.replace('\n',' ')}.")
+            all_control_elements_on()
+            return
+
+
+
+        if self.error_message:
+
+            QtWidgets.QMessageBox.critical(None,
                 self.message_title,
                 self.error_message,
                 buttons=QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-    
-        if self.warning_message:
+            
             global_vars.ui.info_label.setStyleSheet('color: red')            
-            global_vars.ui.info_label.setText(self.warning_message)
+            global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
 
-            QtWidgets.QMessageBox.warning(
-                None,
-                self.message_title,
-                self.warning_message,
-                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
+            all_control_elements_on()
+            return
 
 
         else:
             global_vars.ui.info_label.setStyleSheet('color: green')
             global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} Изменение заголовком завершено.")
+            all_control_elements_on()
 
 

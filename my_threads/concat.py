@@ -5,7 +5,7 @@ import global_vars
 import os, random
 import pandas as pd
 from time import sleep
-from my_threads.functions import check_files_modified
+from my_threads.functions import check_files_modified, pop_up_files
 from openpyxl import load_workbook, styles
 from openpyxl.utils.cell import get_column_letter
 from my_threads.functions import all_control_elements_off, all_control_elements_on, check_excel_file_is_open
@@ -166,6 +166,7 @@ class ConcatThread(QtCore.QThread):
 
 
     def run(self): 
+        self.message_title = "Объединяем таблицы"
         self.error_message = ""
         self.warning_message = ""
         self.result_df_len = 0
@@ -175,16 +176,18 @@ class ConcatThread(QtCore.QThread):
 
         if check_excel_file_is_open("result.xlsx"):
             global_vars.ui.info_label.setStyleSheet('color: red') 
-            self.error_message = 'Закройте файл result.xlsx и снова нажмите "Объединить"'                
-            global_vars.ui.info_label.setText(self.error_message)
-            os.startfile(os.path.join(global_vars.project_folder, "result.xlsx"))                   
+            self.warning_message = 'Закройте файл result.xlsx и снова нажмите "Объединить"'
+            self.result_file =  "result.xlsx"                
+            #global_vars.ui.info_label.setText(self.error_message)
+            #os.startfile(os.path.join(global_vars.project_folder, "result.xlsx"))                   
             return
         
         # if os.path.exists(os.path.join(global_vars.project_folder, "~$result.csv")):
         if check_excel_file_is_open("result.csv"):            
             global_vars.ui.info_label.setStyleSheet('color: red') 
-            self.error_message = 'Файл result.csv занят другим приложением и не может быть перезаприсан!'                
-            global_vars.ui.info_label.setText(self.error_message)
+            self.warning_message = 'Файл result.csv занят другим приложением и не может быть перезаприсан!'  
+            self.result_file =  "result.csv"             
+            #global_vars.ui.info_label.setText(self.error_message)
             # os.startfile(os.path.join(global_vars.project_folder, "result.csv"))                   
             return
 
@@ -210,17 +213,19 @@ class ConcatThread(QtCore.QThread):
                 os.remove(os.path.join(global_vars.project_folder, "result.xlsx"))
             except PermissionError:
                 global_vars.ui.info_label.setStyleSheet('color: red') 
-                self.error_message = 'Закройте файл result.xlsx и снова нажмите "Объединить"'                
+                self.warning_message = 'Закройте файл result.xlsx и снова нажмите "Объединить"'
+                self.result_file =  "result.xlsx"               
                 #global_vars.ui.info_label.setText(self.error_message)
-                os.startfile(os.path.join(global_vars.project_folder, "result.xlsx"))                
+                #os.startfile(os.path.join(global_vars.project_folder, "result.xlsx"))                
                 return
 
         if os.path.exists(os.path.join(global_vars.project_folder, "result.xlsx")):
             try:
                 os.remove(os.path.join(global_vars.project_folder, "result.xlsx"))
             except PermissionError:
-                global_vars.ui.info_label.setStyleSheet('color: red') 
-                self.error_message = 'Файл result.csv занят другим приложением и не может быть перезаписан!'                
+                global_vars.ui.info_label.setStyleSheet('color: red')
+                self.result_file =  "result.csv"
+                self.warning_message = 'Файл result.csv занят другим приложением и не может быть перезаписан!'                
                 #global_vars.ui.info_label.setText(self.error_message)
                 # os.startfile(os.path.join(global_vars.project_folder, "result.#sv"))                   
                 return
@@ -276,12 +281,10 @@ class ConcatThread(QtCore.QThread):
                                            self.error_message,
                                            buttons=QtWidgets.QMessageBox.StandardButton.Ok) 
         elif self.warning_message:
+            pop_up_files(self.message_title, self.warning_message, [self.result_file])
             global_vars.ui.info_label.setStyleSheet('color: red')             
             global_vars.ui.info_label.setText(self.warning_message.replace('\n',' '))
-            QtWidgets.QMessageBox.warning(None,
-                                           self.message_title,
-                                           self.warning_message,
-                                           buttons=QtWidgets.QMessageBox.StandardButton.Ok)             
+           
         else:
             global_vars.ui.info_label.setStyleSheet('color: green')   
             if self.result_df_len < 1048576:          
