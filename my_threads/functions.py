@@ -278,6 +278,9 @@ def refresh_files_info (folder):
 
 def check_files_modified(folder):
     print(f'check_files_modified {folder}')
+    global_vars.ui.info_label.setStyleSheet('color: blue')
+    global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. Проверяем не менялись ли файлы в папке .Исходники")
+
     if folder=='.Размеченные':
         table='md_files_info'
     elif folder=='.Исходники': 

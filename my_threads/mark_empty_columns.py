@@ -38,7 +38,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
         self.info_message = "" 
 
         self.is_src_files_modifyed = check_files_modified('.Исходники')
-        self.is_md_files_modifyed = check_files_modified('.Размеченные')
+
 
         if self.is_src_files_modifyed:
             global_vars.ui.info_label.setStyleSheet('color: red')
@@ -49,12 +49,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
             # global_vars.ui.info_label.setText(self.error_message)
             return
         
-        #if self.is_md_files_modifyed:
-        #    global_vars.ui.info_label.setStyleSheet('color: red')
-        #    self.error_message = ('Файлы в папке .Размеченные были изменены.\n'
-        #                          'Нажмите кнопку "Просмотерь разметку"!!')
-        #    return
-        
+       
         
 
         files_sheets_list = get_files_and_sheets_from_pyperclip()
