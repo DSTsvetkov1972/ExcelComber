@@ -33,16 +33,16 @@ class RenameColumnThread(QtCore.QThread):
 
     def run(self):
 
-        print(global_vars.ui.lineEditOldColumnNameInHeader.text())
-        print(global_vars.ui.lineEditNewColumnNameInHeader.text())
-        print(global_vars.ui.radioButtonOldInTopHeader.isChecked())
-        print(global_vars.ui.radioButtonNewInTopHeader.isChecked())
+        self.error_message = "Не удалось найти ни одного заголовка для изменения!"
+        self.warning_message = ""
+        self.info_message = ""
+        self.md_files_opened = []
+
 
         self.is_src_files_modifyed = check_files_modified('.Исходники')
 
 
         if self.is_src_files_modifyed:
-            global_vars.ui.info_label.setStyleSheet('color: red')
             self.error_message = ('В папку .Исходники были добавлены новые файлы или\n'
                                   'некоторые файлы в ней были пересохранены или удалены.\n'
                                   'Нажмите кнопку "Просмотерь разметку"!')
@@ -62,8 +62,7 @@ class RenameColumnThread(QtCore.QThread):
             return
         
         
-        self.error_message = "Не удалось найти ни одного заголовка для изменения!"
-        self.warning_message = ""
+
         changed_qty = 0
 
         if global_vars.ui.radioButtonOldInTopHeader.isChecked():

@@ -261,7 +261,7 @@ class Ui_MainWindow(object):
         self.pushButtonHeadersFiller.setEnabled(False)
         self.verticalLayoutCenterTop.addWidget(self.pushButtonHeadersFiller)
 
-        self.pushButtonShowEmpty = QPushButton("Пометить не пустые колонки")
+        self.pushButtonShowEmpty = QPushButton("Пометить непустые колонки")
         self.pushButtonShowEmpty.setEnabled(False)
         self.verticalLayoutCenterTop.addWidget(self.pushButtonShowEmpty)
 

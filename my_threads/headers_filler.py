@@ -24,12 +24,13 @@ class HeadersFillerThread(QtCore.QThread):
     def run(self):
         self.error_message = ""
         self.warning_message = ""
-        self.info_message = "" 
+        self.info_message = ""
+        self.md_files_opened = []
+
 
         self.is_src_files_modifyed = check_files_modified('.Исходники')
 
         if self.is_src_files_modifyed:
-            global_vars.ui.info_label.setStyleSheet('color: red')
             self.error_message = ('В папку .Исходники были добавлены новые файлы или\n'
                                   'некоторые файлы в ней были пересохранены или удалены.\n'
                                   'Нажмите кнопку "Просмотерь разметку"!')

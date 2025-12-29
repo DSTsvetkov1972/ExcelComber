@@ -278,6 +278,7 @@ def refresh_files_info (folder):
 
 def check_files_modified(folder):
     print(f'check_files_modified {folder}')
+
     global_vars.ui.info_label.setStyleSheet('color: blue')
     global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. Проверяем не менялись ли файлы в папке .Исходники")
 
@@ -768,21 +769,23 @@ def open_or_show_file(file_name='markup.xlsx'):
 
 def on_finsh_change_thread(message_title, error_message, warning_message, info_message, md_files_opened):
         if warning_message:
-
-            pop_up_files(message_title, warning_message, md_files_opened, '.Размеченные')
-
             global_vars.ui.info_label.setStyleSheet('color: red')
             global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {warning_message.replace('\n',' ')}.")
 
+            pop_up_files(message_title, warning_message, md_files_opened, '.Размеченные')
+
+
+
         elif error_message:
+            global_vars.ui.info_label.setStyleSheet('color: red')            
+            global_vars.ui.info_label.setText(error_message.replace('\n',' '))
 
             QMessageBox.critical(None,
                 message_title,
                 error_message,
                 buttons=QMessageBox.StandardButton.Ok)
             
-            global_vars.ui.info_label.setStyleSheet('color: red')            
-            global_vars.ui.info_label.setText(error_message.replace('\n',' '))
+
 
         else:
             global_vars.ui.info_label.setStyleSheet('color: green')

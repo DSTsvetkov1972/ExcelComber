@@ -18,7 +18,7 @@ from time import sleep
 class ChangeRemThread(QtCore.QThread):
     def __init__ (self, md_files=False, parent=None):
         QtCore.QThread.__init__(self, parent)
-        self.message_title = "Замена примечаний на выбранных листах"
+        self.message_title = "Замена примечаний на выбранных листах."
         self.md_files = md_files
 
     mysignal = QtCore.Signal(str)
@@ -30,6 +30,8 @@ class ChangeRemThread(QtCore.QThread):
     def run(self):
         self.error_message = "Не удалось найти ни одного комментария для изменения!"
         self.warning_message = ""
+        self.info_message = ""
+        self.md_files_opened = []
         changed_qty = 0
         
 
@@ -37,7 +39,7 @@ class ChangeRemThread(QtCore.QThread):
 
 
         if self.is_src_files_modifyed:
-            global_vars.ui.info_label.setStyleSheet('color: red')
+
             self.error_message = ('В папку .Исходники были добавлены новые файлы или\n'
                                   'некоторые файлы в ней были пересохранены или удалены.\n'
                                   'Нажмите кнопку "Просмотерь разметку"!')
