@@ -163,6 +163,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
         else:
             wb.close()
 
+        self.info_message = "Помечены заголовки для непустых колонок."
 
 
     def on_clicked(self):
