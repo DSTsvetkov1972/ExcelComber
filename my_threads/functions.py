@@ -761,4 +761,32 @@ def open_or_show_file(file_name='markup.xlsx'):
     global_vars.ui.info_label.setStyleSheet('color: green')             
     global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                         f"{file_name} открыт и помещён поверх всех окон.")    
-        
+
+
+def on_finsh_change_thread(message_title, error_message, warning_message, info_message, md_files_opened):
+        if warning_message:
+
+            pop_up_files(message_title, warning_message, md_files_opened, '.Размеченные')
+
+            global_vars.ui.info_label.setStyleSheet('color: red')
+            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {warning_message.replace('\n',' ')}.")
+
+        elif error_message:
+
+            QMessageBox.critical(None,
+                message_title,
+                error_message,
+                buttons=QMessageBox.StandardButton.Ok)
+            
+            global_vars.ui.info_label.setStyleSheet('color: red')            
+            global_vars.ui.info_label.setText(error_message.replace('\n',' '))
+
+        else:
+            global_vars.ui.info_label.setStyleSheet('color: green')
+            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {message_title} {info_message}")
+
+            QMessageBox.information(
+                None,
+                message_title,
+                info_message,
+                buttons=QMessageBox.StandardButton.Ok)

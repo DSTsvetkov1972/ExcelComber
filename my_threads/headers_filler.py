@@ -7,8 +7,7 @@ import os
 import pandas as pd
 from my_threads.functions import check_files_modified
 from openpyxl import load_workbook, styles
-from my_threads.functions import all_control_elements_off, all_control_elements_on, get_files_and_sheets_from_pyperclip, check_excel_file_is_open, pop_up_files
-
+from my_threads.functions import all_control_elements_off, all_control_elements_on, get_files_and_sheets_from_pyperclip, check_excel_file_is_open, on_finsh_change_thread
 class HeadersFillerThread(QtCore.QThread):
  
     mysignal = QtCore.Signal(str)
@@ -18,7 +17,7 @@ class HeadersFillerThread(QtCore.QThread):
 
     def __init__ (self, parent=None):
         QtCore.QThread.__init__(self, parent)
-        self.message_title = "Заполняем заголовки"         
+        self.message_title = "Заполнение заголовков на выбранных листах."         
 
        
 
@@ -141,6 +140,7 @@ class HeadersFillerThread(QtCore.QThread):
                 ws.cell(row=1, column=col).alignment = styles.Alignment(wrap_text=False, horizontal="center", vertical="center")
                 col += 1
             need_to_save = True
+
             # wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))                      
 
         if need_to_save:
@@ -151,6 +151,8 @@ class HeadersFillerThread(QtCore.QThread):
             wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
         else:
             wb.close()
+
+        self.info_message = "Заголовки заполнены."    
 
            
 
@@ -167,34 +169,6 @@ class HeadersFillerThread(QtCore.QThread):
 
 
     def on_finished(self): # Вызывается при завершении потока
-        if self.warning_message:
-
-            pop_up_files(self.message_title, self.warning_message, self.md_files_opened, '.Размеченные')
-
-            global_vars.ui.info_label.setStyleSheet('color: red')
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {self.warning_message.replace('\n',' ')}.")
-            all_control_elements_on()
-            return
-
-
-
-        if self.error_message:
-
-            QtWidgets.QMessageBox.critical(None,
-                self.message_title,
-                self.error_message,
-                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
+        on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
             
-            global_vars.ui.info_label.setStyleSheet('color: red')            
-            global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
-
-            all_control_elements_on()
-            return
-       
-        else:
-            global_vars.ui.info_label.setStyleSheet('color: green')             
-            global_vars.ui.info_label.setText(
-                f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                f"Заголовки заполнены.")
-            
-            all_control_elements_on()
+        all_control_elements_on()

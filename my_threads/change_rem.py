@@ -11,14 +11,14 @@ import os
 import pyperclip
 import pandas as pd
 from datetime import datetime
-from my_threads.functions import get_files_and_sheets_from_pyperclip, check_files_modified, check_excel_file_is_open, pop_up_files, all_control_elements_off, all_control_elements_on
+from my_threads.functions import get_files_and_sheets_from_pyperclip, check_files_modified, check_excel_file_is_open, all_control_elements_off, all_control_elements_on, on_finsh_change_thread
 from time import sleep
 
 
 class ChangeRemThread(QtCore.QThread):
     def __init__ (self, md_files=False, parent=None):
         QtCore.QThread.__init__(self, parent)
-        self.message_title = "Заменяем примечание на выбранных листах"
+        self.message_title = "Замена примечаний на выбранных листах"
         self.md_files = md_files
 
     mysignal = QtCore.Signal(str)
@@ -30,7 +30,8 @@ class ChangeRemThread(QtCore.QThread):
     def run(self):
         self.error_message = "Не удалось найти ни одного комментария для изменения!"
         self.warning_message = ""
-        self.info_message = "" 
+        changed_qty = 0
+        
 
         self.is_src_files_modifyed = check_files_modified('.Исходники')
         self.is_md_files_modifyed = check_files_modified('.Размеченные')
@@ -127,6 +128,7 @@ class ChangeRemThread(QtCore.QThread):
             if rem_in_sheet == global_vars.ui.lineEditOldRem.text():
                 ws['A1'].value = global_vars.ui.lineEditNewRem.text()
                 need_to_save = True
+                changed_qty += 1
                 self.error_message = ""
 
 
@@ -137,6 +139,8 @@ class ChangeRemThread(QtCore.QThread):
             wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
         else:
             wb.close()
+
+        self.info_message = f"Изменено примечаний: {changed_qty}."            
 
 
 
@@ -154,32 +158,5 @@ class ChangeRemThread(QtCore.QThread):
 
 
     def on_finished(self): # Вызывается при завершении потока
-
-        if self.warning_message:
-
-            pop_up_files(self.message_title, self.warning_message, self.md_files_opened, '.Размеченные')
-
-            global_vars.ui.info_label.setStyleSheet('color: red')
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {self.warning_message.replace('\n',' ')}.")
-            all_control_elements_on()
-            return
-
-
-
-        if self.error_message:
-
-            QtWidgets.QMessageBox.critical(None,
-                self.message_title,
-                self.error_message,
-                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
-            
-            global_vars.ui.info_label.setStyleSheet('color: red')            
-            global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
-
-            all_control_elements_on()
-            return
-        
-        else:
-            global_vars.ui.info_label.setStyleSheet('color: green')
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} Изменение комментариев завершено.")
-            all_control_elements_on()
+        on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
+        all_control_elements_on()

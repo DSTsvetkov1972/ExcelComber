@@ -15,14 +15,14 @@ import os
 import pyperclip
 import pandas as pd
 from datetime import datetime
-from my_threads.functions import get_files_and_sheets_from_pyperclip, all_control_elements_on, all_control_elements_off, check_files_modified, check_excel_file_is_open, pop_up_files
+from my_threads.functions import get_files_and_sheets_from_pyperclip, all_control_elements_on, all_control_elements_off, check_files_modified, check_excel_file_is_open, on_finsh_change_thread
 from time import sleep
 
 
 class RenameColumnThread(QtCore.QThread):
     def __init__ (self, md_files=False, parent=None):
         QtCore.QThread.__init__(self, parent)
-        self.message_title = "Заменяем заголовки в выбранных листах"
+        self.message_title = "Изменение заголовков в выбранных листах."
         self.md_files = md_files
 
     mysignal = QtCore.Signal(str)
@@ -69,7 +69,7 @@ class RenameColumnThread(QtCore.QThread):
         
         self.error_message = "Не удалось найти ни одного заголовка для изменения!"
         self.warning_message = ""
-        self.info_message = "" 
+        changed_qty = 0
 
         if global_vars.ui.radioButtonOldInTopHeader.isChecked():
             old_header_row_number = 1
@@ -146,6 +146,7 @@ class RenameColumnThread(QtCore.QThread):
                     ws.cell(row=old_header_row_number, column=col_number, value='')                
                     ws.cell(row=new_header_row_number, column=col_number, value=global_vars.ui.lineEditNewColumnNameInHeader.text())
                     need_to_save = True
+                    changed_qty += 1
                     self.error_message = ""
 
 
@@ -156,6 +157,8 @@ class RenameColumnThread(QtCore.QThread):
             wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
         else:
             wb.close()
+
+        self.info_message = f"Изменено заголовков: {changed_qty}."     
 
 
 
@@ -169,35 +172,8 @@ class RenameColumnThread(QtCore.QThread):
 
 
     def on_finished(self): # Вызывается при завершении потока
-        
-        if self.warning_message:
+        on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
+        all_control_elements_on()
 
-            pop_up_files(self.message_title, self.warning_message, self.md_files_opened, '.Размеченные')
-
-            global_vars.ui.info_label.setStyleSheet('color: red')
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {self.warning_message.replace('\n',' ')}.")
-            all_control_elements_on()
-            return
-
-
-
-        if self.error_message:
-
-            QtWidgets.QMessageBox.critical(None,
-                self.message_title,
-                self.error_message,
-                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
-            
-            global_vars.ui.info_label.setStyleSheet('color: red')            
-            global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
-
-            all_control_elements_on()
-            return
-
-
-        else:
-            global_vars.ui.info_label.setStyleSheet('color: green')
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} Изменение заголовком завершено.")
-            all_control_elements_on()
 
 

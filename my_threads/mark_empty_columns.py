@@ -16,7 +16,7 @@ import os
 import pyperclip
 import pandas as pd
 from datetime import datetime
-from my_threads.functions import get_files_and_sheets_from_pyperclip, all_control_elements_on, all_control_elements_off, check_files_modified, check_excel_file_is_open, pop_up_files
+from my_threads.functions import get_files_and_sheets_from_pyperclip, all_control_elements_on, all_control_elements_off, check_files_modified, check_excel_file_is_open, on_finsh_change_thread
 from time import sleep
 
 
@@ -175,34 +175,6 @@ class MarkEmptyColumnsThread(QtCore.QThread):
 
 
     def on_finished(self): # Вызывается при завершении потока
-        if self.warning_message:
-
-            pop_up_files(self.message_title, self.warning_message, self.md_files_opened, '.Размеченные')
-
-            global_vars.ui.info_label.setStyleSheet('color: red')
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {self.warning_message.replace('\n',' ')}.")
-            all_control_elements_on()
-            return
-
-
-
-        if self.error_message:
-
-            QtWidgets.QMessageBox.critical(None,
-                self.message_title,
-                self.error_message,
-                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
+        on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
             
-            global_vars.ui.info_label.setStyleSheet('color: red')            
-            global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
-
-            all_control_elements_on()
-            return
-
-
-
-
-        else:
-            global_vars.ui.info_label.setStyleSheet('color: green')
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} Маркировка не пустых колонок завершена.")
-            all_control_elements_on()
+        all_control_elements_on()
