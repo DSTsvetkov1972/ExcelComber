@@ -126,6 +126,8 @@ class MyWindow(QtWidgets.QWidget):
 
 if __name__ == "__main__":
 
+    global_vars.interface_enabled = False
+
     # подчищаем папку .Обработка из папки проекта
     # выбранной при предыдущем запуске программы
     if os.path.exists('.session_folder'):
