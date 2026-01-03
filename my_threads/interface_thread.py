@@ -86,15 +86,8 @@ class InterfaceThread(QtCore.QThread):
 
         while True:
             sleep(0.5)
-            if not global_vars.interface_enabled:
-                continue
-            
-            # clipboard = pyperclip.paste()
-
-            # if clipboard != clipboard_preceding or global_vars.project_folder != project_folder_preceding:
-
-            # clipboard_preceding = clipboard
-            # project_folder_preceding = global_vars.project_folder
+            #if not global_vars.interface_enabled:
+            #    continue
 
             files_sheet_to_show = get_files_and_sheets_from_pyperclip()
 
@@ -123,16 +116,20 @@ class InterfaceThread(QtCore.QThread):
                     global_vars.ui.pushButtonShowEmpty.setEnabled(False)
                     global_vars.ui.pushButtonRenameColumn.setEnabled(False)
                     global_vars.ui.pushButtonChangeRem.setEnabled(False)
+                    
             else:
-                global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(False) 
-                if os.path.exists(os.path.join(global_vars.project_folder, 'markup.xlsx')) and global_vars.interface_enabled:
-                    global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(True)
-                    global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(True)                      
-                    global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(True)
-                else:
-                    global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(False)
-                    global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(False)  
-                    global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(False)
+                #global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(False)
+
+                #if os.path.exists(os.path.join(global_vars.project_folder, 'markup.xlsx')):
+                #    global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(True)
+                #    global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(True)                      
+                #    global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(True)
+                #else:
+
+                global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(False)
+                global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(False)
+                global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(False)  
+                
 
 
                 global_vars.ui.pushButtonHeadersFiller.setEnabled(False)                    

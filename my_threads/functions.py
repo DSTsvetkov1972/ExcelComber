@@ -358,10 +358,12 @@ def all_control_elements_off():
         ##########################################################################################
         global_vars.ui.pushButtonChooseProjectFolder.setEnabled(False)
         global_vars.ui.pushButtonXLStoXLSX.setEnabled(False)
-        global_vars.ui.pushButtonProcessing.setEnabled(False) 
+        global_vars.ui.pushButtonProcessing.setEnabled(False)
+
         global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(False)
         global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(False)
         global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(False)
+        
         global_vars.ui.pushButtonConcat.setEnabled(False)
         ##########################################################################################
         global_vars.ui.pushButtonHeadersFiller.setEnabled(False)
@@ -405,7 +407,8 @@ def all_control_elements_on():
             # global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(True)
             ##########################################################################################
             # global_vars.ui.pushButtonHeadersFiller.setEnabled(True)
-            global_vars.ui.pushButtonShowEmpty.setEnabled(True)  
+            
+            #global_vars.ui.pushButtonShowEmpty.setEnabled(True)  
 
             global_vars.ui.radioButtonOldInTopHeader.setEnabled(True)
             global_vars.ui.radioButtonOldInBottomHeader.setEnabled(True)            
@@ -418,6 +421,7 @@ def all_control_elements_on():
             global_vars.ui.lineEditNewColumnNameInHeader.setEnabled(True)
             ##########################################################################################
             # global_vars.ui.pushButtonChangeRem.setEnabled(True)
+
             global_vars.ui.lineEditOldRem.setEnabled(True)
             global_vars.ui.lineEditNewRem.setEnabled(True)
         else:

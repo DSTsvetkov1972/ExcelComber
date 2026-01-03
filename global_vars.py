@@ -1,7 +1,7 @@
 global ui                       # global_vars.ui                       Главное окно программы. В глобальной переменной для доступности элементво интерфейса из всех потоков 
 
 
-interface_enabled = True
+interface_enabled = False
 
 project_folder = ''
 
