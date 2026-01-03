@@ -8,9 +8,11 @@ from datetime import datetime
 
 
 class ChooseProjectFolderThread(QtCore.QThread):
+
     def __init__ (self, parent=None):
         QtCore.QThread.__init__(self, parent)
         self.message_title = "Выбор папки проекта:"
+
 
     def run(self): 
         self.error_message = ""
@@ -76,11 +78,6 @@ class ChooseProjectFolderThread(QtCore.QThread):
 
             global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)
             global_vars.ui.pushButtonProcessing.setEnabled(False)
-            global_vars.ui.pushButtonHeadersFiller.setEnabled(False)            
-            global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(False)
-            global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(False) 
-            global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(False) 
-            global_vars.uipushButtonHeadersFiller.setEnabled(False)            
             global_vars.ui.pushButtonConcat.setEnabled(False)  
             return                
 
@@ -97,10 +94,6 @@ class ChooseProjectFolderThread(QtCore.QThread):
 
             global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)
             global_vars.ui.pushButtonProcessing.setEnabled(False)
-            global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(False)
-            global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(False)
-            global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(False)
-            global_vars.ui.pushButtonHeadersFiller.setEnabled(False)
             global_vars.ui.pushButtonConcat.setEnabled(False)
             return    
 

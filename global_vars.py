@@ -13,4 +13,4 @@ dev_info = """Приложение работает не так как ожид�
 Всегда рады будем с Вами пообщаться!
 E-mail: team@excelcomber.ru"""
 
-manual_url = "http://excelcomber.ru"
+manual_url = "https://excelcomber.ru"

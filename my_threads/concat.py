@@ -243,13 +243,13 @@ class ConcatThread(QtCore.QThread):
 
 
     def on_started(self): # Вызывается при запуске потока
-        global_vars.interface_enabled = False
+        #global_vars.interface_enabled = False
         all_control_elements_off()
 
 
     def on_finished(self): # Вызывается при завершении потока
 
-        global_vars.interface_enabled = True
+        #global_vars.interface_enabled = True
         all_control_elements_on()
 
         """
