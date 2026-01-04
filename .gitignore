@@ -6,3 +6,4 @@ output
 processing_cell_by_cell.py
 test*
 license
+auto-py-to-exe.json
