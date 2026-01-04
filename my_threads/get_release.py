@@ -64,6 +64,7 @@ class GetReleaseThread(QtCore.QThread):
             else:
                 global_vars.title = f"ExcelComber {global_vars.version}; Доступен новый релиз {current_release}" + license_str
         else:
+            sleep(0.01)
             global_vars.title = f"ExcelComber {global_vars.version}; {current_release}" + license_str        
 
         self.mysignal.emit(None)
