@@ -51,7 +51,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
                                   'затем снова нажмите кнопку "Выбирете папку проекта"!')
 
             #all_control_elements_off()
-            global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)                 
+            #global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)                 
             return 
         
         if not source_files_list:
@@ -65,7 +65,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
             self.error_message = f'Папка .Исходники/ не содержит файлов!\nСкопируйте в папку .Исходники/ файлы для обработки и снова нажмите кнопку "Выберите папку проекта"!'
 
             #all_control_elements_off()
-            global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)     
+            #global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)     
             return                  
 
         if source_old_excels_list:       
