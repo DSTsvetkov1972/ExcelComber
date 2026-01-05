@@ -2,9 +2,11 @@ from PySide6 import QtWidgets, QtCore
 from colorama import Fore
 import global_vars 
 import os
-from my_threads.functions import all_control_elements_off, all_control_elements_on, get_license_data
+from my_threads.functions import check_excel_file_is_open, check_path_length, all_control_elements_off, all_control_elements_on, get_license_data
 from colorama import Fore
 from datetime import datetime
+import pandas as pd
+from time import sleep
 
 
 class ChooseProjectFolderThread(QtCore.QThread):
@@ -60,7 +62,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
             global_vars.ui.info_label.setStyleSheet('color: red')            
             global_vars.ui.info_label.setText(f'В папке проекта есть папка .Исходники/, но она не содержит файлов.')
                              
-            self.warning_message = f'Папка .Исходники/ не содержит файлов!\nСкопируйте в папку .Исходники/ файлы для обработки и снова нажмите кнопку "Выберите папку проекта"!'
+            self.error_message = f'Папка .Исходники/ не содержит файлов!\nСкопируйте в папку .Исходники/ файлы для обработки и снова нажмите кнопку "Выберите папку проекта"!'
 
             all_control_elements_off()
             global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)     
@@ -74,7 +76,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
             global_vars.ui.info_label.setStyleSheet('color: red')            
             global_vars.ui.info_label.setText('В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm')
                              
-            self.warning_message = 'В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm'
+            self.error_message = 'В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm'
 
             global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)
             global_vars.ui.pushButtonProcessing.setEnabled(False)
@@ -89,13 +91,21 @@ class ChooseProjectFolderThread(QtCore.QThread):
             global_vars.ui.info_label.setStyleSheet('color: red')            
             global_vars.ui.info_label.setText('В папке проекта есть папка .Исходники/, но в ней нет файлов .xlsx')
                              
-            self.warning_message = 'В папке проекта есть папка .Исходники/, но в ней нет файлов .xlsx'
+            self.error_message = 'В папке проекта есть папка .Исходники/, но в ней нет файлов .xlsx'
 
 
             global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)
             global_vars.ui.pushButtonProcessing.setEnabled(False)
             global_vars.ui.pushButtonConcat.setEnabled(False)
-            return    
+            return
+        
+        self.length_err_list = check_path_length()
+        
+        if self.length_err_list:
+            self.warning_message = (
+                f"Длина пути к размеченным файлам {len(global_vars.project_folder + '.Размеченные') + 2},\n"
+                f"полная длина пути к некоторым размеченным файлам превышает 218 символов.\n"
+                f"Переименуйте файлы с длинными названиями или перенесите проект в папку с более коротким путём!\n")
 
         global_vars.ui.project_folder_label.setStyleSheet('color: green')  
         global_vars.ui.project_folder_label.setText(f'Папка проекта: {global_vars.project_folder}') 
@@ -125,6 +135,14 @@ class ChooseProjectFolderThread(QtCore.QThread):
         print(f'run {self.message_title}')   
 
     def on_clicked(self):
+        if check_excel_file_is_open("markup.xlsx"):
+            global_vars.ui.info_label.setStyleSheet('color: red')             
+            global_vars.ui.info_label.setText('Закройте файл markup.xlsx перед тем как запустить обработку.')   
+            self.warning_message ='Файл markup.xlsx уже открыт на рабочем столе.\nЗакройте его и заново нажмите кнопку "Просмотреть разметку"'
+            return 
+        
+        
+        
         if os.path.exists('.session_folder'):
             with open('.session_folder', encoding='utf-8') as f:
                 dir = f.readline()
@@ -159,12 +177,21 @@ class ChooseProjectFolderThread(QtCore.QThread):
             return 
         
         if self.warning_message:
-            print(Fore.YELLOW, f"on_finished Б {self.error_message} {len(self.error_message)}", Fore.RESET)
+            global_vars.ui.info_label.setStyleSheet('color: red')             
+            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                                              f"{self.warning_message.replace('\n',' ')}")
             QtWidgets.QMessageBox.warning(None,
                 self.message_title,
                 self.warning_message,
                 buttons=QtWidgets.QMessageBox.StandardButton.Ok)
             
+            df = pd.DataFrame(self.length_err_list)
+            df.to_excel(os.path.join(global_vars.project_folder, 'markup.xlsx'), index=None, header=None)
+            os.startfile(os.path.join(global_vars.project_folder, 'markup.xlsx'))
+            while True:
+                sleep(0.1)
+                if os.path.exists(os.path.join(global_vars.project_folder, f'{os.path.join(global_vars.project_folder, '~$markup.xlsx')}')):
+                    break
             return
         
         all_control_elements_on()

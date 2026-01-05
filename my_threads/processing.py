@@ -49,7 +49,7 @@ class ProcessingThread(QtCore.QThread):
         self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                             f"проверяем чтобы длина пути к самому длинному файлу не превышала 218 символолв")
 
-        project_folder_len = len(global_vars.project_folder+'.Размеченные') + 2
+        project_folder_len = len(global_vars.project_folder + '.Размеченные') + 2
 
         src_files = list(os.walk(os.path.join(global_vars.project_folder,'.Исходники')))[0][2]
 

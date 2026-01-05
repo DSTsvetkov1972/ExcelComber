@@ -141,6 +141,33 @@ def get_license_data():
             }
     return license_dict
 
+
+def check_path_length():
+        """
+        Перед началом обработки проверяем чтобы не было 
+        полный путь к любому md_ файлу не првышал 218 символов
+        
+
+        self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                            f"проверяем чтобы длина пути к самому длинному файлу не превышала 218 символолв")
+        """
+        
+        project_folder_len = len(global_vars.project_folder + '.Размеченные') + 2
+
+        src_files = list(os.walk(os.path.join(global_vars.project_folder,'.Исходники')))[0][2]
+
+        src_files_and_lens = [(file, len(file)+3) for file in src_files]
+
+        check_path_length_err_list = [
+            (f'{global_vars.project_folder}/.Размеченные/md_{file[0]}',
+             f'Длина полного пути { file[1] + project_folder_len } символов '
+             f'(длина пути к папке { project_folder_len } + длина имени файла {file[1]}). '
+             f'Не должна превышать 218 символов, иначе Эксель не сможет открыть этот файл!') for file in src_files_and_lens if file[1]+project_folder_len > 218]
+
+        return check_path_length_err_list
+
+
+
 def init_project():
     if not os.path.exists(os.path.join(global_vars.project_folder, '.Обработка')):
         os.mkdir(os.path.join(global_vars.project_folder, '.Обработка'))
