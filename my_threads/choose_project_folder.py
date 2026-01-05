@@ -50,7 +50,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
                                   'и скопируйте в неё файлы, которые нужно обработать,\n'
                                   'затем снова нажмите кнопку "Выбирете папку проекта"!')
 
-            all_control_elements_off()
+            #all_control_elements_off()
             global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)                 
             return 
         
@@ -64,7 +64,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
                              
             self.error_message = f'Папка .Исходники/ не содержит файлов!\nСкопируйте в папку .Исходники/ файлы для обработки и снова нажмите кнопку "Выберите папку проекта"!'
 
-            all_control_elements_off()
+            #all_control_elements_off()
             global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)     
             return                  
 
@@ -77,10 +77,10 @@ class ChooseProjectFolderThread(QtCore.QThread):
             global_vars.ui.info_label.setText('В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm')
                              
             self.error_message = 'В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm'
-
+            print('Мы тут! Странно!')
             global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)
-            global_vars.ui.pushButtonProcessing.setEnabled(False)
-            global_vars.ui.pushButtonConcat.setEnabled(False)  
+            sleep(0.01)
+            print('Мы тут! Странно!')
             return                
 
 
@@ -93,10 +93,6 @@ class ChooseProjectFolderThread(QtCore.QThread):
                              
             self.error_message = 'В папке проекта есть папка .Исходники/, но в ней нет файлов .xlsx'
 
-
-            global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)
-            global_vars.ui.pushButtonProcessing.setEnabled(False)
-            global_vars.ui.pushButtonConcat.setEnabled(False)
             return
         
         self.length_err_list = check_path_length()
@@ -173,6 +169,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
 
 
         global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)
+        
         if self.error_message:
             QtWidgets.QMessageBox.critical(None,
                 self.message_title,
