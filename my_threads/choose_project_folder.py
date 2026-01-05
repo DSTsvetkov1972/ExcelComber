@@ -118,8 +118,8 @@ class ChooseProjectFolderThread(QtCore.QThread):
             global_vars.ui.info_label.setStyleSheet('color: red')          
             global_vars.ui.info_label.setText('Срок действия лицензии закончился!')  
         else:
-            global_vars.ui.info_label.setStyleSheet('color: blue')          
-            global_vars.ui.info_label.setText('Нажмите кнопку Просмотреть разметку')
+            global_vars.ui.info_label.setStyleSheet('color: green')          
+            global_vars.ui.info_label.setText('Папка проекта выбрана. Нажмите кнопку Просмотреть разметку')
 
         '''
         global_vars.ui.pushButtonXLStoXLSX.setEnabled(False)
@@ -135,13 +135,18 @@ class ChooseProjectFolderThread(QtCore.QThread):
         print(f'run {self.message_title}')   
 
     def on_clicked(self):
+        
         if check_excel_file_is_open("markup.xlsx"):
             global_vars.ui.info_label.setStyleSheet('color: red')             
-            global_vars.ui.info_label.setText('Закройте файл markup.xlsx перед тем как запустить обработку.')   
-            self.warning_message ='Файл markup.xlsx уже открыт на рабочем столе.\nЗакройте его и заново нажмите кнопку "Просмотреть разметку"'
+            global_vars.ui.info_label.setText('Закройте файл markup.xlsx перед тем как выбирать папку проекта.')   
+            self.error_message ='Файл markup.xlsx уже открыт на рабочем столе.\nЗакройте его и заново нажмите кнопку "Выбрать папку проекта"'
+            
+            QtWidgets.QMessageBox.critical(None,
+                self.message_title,
+                self.error_message,
+                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
             return 
-        
-        
+         
         
         if os.path.exists('.session_folder'):
             with open('.session_folder', encoding='utf-8') as f:
@@ -169,7 +174,6 @@ class ChooseProjectFolderThread(QtCore.QThread):
 
         global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)
         if self.error_message:
-            print(Fore.RED, f"on_finished A {self.error_message} {len(self.error_message)}", Fore.RESET)
             QtWidgets.QMessageBox.critical(None,
                 self.message_title,
                 self.error_message,
