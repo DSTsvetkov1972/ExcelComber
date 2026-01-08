@@ -750,7 +750,7 @@ class ProcessingThread(QtCore.QThread):
                 buttons=QtWidgets.QMessageBox.StandardButton.Ok
                 )  
             
-            #open_or_show_file(file_name='markup.xlsx')
+            open_or_show_file(file_name='markup.xlsx')
 
 
             # if 'Некоторые файлы в папке .Исходники' in self.warning_message:

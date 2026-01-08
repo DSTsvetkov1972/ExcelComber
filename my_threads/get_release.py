@@ -55,16 +55,24 @@ class GetReleaseThread(QtCore.QThread):
         license_str = f"; Пользователь: {license_data['user']}; Активировано до: {license_data['trial_finish'][:16]};"
         print(Fore.MAGENTA, license_data, Fore.RESET)
         
-        print(Fore.MAGENTA, 'Запустили определение текущего релиза', Fore.RESET)
-        current_release = self.get_current_release()
+        while True:
+                
+            print(Fore.MAGENTA, 'Запустили определение текущего релиза', Fore.RESET)
+            current_release = self.get_current_release()
+            print(Fore.GREEN, f'Определили релиз {current_release}', Fore.RESET)
         
-        if current_release and 'Не удалось проверить релиз - ' not in current_release:
-            if current_release == global_vars.version:
-                global_vars.title = f"ExcelComber {global_vars.version}; Актуальный релиз" + license_str
-            else:
-                global_vars.title = f"ExcelComber {global_vars.version}; Доступен новый релиз {current_release}" + license_str
-        else:
-            sleep(0.01)
-            global_vars.title = f"ExcelComber {global_vars.version}; {current_release}" + license_str        
 
-        self.mysignal.emit(None)
+            if current_release and 'Не удалось проверить релиз - ' not in current_release:
+                if current_release == global_vars.version:
+                    global_vars.title = f"ExcelComber {global_vars.version}; Актуальный релиз" + license_str
+                else:
+                    global_vars.title = f"ExcelComber {global_vars.version}; Доступен новый релиз {current_release}" + license_str
+                
+                self.mysignal.emit(None)
+                return
+            else:
+                global_vars.title = f"ExcelComber {global_vars.version}; {current_release}" + license_str
+                self.mysignal.emit(None)
+                sleep(2)      
+
+        
