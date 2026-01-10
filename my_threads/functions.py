@@ -823,7 +823,7 @@ def on_finsh_change_thread(message_title, error_message, warning_message, info_m
 
         elif info_message:
             global_vars.ui.info_label.setStyleSheet('color: green')
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {message_title} {info_message}")
+            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {message_title} {info_message.replace('\n',' ')}")
 
             QMessageBox.information(
                 None,

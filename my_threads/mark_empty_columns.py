@@ -84,6 +84,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
 
         file_preceding = ""
         need_to_save = False
+        file_sheets_qty = 0
 
         for file_sheet_number, file_sheet_list in enumerate(files_sheets_list, 1):
             # print(Fore.MAGENTA, file_sheet_list,  Fore.RESET)
@@ -133,7 +134,10 @@ class MarkEmptyColumnsThread(QtCore.QThread):
             errors = marking_checker(sheet_rem=[], s=s, f=f, header_rows=[], rem_and_headers_check = False)
             print(Fore.RED, errors, Fore.RESET)
             if errors != 'ok':
-                self.error_list.append((file, sheet_name, errors))
+                if errors == '-':
+                    self.error_list.append((file, sheet_name, 'Не заданы маркеры s и f'))
+                else:
+                    self.error_list.append((file, sheet_name, errors))
                 continue
 
             s_index = int(s)
@@ -149,7 +153,11 @@ class MarkEmptyColumnsThread(QtCore.QThread):
                     ws.cell(column=col_number, row=1).fill = styles.PatternFill(start_color='C6EFCE', fill_type='solid')
                     ws.cell(column=col_number, row=1).font = styles.Font(color='006100')
                     need_to_save = True
-                    self.info_message = "Помечены заголовки для непустых колонок."
+
+            if need_to_save:
+                file_sheets_qty += 1
+                
+                self.info_message = f"Помечены заголовки для непустых колонок.\nУспешно обработано листов: {file_sheets_qty} из {len(files_sheets_list)}."
 
 
         if need_to_save:
@@ -177,8 +185,10 @@ class MarkEmptyColumnsThread(QtCore.QThread):
         if self.error_list:
             
             if self.info_message:
-                self.info_message += ("\nНо на некоторых листах не удалось пометить пустые заголовки,\n"
+                self.info_message += ("\nНа некоторых листах не удалось пометить пустые заголовки,\n"
                                     "из-за ошибок маркировки строк!")
+            else:
+                self.error_message = "Все выбранные Вами листы содержат ошибки маркировки."
             
         on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened, folder=self.folder)
         
