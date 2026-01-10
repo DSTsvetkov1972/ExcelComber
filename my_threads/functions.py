@@ -241,12 +241,13 @@ def repeating_headers_checker(header_rows_df):
         return ("Повторяющиеся заголовки: " + ", ".join(errors_list))
 
 
-def marking_checker(sheet_rem, s, f, header_rows):
+def marking_checker(sheet_rem, s, f, header_rows, rem_and_headers_check = True):
     errors_list = []
 
     # if str(sheet_rem) != 'nan':
-    if str(sheet_rem) != 'None' and str(sheet_rem) != 'nan':        
-        return sheet_rem
+    if rem_and_headers_check:
+        if str(sheet_rem) != 'None' and str(sheet_rem) != 'nan':        
+            return sheet_rem
 
     if s == "-" and f == "-":
         return "-"
@@ -271,14 +272,16 @@ def marking_checker(sheet_rem, s, f, header_rows):
         s !="-" and f != "-" and
         int(s) > int(f)):
         errors_list.append('Маркер f расположен выше маркера s')  
+        
+    if rem_and_headers_check:    
 
-    headers_errors =  headers_checker(header_rows)
-    if headers_errors:
-        errors_list.append(headers_errors) 
+        headers_errors =  headers_checker(header_rows)
+        if headers_errors:
+            errors_list.append(headers_errors) 
 
-    repeating_headers_errors = repeating_headers_checker(header_rows)
-    if repeating_headers_errors:
-        errors_list.append(repeating_headers_errors)       
+        repeating_headers_errors = repeating_headers_checker(header_rows)
+        if repeating_headers_errors:
+            errors_list.append(repeating_headers_errors)       
 
     if errors_list:        
         return ("; " + "\n").join(errors_list)
@@ -798,12 +801,12 @@ def open_or_show_file(file_name='markup.xlsx'):
                                         f"{file_name} открыт и помещён поверх всех окон.")    
 
 
-def on_finsh_change_thread(message_title, error_message, warning_message, info_message, md_files_opened):
+def on_finsh_change_thread(message_title, error_message, warning_message, info_message, md_files_opened, folder = '.Размеченные'):
         if warning_message:
             global_vars.ui.info_label.setStyleSheet('color: red')
             global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {warning_message.replace('\n',' ')}.")
 
-            pop_up_files(message_title, warning_message, md_files_opened, '.Размеченные')
+            pop_up_files(message_title, warning_message, md_files_opened, folder=folder)
 
 
 
@@ -818,7 +821,7 @@ def on_finsh_change_thread(message_title, error_message, warning_message, info_m
             
 
 
-        else:
+        elif info_message:
             global_vars.ui.info_label.setStyleSheet('color: green')
             global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {message_title} {info_message}")
 
