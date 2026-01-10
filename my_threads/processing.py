@@ -625,6 +625,8 @@ class ProcessingThread(QtCore.QThread):
         self.message_title = "Разметка"
         self.error_message = ""
         self.warning_message = ""
+        global_vars.ui.info_label.setStyleSheet('color: blue')
+        sleep(0.01) 
 
         if (not os.path.exists(os.path.join(global_vars.project_folder, "markup.xlsx")) and
             os.path.exists(os.path.join(global_vars.project_folder, "~$markup.xlsx"))):
@@ -710,8 +712,7 @@ class ProcessingThread(QtCore.QThread):
         global_vars.ui.pushButtonChooseProjectFolder.setEnabled(False)   
         all_control_elements_off()
 
-        global_vars.ui.info_label.setStyleSheet('color: blue')
-        sleep(0.01)        
+       
 
 
     def on_finished(self): # Вызывается при завершении потока
