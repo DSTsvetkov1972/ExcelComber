@@ -140,7 +140,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
             f_index = int(f)
             
             for col_number, col in enumerate(list(ws.iter_cols())[2:], 3):
-                col_values = list([cell.value for cell in col[s_index:f_index+1]])
+                col_values = list([cell.value for cell in col[s_index-1:f_index]])
                 # print(col_number, col_values)
 
                 if set(col_values) == {None}:
