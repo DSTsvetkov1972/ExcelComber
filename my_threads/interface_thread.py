@@ -137,3 +137,7 @@ class InterfaceThread(QtCore.QThread):
                 global_vars.ui.pushButtonRenameColumn.setEnabled(False)
                 global_vars.ui.pushButtonChangeRem.setEnabled(False)
 
+    def on_finished(self): # Вызывается при завершении потока
+        while True:
+            print("Поток интерфейса сломался")
+            sleep(2)
