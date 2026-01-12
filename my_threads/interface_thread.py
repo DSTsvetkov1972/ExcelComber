@@ -53,8 +53,8 @@ class InterfaceThread(QtCore.QThread):
                 global_vars.ui.tableMDFilesInClipboard.setColumnWidth(0, 240)
                 global_vars.ui.tableMDFilesInClipboard.setColumnWidth(1, 60)
 
-                global_vars.ui.lineEditInClipboardTitle.setText(f'Выбрано листов для редактирования: { len(files_sheet_to_show) }')
-                sleep(0.0051)
+                #global_vars.ui.lineEditInClipboardTitle.setText(f'Выбрано листов для редактирования: { len(files_sheet_to_show) }')
+                #sleep(0.0051)
                 # global_vars.ui.tableMDFilesInClipboard.resizeColumnsToContents()
 
             if len(files_sheet_to_show[0]) == 1:
@@ -70,8 +70,8 @@ class InterfaceThread(QtCore.QThread):
 
                     global_vars.ui.tableMDFilesInClipboard.setItem(file_sheet_to_show_number, 0, md_file_name)
 
-                global_vars.ui.tableMDFilesInClipboard.setColumnWidth(0, 240)
-                global_vars.ui.lineEditInClipboardTitle.setText(f'Выбрано файлов для показа/удаления: { len(files_sheet_to_show) }')
+                #global_vars.ui.tableMDFilesInClipboard.setColumnWidth(0, 240)
+                #global_vars.ui.lineEditInClipboardTitle.setText(f'Выбрано файлов для показа/удаления: { len(files_sheet_to_show) }')
   
 
         else:
