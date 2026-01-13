@@ -482,6 +482,8 @@ def get_files_to_show():
 
 
 def get_files_and_sheets_from_pyperclip():
+    # in_clipboard = ''
+
     md_folder_info = list(os.walk(os.path.join(global_vars.project_folder, '.Размеченные')))
 
     if md_folder_info:
@@ -499,9 +501,9 @@ def get_files_and_sheets_from_pyperclip():
     
     try:
         in_clipboard = pyperclip.paste()
-    except Exception as e: #pyperclip.PyperclipWindowsException:
-        print(str(e))
-        pyperclip.paste('')
+    except pyperclip.PyperclipWindowsException: #pyperclip.PyperclipWindowsException:
+        # print('Ошибка буфера обмена')
+        # pyperclip.paste('')
         in_clipboard = ''
         
     if not in_clipboard:
