@@ -68,8 +68,8 @@ class ConcatThread(QtCore.QThread):
                 self.mysignal.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
                                    f'Книга {file_number} из {len(files)} лист {sheet_number} из {len(sheets)}. ' 
                                    f'Подготавливаем к объединению файл "{file}" лист "{sheet}"')  
-                file_info = columns_info_df[(columns_info_df['file'] == file) &
-                                            (columns_info_df['sheet'] == sheet) &
+                file_info = columns_info_df[(columns_info_df['_file_'] == file) &
+                                            (columns_info_df['_sheet_'] == sheet) &
                                             (columns_info_df['Ошибки маркировки'] == 'ok')]
                 
                 print(file_info)

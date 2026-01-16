@@ -453,6 +453,8 @@ class ProcessingThread(QtCore.QThread):
 
             markup_dict = get_markup_from_db(db, file)
 
+            print(markup_dict)
+
             if markup_dict:
                 if markup_dict['modifyed_time'] != str(os.path.getmtime(os.path.join(global_vars.project_folder, '.Размеченные',file))):
                     set_markup_in_db(db, file)
@@ -510,8 +512,8 @@ class ProcessingThread(QtCore.QThread):
                     if sheet_df_to_check_is_empty.empty:
                         headers_df = pd.DataFrame([None, None])                    
                         s_f_check_dict = {
-                            'file': file,
-                            'sheet': sheet,
+                            '_file_': file,
+                            '_sheet_': sheet,
                             's': '-',
                             'f': '-',
                             'Ошибки маркировки':'Пустой лист'}
@@ -529,8 +531,8 @@ class ProcessingThread(QtCore.QThread):
 
                         marking_errors = marking_checker(sheet_rem, s, f, header_rows)                   
                         s_f_check_dict = {
-                            'file': file,
-                            'sheet':sheet,
+                            '_file_': file,
+                            '_sheet_':sheet,
                             's': s,
                             'f': f,
                             'Ошибки маркировки': marking_errors
