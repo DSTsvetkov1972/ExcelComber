@@ -53,7 +53,9 @@ class ConcatThread(QtCore.QThread):
 
         marked_folder = os.path.join(project_folder, r".Размеченные")
         files = [file for file in list(os.walk(os.path.join(project_folder, '.Размеченные')))[0][2] if file[0] != "~"]
-        columns_info_df = pd.read_excel(os.path.join(project_folder,'markup.xlsx'))
+        columns_info_df = pd.read_excel(os.path.join(project_folder,'markup.xlsx'), dtype=str)
+
+        print(columns_info_df)
         dfs_to_concat = [pd.DataFrame()]
 
         for file_number, file in enumerate(files, 1):
@@ -62,6 +64,7 @@ class ConcatThread(QtCore.QThread):
                     
             for sheet_number, sheet in enumerate(sheets, 1):
                 # sleep(0.0001)
+                print(file, sheet)
                 self.mysignal.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
                                    f'Книга {file_number} из {len(files)} лист {sheet_number} из {len(sheets)}. ' 
                                    f'Подготавливаем к объединению файл "{file}" лист "{sheet}"')  
@@ -69,9 +72,12 @@ class ConcatThread(QtCore.QThread):
                                             (columns_info_df['sheet'] == sheet) &
                                             (columns_info_df['Ошибки маркировки'] == 'ok')]
                 
+                print(file_info)
+                
                 if not file_info.empty:
                     s = int(file_info['s'].iloc[0])-1
                     f = int(file_info['f'].iloc[0])
+                    print(Fore.YELLOW,  os.path.join(marked_folder,file), Fore.RESET)
                     file_df = pd.read_excel(os.path.join(marked_folder,file), sheet_name=sheet, header=None).iloc[:,2:]
 
         
@@ -94,7 +100,8 @@ class ConcatThread(QtCore.QThread):
                     file_df[source_row_field_name] = file_df.index + 1
 
                     dfs_to_concat.append(file_df)
-
+                else:
+                    print(Fore.RED, 'Странно', Fore.RESET)
 
         if dfs_to_concat:
             self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
