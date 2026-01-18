@@ -141,7 +141,6 @@ class ProcessingThread(QtCore.QThread):
             if not sheets_exceeding_dict[sheet]:
                 sheets_exceeding_dict.pop(sheet)
 
-        print(sheets_exceeding_dict)
         return sheets_exceeding_dict
 
 
@@ -453,7 +452,7 @@ class ProcessingThread(QtCore.QThread):
 
             markup_dict = get_markup_from_db(db, file)
 
-            print(markup_dict)
+            # print(markup_dict)
 
             if markup_dict:
                 if markup_dict['modifyed_time'] != str(os.path.getmtime(os.path.join(global_vars.project_folder, '.Размеченные',file))):
@@ -552,9 +551,12 @@ class ProcessingThread(QtCore.QThread):
                         cell_in_second_line = headers_df.iloc[1].loc[column]
 
                         if pd.notna(cell_in_first_line):
-                            first_and_second_line_dict[cell_in_first_line] = cell_in_first_line
+                            if cell_in_first_line in ('_file_', '_sheet_'):
+                                first_and_second_line_dict[f"<<< колонка md-файла >>> { cell_in_first_line }"] = cell_in_first_line
+                            else:
+                                first_and_second_line_dict[cell_in_first_line] = cell_in_first_line
                         if pd.notna(cell_in_second_line):
-                            first_and_second_line_dict[f"<<< с заполнением >>> {cell_in_second_line}"] = cell_in_second_line
+                            first_and_second_line_dict[f"<<< с заполнением >>> { cell_in_second_line }"] = cell_in_second_line
 
 
                     first_and_second_line_df = pd.DataFrame([first_and_second_line_dict])

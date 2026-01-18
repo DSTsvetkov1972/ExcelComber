@@ -24,11 +24,19 @@ class GetReleaseThread(QtCore.QThread):
         
 
         session = requests.Session()
+        
+        session.headers.update({
+            'User-Agent': f'ExcelComber_{ global_vars.version }_User-Agent',
+            'Referer': f'ExcelComber_{ global_vars.version }_User-Agent_Referer',
+            # 'Accept': 'application/json',
+            # 'Authorization': 'Bearer your_token_here'
+            })
+        
         session.trust_env = False  # Важно! Игнорирует системные настройки прокси
         
         try:
             print(Fore.YELLOW, 'подключаемся к http://www.excelcomber.ru', Fore.RESET)
-            url = 'http://www.excelcomber.ru'
+            url = f'http://www.excelcomber.ru?utm_source=ExcelComber_{ global_vars.version }_utm_source'
             response = session.get(url)
             print(Fore.GREEN, 'подключились http://www.excelcomber.ru', Fore.RESET)
             #response = requests.get(url)
