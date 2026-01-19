@@ -93,7 +93,11 @@ class HeadersFillerThread(QtCore.QThread):
         
 
             sheet_name = file_sheet_list[1]
-            ws = wb[sheet_name]
+
+            if sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+            else:
+                continue
 
             self.mysignal.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_sheet_number} из {len(files_sheets_list)}. "

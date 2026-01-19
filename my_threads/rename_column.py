@@ -126,7 +126,10 @@ class RenameColumnThread(QtCore.QThread):
                 f'Сканируем заголовки в книге "{file}" в листе "{ sheet_name }"')
             sleep(0.01)
 
-            ws = wb[sheet_name]
+            if sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+            else:
+                continue
                 
             old_header_row = list(ws.iter_rows(values_only=True))[old_header_row_number-1]
             # print(Fore.GREEN, old_header_row, Fore.RESET)

@@ -110,7 +110,10 @@ class ChangeRemThread(QtCore.QThread):
                 f"{file_sheet_number} из {len(files_sheets_list)}. Сканируем примечания в листе { sheet_name } в книге {file}.")
             sleep(0.01)
 
-            ws = wb[sheet_name]
+            if sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+            else:
+                continue
                 
             rem_in_sheet = '' if not ws['A1'].value else str(ws['A1'].value)
             print(

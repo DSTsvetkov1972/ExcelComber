@@ -119,7 +119,10 @@ class MarkEmptyColumnsThread(QtCore.QThread):
                 f'Ищем непустые колонки в книге: "{file}" в листе: "{file_sheet_list[0]}"')
             sleep(0.01)
 
-            ws = wb[sheet_name]
+            if sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+            else:
+                continue
                 
             col_0 = ws['A']
             col_values = list([cell.value for cell in col_0])
