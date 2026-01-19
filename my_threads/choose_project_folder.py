@@ -35,8 +35,8 @@ class ChooseProjectFolderThread(QtCore.QThread):
  
         if os.path.exists(os.path.join(global_vars.project_folder,'.Исходники')):
             source_files_list = list(os.walk(os.path.join(global_vars.project_folder,'.Исходники')))[0][2]
-            source_excels_list = [file for file in source_files_list if file[-4:] == 'xlsx']            
-            source_old_excels_list = [file for file in source_files_list if file[-4:] in ['.xls', 'xlsm']]
+            source_excels_list = [file for file in source_files_list if file[-4:].lower() == 'xlsx']            
+            source_old_excels_list = [file for file in source_files_list if file[-4:].lower() in ['.xls', 'xlsm']]
 
         else:
             global_vars.ui.project_folder_label.setStyleSheet('color: red')  

@@ -122,6 +122,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
             if sheet_name in wb.sheetnames:
                 ws = wb[sheet_name]
             else:
+                self.info_message = f"Помечены заголовки для непустых колонок.\nУспешно обработано листов: {file_sheets_qty} из {len(files_sheets_list)}."
                 continue
                 
             col_0 = ws['A']

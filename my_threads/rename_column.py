@@ -129,6 +129,7 @@ class RenameColumnThread(QtCore.QThread):
             if sheet_name in wb.sheetnames:
                 ws = wb[sheet_name]
             else:
+                self.info_message = f"Изменено заголовков: {changed_qty}."   
                 continue
                 
             old_header_row = list(ws.iter_rows(values_only=True))[old_header_row_number-1]

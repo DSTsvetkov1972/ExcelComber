@@ -113,6 +113,7 @@ class ChangeRemThread(QtCore.QThread):
             if sheet_name in wb.sheetnames:
                 ws = wb[sheet_name]
             else:
+                self.info_message = f"Изменено примечаний: {changed_qty}."
                 continue
                 
             rem_in_sheet = '' if not ws['A1'].value else str(ws['A1'].value)

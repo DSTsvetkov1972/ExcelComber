@@ -97,6 +97,7 @@ class HeadersFillerThread(QtCore.QThread):
             if sheet_name in wb.sheetnames:
                 ws = wb[sheet_name]
             else:
+                self.info_message = "Заголовки заполнены."
                 continue
 
             self.mysignal.emit(
