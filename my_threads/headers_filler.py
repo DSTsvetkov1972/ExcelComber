@@ -119,8 +119,17 @@ class HeadersFillerThread(QtCore.QThread):
             # Если заголовок уже есть, то пропускаем
             header_df = df.iloc[:2, 2:]
             header_df = header_df.fillna("")
-            if not (header_df.applymap(lambda x: isinstance(x, str) and len(x) == 0)).all().all():
-                print('Заголовок уже есть!')
+
+            for t in header_df.itertuples():
+                print(t)
+                not_empty_header = [i for i in t[1:] if i!='' and not pd.isnull(i)]
+                print(not_empty_header)
+                if not_empty_header:
+                    break
+
+
+            if not_empty_header:
+                print("Заголовок уже есть!")
                 continue
                 
             print(f"Файл {file} лист {file_sheet_list} Заголовка нет. будем заполнять")          
