@@ -73,7 +73,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
         for file_number, file in enumerate(files_list):
             self.mysignal.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
-                f"Заполнение заголовков. Проверяем не открыт ли на рабочем столе: {file}.")
+                f"Маркировка непустых колонок. Проверяем не открыт ли на рабочем столе: {file}.")
             sleep(0.01)
             if check_excel_file_is_open(file):
                 self.md_files_opened.append(file)
