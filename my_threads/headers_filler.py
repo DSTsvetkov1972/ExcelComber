@@ -45,7 +45,17 @@ class HeadersFillerThread(QtCore.QThread):
         files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
         files_list.sort()
 
-        self.md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+        # self.md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+        self.md_files_opened = []
+        
+        for file_number, file in enumerate(files_list):
+            self.mysignal.emit(
+                f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
+                f"Заполнение заголовков. Проверяем не открыт ли на рабочем столе: {file}.")
+            sleep(0.01)
+            if check_excel_file_is_open(file):
+                self.md_files_opened.append(file)
+
         if self.md_files_opened:
             self.warning_message = (
                 f"Некоторые размеченные файлы открыты на рабочем столе!\n"

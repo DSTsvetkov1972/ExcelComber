@@ -99,7 +99,7 @@ class XLS_TO_xlsxThread(QtCore.QThread):
             # print(f"Конвертируем {i} из {len(xls_files)}. {xls_file}.")
                
             if os.path.exists(os.path.join(global_vars.project_folder, '.Исходники', xls_file[:-4]+'.xlsx')):
-                self.error_message = f"В папке .Исходники есть файлы {xls_file[:-4]}.xls и {xls_file[:-4]}.xlsx. Один из них надо удалить или переимновать!"
+                self.error_message = f"В папке .Исходники есть файлы {xls_file[:-4]}.xls и {xls_file[:-4]}.xlsx. Один из них надо удалить или переименовать!"
                 break
             try:
                 self.run_convert_xls_to_xlsx(os.path.join(global_vars.project_folder, '.Исходники', xls_file)) 
