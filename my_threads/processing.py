@@ -264,10 +264,14 @@ class ProcessingThread(QtCore.QThread):
                     letter = get_column_letter(i) # преобразовываем индекс столбца в его букву
                     # получаем ширину столбца и добавляем в список
                     cw = ws.column_dimensions[letter].width
-                    if cw:
-                        columns_width.append(cw)
+                    if not cw:
+                        columns_width.append(16)
+                    elif cw<2:
+                        columns_width.append(16)
+                    elif cw>36:
+                        columns_width.append(24)
                     else:
-                        columns_width.append(15)        
+                        columns_width.append(cw)        
 
                 # Записываем высоты строк
                 self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "

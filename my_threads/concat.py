@@ -55,7 +55,7 @@ class ConcatThread(QtCore.QThread):
         files = [file for file in list(os.walk(os.path.join(project_folder, '.Размеченные')))[0][2] if file[0] != "~"]
         columns_info_df = pd.read_excel(os.path.join(project_folder,'markup.xlsx'), dtype=str)
 
-        print(columns_info_df)
+        # print(columns_info_df)
         dfs_to_concat = [pd.DataFrame()]
 
         for file_number, file in enumerate(files, 1):
@@ -72,7 +72,7 @@ class ConcatThread(QtCore.QThread):
                                             (columns_info_df['_sheet_'] == sheet) &
                                             (columns_info_df['Ошибки маркировки'] == 'ok')]
                 
-                print(file_info)
+                # print(file_info)
                 
                 if not file_info.empty:
                     s = int(file_info['_s_'].iloc[0])-1
