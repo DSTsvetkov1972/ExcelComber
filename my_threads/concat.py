@@ -75,8 +75,8 @@ class ConcatThread(QtCore.QThread):
                 print(file_info)
                 
                 if not file_info.empty:
-                    s = int(file_info['s'].iloc[0])-1
-                    f = int(file_info['f'].iloc[0])
+                    s = int(file_info['_s_'].iloc[0])-1
+                    f = int(file_info['_f_'].iloc[0])
                     print(Fore.YELLOW,  os.path.join(marked_folder,file), Fore.RESET)
                     file_df = pd.read_excel(os.path.join(marked_folder,file), sheet_name=sheet, header=None).iloc[:,2:]
 
