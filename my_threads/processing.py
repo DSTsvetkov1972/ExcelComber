@@ -350,6 +350,21 @@ class ProcessingThread(QtCore.QThread):
                     #     f'Сохраняем после отмены объединения ячеек. Книга: "{prc_file}", лист: "{sheet}"')
                     # wb.save(os.path.join(project_folder,'.Обработка', prc_file)) 
 
+                # Сохраняем текст, но удаляем ссылку
+                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                                   f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Удаляем гиперссылки {prc_file} {sheet}")   
+
+                for row in ws.iter_rows():
+                    for cell in row:
+                        if cell.hyperlink:
+                            # Сохраняем значение ячейки (текст)
+                            text = cell.value
+                            # Удаляем гиперссылку
+                            cell.hyperlink = None
+                            # Восстанавливаем текст (если он был равен URL)
+                            if cell.value == cell.hyperlink.target if cell.hyperlink else None:
+                                cell.value = text    
+
  
                 # Сдвигаем вниз
                 self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "

@@ -199,14 +199,18 @@ def init_project():
 
 def value_searcher(col, value):
     #found = col[col==value]
-    found = col.apply(lambda x: value in str(x))
-    found = found[found]
-    if found.size == 0:
+    #col = col.fillna('')
+    #found = col.apply(lambda x: value in str(x))
+    #found = found[found]
+    #print(Fore.RED, value, found.size, Fore.RESET)
+
+    found = (col == value).sum()
+    if found == 0:
         return "-"
-    elif (len(found)) > 1:
+    elif found > 1:
         return "несколько"
     else:
-        return str(found.index[0]+1)
+        return str(col[col == value].index[0]+1)
 
 
 def headers_checker(header_rows_df):
