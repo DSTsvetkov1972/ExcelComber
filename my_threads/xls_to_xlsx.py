@@ -2,6 +2,7 @@ from PySide6 import QtWidgets, QtCore
 from colorama import Fore
 import global_vars 
 import os, shutil
+from openpyxl import load_workbook
 import win32com.client as win32
 from my_threads.functions import all_control_elements_off, all_control_elements_on
 from time import sleep
@@ -19,6 +20,14 @@ class XLS_TO_xlsxThread(QtCore.QThread):
     def convert_xls_to_xlsx(self, file_to_convert):
         file_converted = '.'.join(file_to_convert.split('.')[:-1])+'.xlsx'
         
+        if file_to_convert.split('.')[-1] == 'xlsm':
+            wb = load_workbook(file_to_convert)
+            wb.save(file_converted)
+            os.remove(file_to_convert)
+            return file_converted
+
+
+
         try:
             excel = win32.gencache.EnsureDispatch('Excel.Application')
             excel.Visible = False

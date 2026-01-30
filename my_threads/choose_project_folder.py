@@ -169,6 +169,9 @@ class ChooseProjectFolderThread(QtCore.QThread):
 
 
         global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)
+
+        if self.error_message == 'В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm':
+            global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)
         
         if self.error_message:
             QtWidgets.QMessageBox.critical(None,
