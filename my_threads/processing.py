@@ -19,7 +19,7 @@ from my_threads.functions import all_control_elements_off, all_control_elements_
 from my_threads.functions import value_searcher, marking_checker
 from my_threads.functions import init_project, refresh_files_info, clean_process_folder, check_files_modified, check_excel_file_is_open, open_or_show_file
 from my_threads.functions import get_range_info, set_range_border
-from my_threads.functions import set_markup_in_db, get_markup_from_db
+from my_threads.functions import set_markup_in_db, get_markup_from_db, set_merged_range_headers_in_db
 
 
 horizontal_offset = 2
@@ -353,11 +353,11 @@ class ProcessingThread(QtCore.QThread):
 
                         # заполняем диапазон значением первой ячейки
                         for row in range(min_row, max_row + 1):
-
+                            merged_range_headers[sheet][row]={}
                             for col in range(min_col, max_col + 1):
-
+                                merged_range_headers[sheet][row][col]={}
                                 if row == min_row:
-                                    merged_range_headers[sheet][(row, col)] = first_cell_value
+                                    merged_range_headers[sheet][row][col] = first_cell_value
                                     #print(str(merged_range), source_file, sheet, first_cell_value, row, col)
                                 
                                 if row != min_row or col != min_col:
@@ -500,6 +500,7 @@ class ProcessingThread(QtCore.QThread):
 
             wb.views = [view]
             
+            set_merged_range_headers_in_db(source_file, merged_range_headers)
 
             wb.save(os.path.join(project_folder,'.Обработка', prc_file))            
             wb.close()
@@ -510,7 +511,7 @@ class ProcessingThread(QtCore.QThread):
         global_vars.ui.info_label.setStyleSheet('color: blue')          
 
         marked_folder = os.path.join(project_folder,'.Размеченные')
-        db = os.path.join(global_vars.project_folder, 'files_info.db')
+
         
         files = [file for file in list(os.walk(os.path.join(project_folder, '.Размеченные')))[0][2] if file[0] != "~"]
 
@@ -520,13 +521,13 @@ class ProcessingThread(QtCore.QThread):
 
         for file_number, file in enumerate(files, 1):
 
-            markup_dict = get_markup_from_db(db, file)
+            markup_dict = get_markup_from_db(file)
 
             # print(markup_dict)
 
             if markup_dict:
                 if markup_dict['modifyed_time'] != str(os.path.getmtime(os.path.join(global_vars.project_folder, '.Размеченные',file))):
-                    set_markup_in_db(db, file)
+                    set_markup_in_db(file)
                     markup_dict = {}
 
 
@@ -640,7 +641,6 @@ class ProcessingThread(QtCore.QThread):
                         }
 
                 set_markup_in_db(
-                    db,
                     file,
                     modifyed_time=str(os.path.getmtime(os.path.join(global_vars.project_folder, '.Размеченные',file))),
                     markup_dict=markup_dict)
@@ -777,6 +777,7 @@ class ProcessingThread(QtCore.QThread):
 
     def on_clicked(self):
         init_project()
+
               
         self.start() # Запускаем поток  
      
