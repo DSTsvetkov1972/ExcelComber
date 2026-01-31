@@ -2,6 +2,8 @@ from PySide6 import QtWidgets, QtCore
 from colorama import Fore
 from time import sleep
 
+from pprint import pprint
+
 import global_vars 
 import os, shutil
 import pandas as pd
@@ -213,6 +215,9 @@ class ProcessingThread(QtCore.QThread):
         md_files = list(os.walk(os.path.join(global_vars.project_folder,'.Размеченные')))[0][2]        
         
         for source_file_number, source_file in enumerate(source_files, 1):
+
+            merged_range_headers = {}
+
             md_file = 'md_' + source_file
 
             if md_file in md_files: 
@@ -247,6 +252,7 @@ class ProcessingThread(QtCore.QThread):
             # обрабатываем листы
             for sheet_number, sheet in enumerate(wb.sheetnames, 1):
                 print(Fore.GREEN, f'Размечаем {source_file} лист {sheet}') 
+                merged_range_headers[sheet]={}
 
                 ws = wb[sheet]
 
@@ -341,19 +347,30 @@ class ProcessingThread(QtCore.QThread):
 
                         # получаем значение первой ячейки
                         first_cell_value = ws.cell(row=min_row, column=min_col).value
+                        first_cell_alignment = ws.cell(row=min_row, column=min_col).alignment
                         
                         
 
                         # заполняем диапазон значением первой ячейки
                         for row in range(min_row, max_row + 1):
+
                             for col in range(min_col, max_col + 1):
-                                print(str(merged_range), first_cell_value, row, col)
+
+                                if row == min_row:
+                                    merged_range_headers[sheet][(row, col)] = first_cell_value
+                                    #print(str(merged_range), source_file, sheet, first_cell_value, row, col)
+                                
                                 if row != min_row or col != min_col:
                                     merged_range_cell = ws.cell(row=row, column=col, value=first_cell_value)
                                     merged_range_cell.alignment = styles.Alignment(
-                                        vertical='top',
-                                        horizontal='center',
-                                        wrap_text=True)
+                                        vertical=first_cell_alignment.vertical,
+                                        horizontal=first_cell_alignment.horizontal,
+                                        wrap_text=first_cell_alignment.wrap_text)
+                                    
+                                    # merged_range_cell.alignment = styles.Alignment(
+                                    #     vertical='top',
+                                    #     horizontal='center',
+                                    #     wrap_text=True)
                                     merged_range_cell.font = styles.Font(color="FFCCCC")
 
                     for merged_cells_info in merged_cells_info_list: # помечаем красной розовой линией ранее объединенные ячейки
@@ -466,6 +483,9 @@ class ProcessingThread(QtCore.QThread):
                 ws.sheet_view.topLeftCell = 'A1'                
                 freeze_cell = ws['C3']             
                 ws.freeze_panes = freeze_cell
+
+
+            pprint(merged_range_headers)
 
             # Сохраняем размеченную книгу.'
             self.mysignal.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
