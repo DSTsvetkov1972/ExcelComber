@@ -720,7 +720,7 @@ def set_merged_range_headers_in_db(file, header_dict):
         cur.execute(sql)
 
 
-def get_merged_range_headers_from_db(file):
+def get_merged_range_headers_from_db(file, sheet):
     db = os.path.join(global_vars.project_folder, 'files_info.db')
     conn = sqlite3.connect(db)
     res = {}
@@ -736,12 +736,11 @@ def get_merged_range_headers_from_db(file):
         cur.execute(sql)
         row = cur.fetchone()
         # print(row)
+
         if row:
-            res['modifyed_time'] = row[1]
 
-            markup_json = row[2]
-            res['markup_dict'] = json.loads(markup_json)
-
+            headers_json = row[1]
+            res = json.loads(headers_json)[sheet]
 
         return res            
 

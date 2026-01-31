@@ -353,10 +353,10 @@ class ProcessingThread(QtCore.QThread):
 
                         # заполняем диапазон значением первой ячейки
                         for row in range(min_row, max_row + 1):
-                            merged_range_headers[sheet][row]={}
                             for col in range(min_col, max_col + 1):
-                                merged_range_headers[sheet][row][col]={}
                                 if row == min_row:
+                                    if row not in merged_range_headers[sheet]: 
+                                        merged_range_headers[sheet][row]={}
                                     merged_range_headers[sheet][row][col] = first_cell_value
                                     #print(str(merged_range), source_file, sheet, first_cell_value, row, col)
                                 
