@@ -8,7 +8,7 @@ import pandas as pd
 
 from openpyxl.utils.cell import get_column_letter
 from openpyxl import load_workbook, styles
-from openpyxl.utils.cell import get_column_letter
+from openpyxl.utils import range_boundaries
 from openpyxl.worksheet.datavalidation import DataValidationList
 from openpyxl.workbook.views import BookView  
 
@@ -333,10 +333,30 @@ class ProcessingThread(QtCore.QThread):
 
                 if merged_cells_info_list:
 
-                    for merged_cell in list(ws.merged_cells.ranges): # отменяем объединение ячеек
-                        ws.unmerge_cells(str(merged_cell))
+                    # отменяем объединение ячеек
+                    for merged_range in list(ws.merged_cells.ranges):
 
-                    for merged_cells_info in merged_cells_info_list: # помечаем красной штрих-пунттирной линией ранее объединенные ячейки
+                        min_col, min_row, max_col, max_row = range_boundaries(str(merged_range))
+                        ws.unmerge_cells(str(merged_range)) 
+
+                        # получаем значение первой ячейки
+                        first_cell_value = ws.cell(row=min_row, column=min_col).value
+                        
+                        
+
+                        # заполняем диапазон значением первой ячейки
+                        for row in range(min_row, max_row + 1):
+                            for col in range(min_col, max_col + 1):
+                                print(str(merged_range), first_cell_value, row, col)
+                                if row != min_row or col != min_col:
+                                    merged_range_cell = ws.cell(row=row, column=col, value=first_cell_value)
+                                    merged_range_cell.alignment = styles.Alignment(
+                                        vertical='top',
+                                        horizontal='center',
+                                        wrap_text=True)
+                                    merged_range_cell.font = styles.Font(color="FFCCCC")
+
+                    for merged_cells_info in merged_cells_info_list: # помечаем красной розовой линией ранее объединенные ячейки
                         set_range_border(
                             ws,
                             min_row=merged_cells_info['min_row'],
