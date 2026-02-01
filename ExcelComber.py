@@ -7,6 +7,8 @@ from colorama import Fore
 import resources_rc
 
 from my_threads.functions import clean_process_folder
+from my_threads.interface_thread import InterfaceThread
+
 from my_threads.choose_project_folder import ChooseProjectFolderThread
 from my_threads.xls_to_xlsx import XLS_TO_xlsxThread
 from my_threads.headers_filler import HeadersFillerThread
@@ -14,12 +16,14 @@ from my_threads.processing import ProcessingThread
 from my_threads.open_choosed_files import OpenChoosedFilesThread
 from my_threads.del_choosed_md_files import DelChoosedMDFilesThread
 from my_threads.concat import ConcatThread
-from my_threads.interface_thread import InterfaceThread
-from my_threads.change_rem import ChangeRemThread
+from my_threads.make_files import MakeFilesThread
+
 from my_threads.rename_column import RenameColumnThread
 from my_threads.mark_empty_columns import MarkEmptyColumnsThread
+from my_threads.clean_empty_columns import CleanEmptyColumnsThread
 from my_threads.get_release import GetReleaseThread
 
+from my_threads.change_rem import ChangeRemThread
 
 class MyWindow(QtWidgets.QWidget):
     def __init__ (self, parent=None):
@@ -33,6 +37,7 @@ class MyWindow(QtWidgets.QWidget):
         self.processing_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
         self.headers_filler_thread.mysignal.connect(self.headers_filler_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)        
         self.concat_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.make_files_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
         self.rename_column_thread.mysignal.connect(self.rename_column_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)  
         self.change_rems_thread.mysignal.connect(self.change_rems_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
         self.mark_empty_columns_thread.mysignal.connect(self.mark_empty_columns_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
@@ -68,6 +73,12 @@ class MyWindow(QtWidgets.QWidget):
         global_vars.ui.pushButtonConcat.clicked.connect(self.concat_thread.on_clicked)
         self.concat_thread.started.connect(self.concat_thread.on_started)
         self.concat_thread.finished.connect(self.concat_thread.on_finished)
+
+        
+        global_vars.ui.pushButtonMakeFiles.clicked.connect(self.make_files_thread.on_clicked)
+        self.make_files_thread.started.connect(self.make_files_thread.on_started)
+        self.make_files_thread.finished.connect(self.make_files_thread.on_finished)
+
         
         global_vars.ui.pushButtonHeadersFiller.clicked.connect(self.headers_filler_thread.on_clicked)
         self.headers_filler_thread.started.connect(self.headers_filler_thread.on_started)
@@ -76,7 +87,12 @@ class MyWindow(QtWidgets.QWidget):
 
         global_vars.ui.pushButtonShowEmpty.clicked.connect(self.mark_empty_columns_thread.on_clicked)
         self.mark_empty_columns_thread.started.connect(self.mark_empty_columns_thread.on_started)
-        self.mark_empty_columns_thread.finished.connect(self.mark_empty_columns_thread.on_finished)     
+        self.mark_empty_columns_thread.finished.connect(self.mark_empty_columns_thread.on_finished)  
+
+        
+        global_vars.ui.pushButtonCleanEmpty.clicked.connect(self.clean_empty_columns_thread.on_clicked)
+        self.clean_empty_columns_thread.started.connect(self.clean_empty_columns_thread.on_started)
+        self.clean_empty_columns_thread.finished.connect(self.clean_empty_columns_thread.on_finished)
 
         global_vars.ui.pushButtonChangeRem.clicked.connect(self.change_rems_thread.on_clicked)      
         self.change_rems_thread.started.connect(self.change_rems_thread.on_started)
@@ -114,10 +130,12 @@ class MyWindow(QtWidgets.QWidget):
     open_choosed_files_thread = OpenChoosedFilesThread(md_files = False)  
     open_choosed_mdfiles_thread = OpenChoosedFilesThread(md_files = True)      
     del_choosed_md_files_thread = DelChoosedMDFilesThread()
-    concat_thread = ConcatThread()      
+    concat_thread = ConcatThread()
+    make_files_thread = MakeFilesThread()   
     change_rems_thread = ChangeRemThread()
     rename_column_thread = RenameColumnThread()
     mark_empty_columns_thread = MarkEmptyColumnsThread()
+    clean_empty_columns_thread = CleanEmptyColumnsThread()
     get_release_thread = GetReleaseThread()
     get_release_thread.start()
 

@@ -226,9 +226,9 @@ class ConcatThread(QtCore.QThread):
                 #os.startfile(os.path.join(global_vars.project_folder, "result.xlsx"))                
                 return
 
-        if os.path.exists(os.path.join(global_vars.project_folder, "result.xlsx")):
+        if os.path.exists(os.path.join(global_vars.project_folder, "result.csv")):
             try:
-                os.remove(os.path.join(global_vars.project_folder, "result.xlsx"))
+                os.remove(os.path.join(global_vars.project_folder, "result.csv"))
             except PermissionError:
                 global_vars.ui.info_label.setStyleSheet('color: red')
                 self.result_file =  "result.csv"
@@ -287,6 +287,8 @@ class ConcatThread(QtCore.QThread):
                                            self.message_title,
                                            self.error_message,
                                            buttons=QtWidgets.QMessageBox.StandardButton.Ok) 
+            return
+        
         elif self.warning_message:
             pop_up_files(self.message_title, self.warning_message, [self.result_file])
             global_vars.ui.info_label.setStyleSheet('color: red')             
@@ -298,3 +300,6 @@ class ConcatThread(QtCore.QThread):
                 global_vars.ui.info_label.setText(f'Результат содержит {self.result_df_len} строк и загружен файл result.xlsx')
             else:
                 global_vars.ui.info_label.setText(f'Результат содержит {self.result_df_len} строк и загружен файл result.csv')
+
+        global_vars.ui.pushButtonConcat.setEnabled(True)
+        global_vars.ui.pushButtonMakeFiles.setEnabled(True)        

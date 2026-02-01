@@ -400,9 +400,11 @@ def all_control_elements_off():
         global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(False)
         
         global_vars.ui.pushButtonConcat.setEnabled(False)
+        global_vars.ui.pushButtonMakeFiles.setEnabled(False)  
         ##########################################################################################
         global_vars.ui.pushButtonHeadersFiller.setEnabled(False)
-        global_vars.ui.pushButtonShowEmpty.setEnabled(False) 
+        global_vars.ui.pushButtonShowEmpty.setEnabled(False)
+        global_vars.ui.pushButtonCleanEmpty.setEnabled(False) 
         global_vars.ui.pushButtonRenameColumn.setEnabled(False)
 
         global_vars.ui.radioButtonOldInTopHeader.setEnabled(False)

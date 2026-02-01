@@ -845,7 +845,8 @@ class ProcessingThread(QtCore.QThread):
         else:
             open_or_show_file(file_name='markup.xlsx')
 
-            global_vars.ui.pushButtonConcat.setEnabled(True)    
+            global_vars.ui.pushButtonConcat.setEnabled(True)
+            global_vars.ui.pushButtonMakeFiles.setEnabled(True)  
 
 
             global_vars.ui.info_label.setStyleSheet('color: green')             
