@@ -26,7 +26,14 @@ class HeadersFillerThread(QtCore.QThread):
         self.warning_message = ""
         self.info_message = ""
         self.md_files_opened = []
+        self.err_list = []
 
+        if check_excel_file_is_open("errors.xlsx"):
+            global_vars.ui.info_label.setStyleSheet('color: red')             
+            global_vars.ui.info_label.setText('Закройте файл errors.xlsx перед тем как запустить обработку.')   
+            self.error_message =('Файл errors.xlsx открыт на рабочем столе.\n'
+                                   'Закройте его и снова попробуйте удалить файлы!')
+            return 
 
         self.is_src_files_modifyed = check_files_modified('.Исходники')
 
@@ -75,7 +82,7 @@ class HeadersFillerThread(QtCore.QThread):
         need_to_save = False
 
         for file_sheet_number, file_sheet_list in enumerate(files_sheets_list, 1):
-            print(Fore.MAGENTA, file_sheet_list,  Fore.RESET)
+
             file = file_sheet_list[0]
 
             if file != file_preceding:
@@ -87,7 +94,6 @@ class HeadersFillerThread(QtCore.QThread):
                         f'Сохраняем с заполненными заголовками: "{file}"')
                     sleep(0.01)
 
-                    # print(Fore.GREEN, 'Мы тут', Fore.RESET)
                     wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
 
                 file_preceding = file
@@ -127,10 +133,11 @@ class HeadersFillerThread(QtCore.QThread):
                 continue
 
             # Если заголовок уже есть, то пропускаем
+            """ 
             header_df = df.iloc[:2, 2:]
             header_df = header_df.fillna("")
 
-            """ отключаем незаполнение заголовков если они есть
+            отключаем незаполнение заголовков если они есть
             for t in header_df.itertuples():
                 print(t)
                 not_empty_header = [i for i in t[1:] if i!='' and not pd.isnull(i)]
@@ -144,59 +151,63 @@ class HeadersFillerThread(QtCore.QThread):
                 continue
             """
 
-            print(f"Файл {file} лист {file_sheet_list} Заголовка нет. будем заполнять")          
+       
             # получаем номер строки с заголовком
             header_df = df[df[0]=='h']
-            header_rows = [i-2 for i in header_df.index]
-            print(header_rows)
+            print(header_df)
 
-            source_file_df = pd.read_excel(
-                os.path.join(global_vars.project_folder, '.Исходники', file[3:]),
-                sheet_name=sheet_name,
-                nrows=header_rows[-1]+1,
-                header=None)
-            
-            source_file_df = source_file_df.loc[header_rows]
-            source_file_df = source_file_df.fillna('') 
-            
-            header_cells = []
-            merged_range_headers = get_merged_range_headers_from_db(file[3:], sheet_name)
+            if header_df.empty:
+                self.err_list.append((file, f'Не выбраны строки заголовков на листе "{sheet_name}"'))
+                self.error_message = (
+                    f"У некоторых выбранных листов не была промаркированы строки заголовков!\n"
+                    )
+            else:
+                header_rows = [i-2 for i in header_df.index]
+                print(header_rows)
 
-            for column_number, column in enumerate(source_file_df.columns, 1):
-                header = []
-                for row in header_rows:
-                    if str(row+1) in merged_range_headers:
-                        if str(column_number) in merged_range_headers[str(row+1)]:
-                            header.append(merged_range_headers[str(row+1)][str(column_number)]) 
+
+                source_file_df = pd.read_excel(
+                    os.path.join(global_vars.project_folder, '.Исходники', file[3:]),
+                    sheet_name=sheet_name,
+                    nrows=header_rows[-1]+1,
+                    header=None)
+                
+                source_file_df = source_file_df.loc[header_rows]
+                source_file_df = source_file_df.fillna('') 
+                
+                header_cells = []
+                merged_range_headers = get_merged_range_headers_from_db(file[3:], sheet_name)
+
+                for column_number, column in enumerate(source_file_df.columns, 1):
+                    header = []
+                    for row in header_rows:
+                        if str(row+1) in merged_range_headers:
+                            if str(column_number) in merged_range_headers[str(row+1)]:
+                                header.append(merged_range_headers[str(row+1)][str(column_number)]) 
+                            elif source_file_df[column].loc[row]:
+                                header.append(source_file_df[column].loc[row])
+                            else:
+                                pass
+                                #header.append('')
                         elif source_file_df[column].loc[row]:
                             header.append(source_file_df[column].loc[row])
-                        else:
-                            pass
-                            #header.append('')
-                    elif source_file_df[column].loc[row]:
-                        header.append(source_file_df[column].loc[row])
 
-                header_cells.append('~'.join(header))
-
-            print(header_cells)
-            
+                    header_cells.append('>>>'.join(header))
 
 
+                if not header_cells:
+                #    header_cells = header_df.iloc[0][2:]
+                #else:
+                    continue
 
-            if not header_cells:
-            #    header_cells = header_df.iloc[0][2:]
-            #else:
-                continue
+                col = 3
+                for header_cell in header_cells:
+                    ws.cell(row=1, column=col, value=header_cell)
+                    ws.cell(row=1, column=col).alignment = styles.Alignment(wrap_text=True, horizontal="left", vertical="center")
+                    col += 1
+                need_to_save = True
 
-            col = 3
-            # print(Fore.YELLOW, header_cells, Fore.RESET)
-            for header_cell in header_cells:
-                ws.cell(row=1, column=col, value=header_cell)
-                ws.cell(row=1, column=col).alignment = styles.Alignment(wrap_text=True, horizontal="left", vertical="center")
-                col += 1
-            need_to_save = True
-
-            # wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))                      
+                # wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))                      
 
         if need_to_save:
             self.mysignal.emit(
@@ -225,5 +236,11 @@ class HeadersFillerThread(QtCore.QThread):
 
     def on_finished(self): # Вызывается при завершении потока
         on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
+
+        if self.err_list:
+            df = pd.DataFrame(self.err_list, index=None)
+            df.to_excel(os.path.join(global_vars.project_folder, 'errors.xlsx'), index=None, header=None)
+
+            os.startfile(os.path.join(global_vars.project_folder, "errors.xlsx"))
             
         all_control_elements_on()
