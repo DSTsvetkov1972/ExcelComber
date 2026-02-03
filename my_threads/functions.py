@@ -214,31 +214,25 @@ def value_searcher(col, value):
     print(found_s, found_f, found_sf)
 
     if value == 's':
-        print(11111)
+
         found = found_s + found_sf
 
         if found == 0:
-            print("-")
             return "-"
         elif found > 1:
-            print("несколько")
             return "несколько"
         else:
-            print(str(col[(col == 's') | (col == 'sf')].index[0]+1))
             return str(col[(col == 's') | (col == 'sf')].index[0]+1)
         
     elif value == 'f':
-        print(22222)
+
         found = found_f + found_sf
         
         if found == 0:
-            print("-")
             return "-"
         elif found > 1:
-            print("несколько")
             return "несколько"
         else:
-            print(str(col[(col == 'f') | (col == 'sf')].index[0]+1))
             return str(col[(col == 'f') | (col == 'sf')].index[0]+1)
         
 
