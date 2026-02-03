@@ -357,7 +357,7 @@ class ProcessingThread(QtCore.QThread):
                                 if row == min_row:
                                     if row not in merged_range_headers[sheet]: 
                                         merged_range_headers[sheet][row]={}
-                                    merged_range_headers[sheet][row][col] = first_cell_value
+                                    merged_range_headers[sheet][row][col] = str(first_cell_value)
                                     #print(str(merged_range), source_file, sheet, first_cell_value, row, col)
                                 
                                 if row != min_row or col != min_col:
@@ -579,6 +579,8 @@ class ProcessingThread(QtCore.QThread):
                     sheet_df_to_check_is_empty = sheet_df.copy()
                     sheet_df_to_check_is_empty = sheet_df_to_check_is_empty.dropna(axis=1, how='all')
 
+                    print(sheet_df)
+
                     if sheet_df_to_check_is_empty.empty:
                         headers_df = pd.DataFrame([None, None])                    
                         s_f_check_dict = {
@@ -595,7 +597,10 @@ class ProcessingThread(QtCore.QThread):
 
                         errors_list.append(sheet_rem) # считываем комментарий если есть и добавляем в список
                         s = value_searcher(sheet_df[0], 's')
-                        f = value_searcher(sheet_df[0], 'f')  
+                        f = value_searcher(sheet_df[0], 'f')
+                        # s = f = value_searcher(sheet_df[0], 'sf')
+
+                        print('s, f', s, f) 
                         header_rows = sheet_df.iloc[0:2]
                         headers_df = sheet_df[sheet_df.columns[2:]].iloc[0:2] 
 

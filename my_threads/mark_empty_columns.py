@@ -43,7 +43,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
         if check_excel_file_is_open("errors.xlsx"):
             global_vars.ui.info_label.setStyleSheet('color: red')             
             global_vars.ui.info_label.setText('Закройте файл markup.xlsx перед тем как запустить обработку.')   
-            self.warning_message ='Файл errors.xlsx уже открыт на рабочем столе.\nЗакройте его и заново нажмите кнопку "Пометить непустые колонки"'
+            self.error_message ='Файл errors.xlsx уже открыт на рабочем столе.\nЗакройте его и заново нажмите кнопку "Пометить непустые колонки"'
             self.folder = ""
             self.md_files_opened = ["errors.xlsx"]
             return 

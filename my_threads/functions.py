@@ -205,13 +205,45 @@ def value_searcher(col, value):
     #found = found[found]
     #print(Fore.RED, value, found.size, Fore.RESET)
 
-    found = (col == value).sum()
-    if found == 0:
-        return "-"
-    elif found > 1:
-        return "несколько"
-    else:
-        return str(col[col == value].index[0]+1)
+    print('value_searcher', value)
+
+    found_s = (col == 's').sum()
+    found_f = (col == 'f').sum()
+    found_sf = (col == 'sf').sum()
+
+    print(found_s, found_f, found_sf)
+
+    if value == 's':
+        print(11111)
+        found = found_s + found_sf
+
+        if found == 0:
+            print("-")
+            return "-"
+        elif found > 1:
+            print("несколько")
+            return "несколько"
+        else:
+            print(str(col[(col == 's') | (col == 'sf')].index[0]+1))
+            return str(col[(col == 's') | (col == 'sf')].index[0]+1)
+        
+    elif value == 'f':
+        print(22222)
+        found = found_f + found_sf
+        
+        if found == 0:
+            print("-")
+            return "-"
+        elif found > 1:
+            print("несколько")
+            return "несколько"
+        else:
+            print(str(col[(col == 'f') | (col == 'sf')].index[0]+1))
+            return str(col[(col == 'f') | (col == 'sf')].index[0]+1)
+        
+
+    
+
 
 
 def headers_checker(header_rows_df):
