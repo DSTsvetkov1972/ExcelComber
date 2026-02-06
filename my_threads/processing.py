@@ -260,6 +260,7 @@ class ProcessingThread(QtCore.QThread):
                 ws_max_row = ws.max_row
 
                 # Делаем лист видимым
+                ws_sheet_state = ws.sheet_state
                 ws.sheet_state = 'visible'
 
                 # Записываем ширины колонок
@@ -476,6 +477,13 @@ class ProcessingThread(QtCore.QThread):
                    
                     separator_cell = ws.cell(column=ws_max_column+3, row = row)
                     separator_cell.fill = sep_cell_style
+
+                # Вносим комментарий, если лист был невидимым
+                if ws_sheet_state in ('hidden', 'veryHidden'):
+                    rem_cell = ws.cell(column=1, row=1, value=ws_sheet_state)
+                    rem_cell.fill = styles.PatternFill(start_color='FF0000', fill_type='solid')
+                    rem_cell.font = styles.Font(bold=True, color="FFFFFF")
+
                     
                 # Замораживаем ячейки
                 self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
