@@ -358,7 +358,10 @@ class ProcessingThread(QtCore.QThread):
                                 if row == min_row:
                                     if row not in merged_range_headers[sheet]: 
                                         merged_range_headers[sheet][row]={}
-                                    merged_range_headers[sheet][row][col] = str(first_cell_value)
+                                    if first_cell_value:
+                                        merged_range_headers[sheet][row][col] = str(first_cell_value)
+                                    else:
+                                        merged_range_headers[sheet][row][col] = ""
                                     #print(str(merged_range), source_file, sheet, first_cell_value, row, col)
                                 
                                 if row != min_row or col != min_col:
