@@ -83,6 +83,8 @@ class HeadersFillerThread(QtCore.QThread):
 
         for file_sheet_number, file_sheet_list in enumerate(files_sheets_list, 1):
 
+            print(file)
+
             file = file_sheet_list[0]
 
             if file != file_preceding:
@@ -126,7 +128,9 @@ class HeadersFillerThread(QtCore.QThread):
             for row in ws.iter_rows(values_only=True):
                 data.append(list(row))
             df = pd.DataFrame(data)
+            # df = df.map(str)
 
+            # print(df[[20,21,22,23,24,25,26,27,28]])
 
             # Если лист пустой, то пропускаем
             if df.empty:
@@ -153,8 +157,8 @@ class HeadersFillerThread(QtCore.QThread):
 
        
             # получаем номер строки с заголовком
+            # print(Fore.GREEN, df, Fore.RESET)
             header_df = df[df[0]=='h']
-            print(header_df)
 
             if header_df.empty:
                 self.err_list.append((file, f'Не выбраны строки заголовков на листе "{sheet_name}"'))
@@ -192,7 +196,12 @@ class HeadersFillerThread(QtCore.QThread):
                         elif source_file_df[column].loc[row]:
                             header.append(source_file_df[column].loc[row])
 
-                    header_cells.append('>>>'.join(header))
+                    if header:
+                        header = [str(x) for x in header]
+                        print(Fore.MAGENTA, header, Fore.RESET)
+                        header_cells.append('>>>'.join(header))
+                    else:
+                        header_cells.append('')
 
 
                 if not header_cells:

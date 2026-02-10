@@ -251,7 +251,7 @@ class ProcessingThread(QtCore.QThread):
 
             # обрабатываем листы
             for sheet_number, sheet in enumerate(wb.sheetnames, 1):
-                print(Fore.GREEN, f'Размечаем {source_file} лист {sheet}') 
+                # print(Fore.GREEN, f'Размечаем {source_file} лист {sheet}') 
                 merged_range_headers[sheet]={}
 
                 ws = wb[sheet]
@@ -496,7 +496,7 @@ class ProcessingThread(QtCore.QThread):
                 ws.freeze_panes = freeze_cell
 
 
-            pprint(merged_range_headers)
+            # pprint(merged_range_headers)
 
             # Сохраняем размеченную книгу.'
             self.mysignal.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
@@ -590,7 +590,7 @@ class ProcessingThread(QtCore.QThread):
                     sheet_df_to_check_is_empty = sheet_df.copy()
                     sheet_df_to_check_is_empty = sheet_df_to_check_is_empty.dropna(axis=1, how='all')
 
-                    print(sheet_df)
+                    # print(sheet_df)
 
                     if sheet_df_to_check_is_empty.empty:
                         headers_df = pd.DataFrame([None, None])                    
@@ -611,7 +611,7 @@ class ProcessingThread(QtCore.QThread):
                         f = value_searcher(sheet_df[0], 'f')
                         # s = f = value_searcher(sheet_df[0], 'sf')
 
-                        print('s, f', s, f) 
+                        # print('s, f', s, f) 
                         header_rows = sheet_df.iloc[0:2]
                         headers_df = sheet_df[sheet_df.columns[2:]].iloc[0:2] 
 
