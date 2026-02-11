@@ -41,6 +41,7 @@ class MyWindow(QtWidgets.QWidget):
         self.rename_column_thread.mysignal.connect(self.rename_column_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)  
         self.change_rems_thread.mysignal.connect(self.change_rems_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
         self.mark_empty_columns_thread.mysignal.connect(self.mark_empty_columns_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.clean_empty_columns_thread.mysignal.connect(self.clean_empty_columns_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
         self.get_release_thread.mysignal.connect(lambda: self.setWindowTitle(global_vars.title), QtCore.Qt.ConnectionType.QueuedConnection) 
 
         global_vars.ui.action_show_manual.triggered.connect(self.show_manual)   
