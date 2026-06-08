@@ -2,7 +2,9 @@ import pendulum
 from dateutil.relativedelta import relativedelta
 import pyperclip
 
-letter = f"""Дмитрий Сергеевич, добрый день!
+user_name = 'Дмитрий Сергеевич'
+
+letter = f"""{user_name}, добрый день!
 
 Благодарю Вас за интерес проявленный к ExcelComber.
 Файл лицензии во вложении.
