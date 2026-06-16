@@ -87,11 +87,13 @@ def save_encrypted_dict_to_file(encrypted_data, filename="encrypted_data.bin"):
     return filename
 
 
-if __name__ == "__main__":
 
-    data_dict = {
-        'user': 'Пантелеев Дмитрий Сергеевич',
-        'trial_finish': f"{datetime(2026, 7, 8)}"}
+data_dict = {
+    'user': 'Андрей',
+    'trial_finish': f"{datetime(2026, 7, 16)}"}
+
+
+if __name__ == "__main__":
 
     public_key_pem = os.path.join(os.getcwd(),'keys_manager', 'public_key.pem')
     license_file = os.path.join(os.getcwd(), 'license_manager', 'license')
