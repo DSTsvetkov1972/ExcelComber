@@ -104,6 +104,7 @@ class InterfaceThread(QtCore.QThread):
 
                     global_vars.ui.pushButtonHeadersFiller.setEnabled(True)
                     global_vars.ui.pushButtonShowEmpty.setEnabled(True)
+                    global_vars.ui.pushButtonCleanEmpty.setEnabled(True)
                     global_vars.ui.pushButtonRenameColumn.setEnabled(True)
                     global_vars.ui.pushButtonChangeRem.setEnabled(True)
 
@@ -114,6 +115,7 @@ class InterfaceThread(QtCore.QThread):
 
                     global_vars.ui.pushButtonHeadersFiller.setEnabled(False)
                     global_vars.ui.pushButtonShowEmpty.setEnabled(False)
+                    global_vars.ui.pushButtonCleanEmpty.setEnabled(False)
                     global_vars.ui.pushButtonRenameColumn.setEnabled(False)
                     global_vars.ui.pushButtonChangeRem.setEnabled(False)
                     
@@ -134,6 +136,7 @@ class InterfaceThread(QtCore.QThread):
 
                 global_vars.ui.pushButtonHeadersFiller.setEnabled(False)                    
                 global_vars.ui.pushButtonShowEmpty.setEnabled(False)
+                global_vars.ui.pushButtonCleanEmpty.setEnabled(False)
                 global_vars.ui.pushButtonRenameColumn.setEnabled(False)
                 global_vars.ui.pushButtonChangeRem.setEnabled(False)
 

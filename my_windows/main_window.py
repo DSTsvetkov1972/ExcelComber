@@ -180,9 +180,9 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         #MainWindow.setFixedWidth(1366) 
         #MainWindow.setFixedHeight(768) 
-        MainWindow.resize(1100, 350)
-        MainWindow.setMaximumSize(1500, 350)
-        MainWindow.setMinimumSize(350, 350)    
+        MainWindow.resize(1100, 380)
+        MainWindow.setMaximumSize(1500, 380)
+        MainWindow.setMinimumSize(350, 380)    
         MainWindow.setWindowTitle(f"ExcelComber {global_vars.version}")
 
         icon = QIcon(":/icons/app_icon.png")
@@ -209,7 +209,7 @@ class Ui_MainWindow(object):
         # LEFT
 
         self.verticalLayoutWidgetLeft = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetLeft.setGeometry(QRect(10, 42, 320, 230))
+        self.verticalLayoutWidgetLeft.setGeometry(QRect(10, 41, 320, 266))
         self.verticalLayoutButtonsLeft = QVBoxLayout(self.verticalLayoutWidgetLeft)
         self.verticalLayoutButtonsLeft.setContentsMargins(10, 0, 0, 0)    
              
@@ -242,12 +242,16 @@ class Ui_MainWindow(object):
         self.pushButtonConcat.setEnabled(False)        
         self.verticalLayoutButtonsLeft.addWidget(self.pushButtonConcat)
 
+        self.pushButtonMakeFiles = QPushButton("Создать файлы")
+        self.pushButtonMakeFiles.setEnabled(False)        
+        self.verticalLayoutButtonsLeft.addWidget(self.pushButtonMakeFiles)
+
         # **********************************************************************************************
         # CENTER-TOP
         # **********************************************************************************************
 
         self.verticalLayoutWidgetCenterTop = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetCenterTop.setGeometry(QRect(360, 42, 320, 98))
+        self.verticalLayoutWidgetCenterTop.setGeometry(QRect(368, 42, 320, 128))
         #self.verticalLayoutWidgetCenterTop.setStyleSheet("border: 2px solid blue; border-radius: 8px; background-color: #f0f0f0;")
 
         self.verticalLayoutCenterTop = QVBoxLayout(self.verticalLayoutWidgetCenterTop)
@@ -264,6 +268,11 @@ class Ui_MainWindow(object):
         self.pushButtonShowEmpty = QPushButton("Пометить непустые колонки")
         self.pushButtonShowEmpty.setEnabled(False)
         self.verticalLayoutCenterTop.addWidget(self.pushButtonShowEmpty)
+
+        self.pushButtonCleanEmpty = QPushButton("Удалить заголовки пустых колонок")
+        self.pushButtonCleanEmpty.setEnabled(False)
+        self.verticalLayoutCenterTop.addWidget(self.pushButtonCleanEmpty)
+
 
         self.pushButtonRenameColumn = QPushButton("Переименовать заголовки")
         self.pushButtonRenameColumn.setEnabled(False)
@@ -282,7 +291,7 @@ class Ui_MainWindow(object):
         # CENTER-MIDDLE-1
         # **********************************************************************************************
         self.verticalLayoutWidgetCenterMiddle1 = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetCenterMiddle1.setGeometry(QRect(360, 146, 260, 20))
+        self.verticalLayoutWidgetCenterMiddle1.setGeometry(QRect(368, 176, 260, 20))
         
         self.verticalLayoutCenterMiddle1 = QHBoxLayout(self.verticalLayoutWidgetCenterMiddle1)
         self.verticalLayoutCenterMiddle1.setContentsMargins(10, 0, 0, 0)
@@ -320,7 +329,7 @@ class Ui_MainWindow(object):
         # CENTER-MIDDLE-2
         # **********************************************************************************************
         self.verticalLayoutWidgetCenterMiddle2 = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetCenterMiddle2.setGeometry(QRect(360, 161, 320, 60))
+        self.verticalLayoutWidgetCenterMiddle2.setGeometry(QRect(368, 191, 320, 60))
         
         self.verticalLayoutCenterMiddle2 = QVBoxLayout(self.verticalLayoutWidgetCenterMiddle2)
         self.verticalLayoutCenterMiddle2.setContentsMargins(10, 0, 0, 0)
@@ -348,7 +357,7 @@ class Ui_MainWindow(object):
         # CENTER-MIDDLE-3
         # **********************************************************************************************
         self.verticalLayoutWidgetCenterMiddle3 = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetCenterMiddle3.setGeometry(QRect(360, 212, 260, 20))
+        self.verticalLayoutWidgetCenterMiddle3.setGeometry(QRect(368, 244, 260, 20))
         
         self.verticalLayoutCenterMiddle3 = QHBoxLayout(self.verticalLayoutWidgetCenterMiddle3)
         self.verticalLayoutCenterMiddle3.setContentsMargins(10, 0, 0, 0)
@@ -387,7 +396,7 @@ class Ui_MainWindow(object):
         # CENTER-BOTTOM
         # **********************************************************************************************----
         self.verticalLayoutWidgetCenterBottom = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetCenterBottom.setGeometry(QRect(360, 232, 320, 46))
+        self.verticalLayoutWidgetCenterBottom.setGeometry(QRect(372, 264, 320, 46))
 
         self.verticalLayoutCenterBottom = QVBoxLayout(self.verticalLayoutWidgetCenterBottom)
         self.verticalLayoutCenterBottom.setContentsMargins(10, 0, 0, 0)        
@@ -458,7 +467,7 @@ class Ui_MainWindow(object):
         # RIGHT-BOTTOM
         # ----------------------------------------------------------------------------------------------
         self.verticalLayoutWidgetRightBottom = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetRightBottom.setGeometry(QRect(730, 204, 320, 68))
+        self.verticalLayoutWidgetRightBottom.setGeometry(QRect(730, 204, 320, 96))
 
         self.verticalLayoutRightBottom = QVBoxLayout(self.verticalLayoutWidgetRightBottom)
         self.verticalLayoutRightBottom.setContentsMargins(10, 0, 0, 0)        
@@ -478,7 +487,7 @@ class Ui_MainWindow(object):
         # BOTTOM
 
         self.verticalLayoutWidgetLabels = QWidget(self.centralWidget)
-        self.verticalLayoutWidgetLabels.setGeometry(QRect(14, 286, 1366, 56)) #QRect(10, 120, 320, 120)
+        self.verticalLayoutWidgetLabels.setGeometry(QRect(14, 316, 1366, 56)) #QRect(10, 120, 320, 120)
         self.verticalLayoutLabels = QVBoxLayout(self.verticalLayoutWidgetLabels)
         self.verticalLayoutLabels.setContentsMargins(10, 10, 10, 10)    
 

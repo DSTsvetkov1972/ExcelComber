@@ -20,10 +20,10 @@ from my_threads.functions import value_searcher, marking_checker, get_files_and_
 from time import sleep
 
 
-class MarkEmptyColumnsThread(QtCore.QThread):
+class CleanEmptyColumnsThread(QtCore.QThread):
     def __init__ (self, md_files=False, parent=None):
         QtCore.QThread.__init__(self, parent)
-        self.message_title = "Помечаем непустые колонки."
+        self.message_title = "Удаляем заголовки пустых колонок."
         self.folder = '.Размеченные'
         self.md_files = md_files
 
@@ -43,7 +43,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
         if check_excel_file_is_open("errors.xlsx"):
             global_vars.ui.info_label.setStyleSheet('color: red')             
             global_vars.ui.info_label.setText('Закройте файл markup.xlsx перед тем как запустить обработку.')   
-            self.error_message ='Файл errors.xlsx уже открыт на рабочем столе.\nЗакройте его и заново нажмите кнопку "Пометить непустые колонки"'
+            self.warning_message ='Файл errors.xlsx уже открыт на рабочем столе.\nЗакройте его и заново нажмите кнопку "Пометить непустые колонки"'
             self.folder = ""
             self.md_files_opened = ["errors.xlsx"]
             return 
@@ -73,7 +73,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
         for file_number, file in enumerate(files_list):
             self.mysignal.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
-                f"Маркировка непустых колонок. Проверяем не открыт ли на рабочем столе: {file}.")
+                f"Удаление заголовков пустых колонок. Проверяем не открыт ли на рабочем столе: {file}.")
             sleep(0.01)
             if check_excel_file_is_open(file):
                 self.md_files_opened.append(file)
@@ -109,7 +109,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
                     self.mysignal.emit(
                         f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                         f'{files_list.index(file)+1} из {len(files_list)}. '
-                        f'Сохраняем с помеченными непустыми колонками: "{file}"')
+                        f'Сохраняем с удаленными заголовками пустых колонок: "{file}"')
                     # print(Fore.GREEN, 'Мы тут', Fore.RESET)
                     wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
 
@@ -164,7 +164,9 @@ class MarkEmptyColumnsThread(QtCore.QThread):
                 # print(col_number, col_values)
 
                 if set(col_values) == {None}:
-                    ws.cell(column=col_number, row=1).fill = styles.PatternFill(fill_type=None)
+                    # ws.cell(column=col_number, row=1).fill = styles.PatternFill(fill_type=None)
+                    ws.cell(column=col_number, row=1).value = ""
+                    ws.cell(column=col_number, row=2).value = ""
                 else:
                     ws.cell(column=col_number, row=1).fill = styles.PatternFill(start_color='C6EFCE', fill_type='solid')
                     ws.cell(column=col_number, row=1).font = styles.Font(color='006100')
@@ -173,7 +175,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
             if need_to_save:
                 file_sheets_qty += 1
                 
-                self.info_message = f"Помечены заголовки для непустых колонок.\nУспешно обработано листов: {file_sheets_qty} из {len(files_sheets_list)}."
+                self.info_message = f"Удалены заголовки пустых колонок.\nУспешно обработано листов: {file_sheets_qty} из {len(files_sheets_list)}."
 
 
         if need_to_save:

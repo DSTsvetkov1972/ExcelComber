@@ -2,13 +2,15 @@ from PySide6 import QtWidgets, QtCore
 from colorama import Fore
 from time import sleep
 
+from pprint import pprint
+
 import global_vars 
 import os, shutil
 import pandas as pd
 
 from openpyxl.utils.cell import get_column_letter
 from openpyxl import load_workbook, styles
-from openpyxl.utils.cell import get_column_letter
+from openpyxl.utils import range_boundaries
 from openpyxl.worksheet.datavalidation import DataValidationList
 from openpyxl.workbook.views import BookView  
 
@@ -17,7 +19,7 @@ from my_threads.functions import all_control_elements_off, all_control_elements_
 from my_threads.functions import value_searcher, marking_checker
 from my_threads.functions import init_project, refresh_files_info, clean_process_folder, check_files_modified, check_excel_file_is_open, open_or_show_file
 from my_threads.functions import get_range_info, set_range_border
-from my_threads.functions import set_markup_in_db, get_markup_from_db
+from my_threads.functions import set_markup_in_db, get_markup_from_db, set_merged_range_headers_in_db
 
 
 horizontal_offset = 2
@@ -213,6 +215,9 @@ class ProcessingThread(QtCore.QThread):
         md_files = list(os.walk(os.path.join(global_vars.project_folder,'.Размеченные')))[0][2]        
         
         for source_file_number, source_file in enumerate(source_files, 1):
+
+            merged_range_headers = {}
+
             md_file = 'md_' + source_file
 
             if md_file in md_files: 
@@ -246,7 +251,8 @@ class ProcessingThread(QtCore.QThread):
 
             # обрабатываем листы
             for sheet_number, sheet in enumerate(wb.sheetnames, 1):
-                print(Fore.GREEN, f'Размечаем {source_file} лист {sheet}') 
+                # print(Fore.GREEN, f'Размечаем {source_file} лист {sheet}') 
+                merged_range_headers[sheet]={}
 
                 ws = wb[sheet]
 
@@ -254,6 +260,7 @@ class ProcessingThread(QtCore.QThread):
                 ws_max_row = ws.max_row
 
                 # Делаем лист видимым
+                ws_sheet_state = ws.sheet_state
                 ws.sheet_state = 'visible'
 
                 # Записываем ширины колонок
@@ -333,10 +340,44 @@ class ProcessingThread(QtCore.QThread):
 
                 if merged_cells_info_list:
 
-                    for merged_cell in list(ws.merged_cells.ranges): # отменяем объединение ячеек
-                        ws.unmerge_cells(str(merged_cell))
+                    # отменяем объединение ячеек
+                    for merged_range in list(ws.merged_cells.ranges):
 
-                    for merged_cells_info in merged_cells_info_list: # помечаем красной штрих-пунттирной линией ранее объединенные ячейки
+                        min_col, min_row, max_col, max_row = range_boundaries(str(merged_range))
+                        ws.unmerge_cells(str(merged_range)) 
+
+                        # получаем значение первой ячейки
+                        first_cell_value = ws.cell(row=min_row, column=min_col).value
+                        first_cell_alignment = ws.cell(row=min_row, column=min_col).alignment
+                        
+                        
+
+                        # заполняем диапазон значением первой ячейки
+                        for row in range(min_row, max_row + 1):
+                            for col in range(min_col, max_col + 1):
+                                if row == min_row:
+                                    if row not in merged_range_headers[sheet]: 
+                                        merged_range_headers[sheet][row]={}
+                                    if first_cell_value:
+                                        merged_range_headers[sheet][row][col] = str(first_cell_value)
+                                    else:
+                                        merged_range_headers[sheet][row][col] = ""
+                                    #print(str(merged_range), source_file, sheet, first_cell_value, row, col)
+                                
+                                if row != min_row or col != min_col:
+                                    merged_range_cell = ws.cell(row=row, column=col, value=first_cell_value)
+                                    merged_range_cell.alignment = styles.Alignment(
+                                        vertical=first_cell_alignment.vertical,
+                                        horizontal=first_cell_alignment.horizontal,
+                                        wrap_text=first_cell_alignment.wrap_text)
+                                    
+                                    # merged_range_cell.alignment = styles.Alignment(
+                                    #     vertical='top',
+                                    #     horizontal='center',
+                                    #     wrap_text=True)
+                                    merged_range_cell.font = styles.Font(color="FFCCCC")
+
+                    for merged_cells_info in merged_cells_info_list: # помечаем красной розовой линией ранее объединенные ячейки
                         set_range_border(
                             ws,
                             min_row=merged_cells_info['min_row'],
@@ -439,6 +480,13 @@ class ProcessingThread(QtCore.QThread):
                    
                     separator_cell = ws.cell(column=ws_max_column+3, row = row)
                     separator_cell.fill = sep_cell_style
+
+                # Вносим комментарий, если лист был невидимым
+                if ws_sheet_state in ('hidden', 'veryHidden'):
+                    rem_cell = ws.cell(column=1, row=1, value=ws_sheet_state)
+                    rem_cell.fill = styles.PatternFill(start_color='FF0000', fill_type='solid')
+                    rem_cell.font = styles.Font(bold=True, color="FFFFFF")
+
                     
                 # Замораживаем ячейки
                 self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
@@ -446,6 +494,9 @@ class ProcessingThread(QtCore.QThread):
                 ws.sheet_view.topLeftCell = 'A1'                
                 freeze_cell = ws['C3']             
                 ws.freeze_panes = freeze_cell
+
+
+            # pprint(merged_range_headers)
 
             # Сохраняем размеченную книгу.'
             self.mysignal.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
@@ -460,6 +511,7 @@ class ProcessingThread(QtCore.QThread):
 
             wb.views = [view]
             
+            set_merged_range_headers_in_db(source_file, merged_range_headers)
 
             wb.save(os.path.join(project_folder,'.Обработка', prc_file))            
             wb.close()
@@ -470,7 +522,7 @@ class ProcessingThread(QtCore.QThread):
         global_vars.ui.info_label.setStyleSheet('color: blue')          
 
         marked_folder = os.path.join(project_folder,'.Размеченные')
-        db = os.path.join(global_vars.project_folder, 'files_info.db')
+
         
         files = [file for file in list(os.walk(os.path.join(project_folder, '.Размеченные')))[0][2] if file[0] != "~"]
 
@@ -480,13 +532,13 @@ class ProcessingThread(QtCore.QThread):
 
         for file_number, file in enumerate(files, 1):
 
-            markup_dict = get_markup_from_db(db, file)
+            markup_dict = get_markup_from_db(file)
 
             # print(markup_dict)
 
             if markup_dict:
                 if markup_dict['modifyed_time'] != str(os.path.getmtime(os.path.join(global_vars.project_folder, '.Размеченные',file))):
-                    set_markup_in_db(db, file)
+                    set_markup_in_db(file)
                     markup_dict = {}
 
 
@@ -538,6 +590,8 @@ class ProcessingThread(QtCore.QThread):
                     sheet_df_to_check_is_empty = sheet_df.copy()
                     sheet_df_to_check_is_empty = sheet_df_to_check_is_empty.dropna(axis=1, how='all')
 
+                    # print(sheet_df)
+
                     if sheet_df_to_check_is_empty.empty:
                         headers_df = pd.DataFrame([None, None])                    
                         s_f_check_dict = {
@@ -554,7 +608,10 @@ class ProcessingThread(QtCore.QThread):
 
                         errors_list.append(sheet_rem) # считываем комментарий если есть и добавляем в список
                         s = value_searcher(sheet_df[0], 's')
-                        f = value_searcher(sheet_df[0], 'f')  
+                        f = value_searcher(sheet_df[0], 'f')
+                        # s = f = value_searcher(sheet_df[0], 'sf')
+
+                        # print('s, f', s, f) 
                         header_rows = sheet_df.iloc[0:2]
                         headers_df = sheet_df[sheet_df.columns[2:]].iloc[0:2] 
 
@@ -600,7 +657,6 @@ class ProcessingThread(QtCore.QThread):
                         }
 
                 set_markup_in_db(
-                    db,
                     file,
                     modifyed_time=str(os.path.getmtime(os.path.join(global_vars.project_folder, '.Размеченные',file))),
                     markup_dict=markup_dict)
@@ -737,6 +793,7 @@ class ProcessingThread(QtCore.QThread):
 
     def on_clicked(self):
         init_project()
+
               
         self.start() # Запускаем поток  
      
@@ -804,7 +861,8 @@ class ProcessingThread(QtCore.QThread):
         else:
             open_or_show_file(file_name='markup.xlsx')
 
-            global_vars.ui.pushButtonConcat.setEnabled(True)    
+            global_vars.ui.pushButtonConcat.setEnabled(True)
+            global_vars.ui.pushButtonMakeFiles.setEnabled(True)  
 
 
             global_vars.ui.info_label.setStyleSheet('color: green')             

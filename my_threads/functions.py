@@ -182,7 +182,8 @@ def init_project():
         # cur.execute("CREATE TABLE IF NOT EXISTS actual_src_files_info (file TEXT, modifyed_time TEXT)")  
         cur.execute("CREATE TABLE IF NOT EXISTS md_files_info (file TEXT, modifyed_time TEXT)")  
         # cur.execute("CREATE TABLE IF NOT EXISTS actual_md_files_info (file TEXT, modifyed_time TEXT)")
-        cur.execute("CREATE TABLE IF NOT EXISTS markup (file TEXT, modifyed_time TEXT, markup_json TEXT)")   
+        cur.execute("CREATE TABLE IF NOT EXISTS markup (file TEXT, modifyed_time TEXT, markup_json TEXT)")
+        cur.execute("CREATE TABLE IF NOT EXISTS merged_range_headers (file TEXT, headers_json TEXT)")  
 
     with conn:
 
@@ -204,13 +205,39 @@ def value_searcher(col, value):
     #found = found[found]
     #print(Fore.RED, value, found.size, Fore.RESET)
 
-    found = (col == value).sum()
-    if found == 0:
-        return "-"
-    elif found > 1:
-        return "несколько"
-    else:
-        return str(col[col == value].index[0]+1)
+    print('value_searcher', value)
+
+    found_s = (col == 's').sum()
+    found_f = (col == 'f').sum()
+    found_sf = (col == 'sf').sum()
+
+    print(found_s, found_f, found_sf)
+
+    if value == 's':
+
+        found = found_s + found_sf
+
+        if found == 0:
+            return "-"
+        elif found > 1:
+            return "несколько"
+        else:
+            return str(col[(col == 's') | (col == 'sf')].index[0]+1)
+        
+    elif value == 'f':
+
+        found = found_f + found_sf
+        
+        if found == 0:
+            return "-"
+        elif found > 1:
+            return "несколько"
+        else:
+            return str(col[(col == 'f') | (col == 'sf')].index[0]+1)
+        
+
+    
+
 
 
 def headers_checker(header_rows_df):
@@ -399,9 +426,11 @@ def all_control_elements_off():
         global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(False)
         
         global_vars.ui.pushButtonConcat.setEnabled(False)
+        global_vars.ui.pushButtonMakeFiles.setEnabled(False)  
         ##########################################################################################
         global_vars.ui.pushButtonHeadersFiller.setEnabled(False)
-        global_vars.ui.pushButtonShowEmpty.setEnabled(False) 
+        global_vars.ui.pushButtonShowEmpty.setEnabled(False)
+        global_vars.ui.pushButtonCleanEmpty.setEnabled(False) 
         global_vars.ui.pushButtonRenameColumn.setEnabled(False)
 
         global_vars.ui.radioButtonOldInTopHeader.setEnabled(False)
@@ -697,8 +726,57 @@ def set_range_border(ws, min_row, max_row, min_col, max_col):
 
 '''
 
-def set_markup_in_db(db, file, modifyed_time='', markup_dict={}):
 
+def set_merged_range_headers_in_db(file, header_dict):
+    db = os.path.join(global_vars.project_folder, 'files_info.db')
+
+    conn = sqlite3.connect(db)
+    markup_json = json.dumps(header_dict, ensure_ascii=False)
+    
+    with conn:
+        cur = conn.cursor()
+        
+        cur.execute(
+            f"DELETE FROM merged_range_headers WHERE file = '{file}'")
+
+        
+        sql = (f"INSERT INTO merged_range_headers (file , headers_json) "
+               f"VALUES ('{file}', '{markup_json.replace("'", "''")}');")
+        
+        # print(Fore.CYAN, sql, Fore.RESET)
+
+        cur.execute(sql)
+
+
+def get_merged_range_headers_from_db(file, sheet):
+    db = os.path.join(global_vars.project_folder, 'files_info.db')
+    conn = sqlite3.connect(db)
+    res = {}
+    
+    with conn:
+        cur = conn.cursor()
+        
+        sql = (f"SELECT file , headers_json "
+               f"FROM merged_range_headers WHERE file = '{file}';")
+        
+        # print(sql)
+
+        cur.execute(sql)
+        row = cur.fetchone()
+        # print(row)
+
+        if row:
+
+            headers_json = row[1]
+            res = json.loads(headers_json)[sheet]
+
+        return res            
+
+
+
+
+def set_markup_in_db(file, modifyed_time='', markup_dict={}):
+    db = os.path.join(global_vars.project_folder, 'files_info.db')
     conn = sqlite3.connect(db)
     markup_json = json.dumps(markup_dict, ensure_ascii=False)
     
@@ -716,7 +794,8 @@ def set_markup_in_db(db, file, modifyed_time='', markup_dict={}):
 
         cur.execute(sql)
 
-def get_markup_from_db(db, file):
+def get_markup_from_db(file):
+    db = os.path.join(global_vars.project_folder, 'files_info.db')
     conn = sqlite3.connect(db)
     res = {}
     
