@@ -67,7 +67,19 @@ class MarkEmptyColumnsThread(QtCore.QThread):
         files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
         files_list.sort()
 
-        self.md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+        # self.md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+        self.md_files_opened = []
+        
+        for file_number, file in enumerate(files_list):
+            self.mysignal.emit(
+                f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
+                f"Маркировка непустых колонок. Проверяем не открыт ли на рабочем столе: {file}.")
+            sleep(0.01)
+            if check_excel_file_is_open(file):
+                self.md_files_opened.append(file)
+
+
+
         if self.md_files_opened:
             self.warning_message = (
                 f"Некоторые размеченные файлы открыты на рабочем столе!\n"
@@ -119,7 +131,11 @@ class MarkEmptyColumnsThread(QtCore.QThread):
                 f'Ищем непустые колонки в книге: "{file}" в листе: "{file_sheet_list[0]}"')
             sleep(0.01)
 
-            ws = wb[sheet_name]
+            if sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+            else:
+                self.info_message = f"Помечены заголовки для непустых колонок.\nУспешно обработано листов: {file_sheets_qty} из {len(files_sheets_list)}."
+                continue
                 
             col_0 = ws['A']
             col_values = list([cell.value for cell in col_0])

@@ -2,6 +2,7 @@ from PySide6 import QtWidgets, QtCore
 from colorama import Fore
 import global_vars 
 import os, shutil
+from openpyxl import load_workbook
 import win32com.client as win32
 from my_threads.functions import all_control_elements_off, all_control_elements_on
 from time import sleep
@@ -19,6 +20,14 @@ class XLS_TO_xlsxThread(QtCore.QThread):
     def convert_xls_to_xlsx(self, file_to_convert):
         file_converted = '.'.join(file_to_convert.split('.')[:-1])+'.xlsx'
         
+        if file_to_convert.split('.')[-1] == 'xlsm':
+            wb = load_workbook(file_to_convert)
+            wb.save(file_converted)
+            os.remove(file_to_convert)
+            return file_converted
+
+
+
         try:
             excel = win32.gencache.EnsureDispatch('Excel.Application')
             excel.Visible = False
@@ -76,20 +85,30 @@ class XLS_TO_xlsxThread(QtCore.QThread):
         self.error_message = ""
         self.warning_message = ""
         
-        print(list(os.walk(global_vars.project_folder)))
-        xls_files = list(os.walk(os.path.join(global_vars.project_folder,'.Исходники')))[0][2]
-#        xls_files = [file for file in xls_files if file[-4:]=='.xls']
-        xls_files = [file for file in xls_files if file[-4:]=='.xls' or file[-4:]=='xlsm']
-        print(xls_files)
-        print(Fore.YELLOW, f'run {global_vars.project_folder}',Fore.RESET)      
+        files = list(os.walk(os.path.join(global_vars.project_folder,'.Исходники')))[0][2]
+
+        if files:
+            xls_files = []
+            for file in files:
+                if file[-4:].lower()=='.xls' or file[-4:].lower()=='xlsm':
+                    name_without_any_ext = os.path.splitext(file)[0]
+                    extension = os.path.splitext(file)[1].lower()
+
+                    os.replace(
+                        os.path.join(global_vars.project_folder, '.Исходники', file),
+                        os.path.join(global_vars.project_folder, '.Исходники', name_without_any_ext+extension)
+                    )
+
+                    xls_files.append(name_without_any_ext+extension)
+
         
         for i, xls_file in enumerate(xls_files, 1):
             global_vars.ui.info_label.setStyleSheet('color: blue')             
-            global_vars.ui.info_label.setText(f"Конвертируем .xls=>.xlsx {i} из {len(xls_files)}. {xls_file}.")
-            print(f"Конвертируем {i} из {len(xls_files)}. {xls_file}.")
+            global_vars.ui.info_label.setText(f"Конвертируем .xls=>.xlsx {i} из {len(xls_files)}. {xls_file}")
+            # print(f"Конвертируем {i} из {len(xls_files)}. {xls_file}.")
                
             if os.path.exists(os.path.join(global_vars.project_folder, '.Исходники', xls_file[:-4]+'.xlsx')):
-                self.error_message = f"В папке .Исходники есть файлы {xls_file[:-4]}.xls и {xls_file[:-4]}.xlsx. Один из них надо удалить или переимновать!"
+                self.error_message = f"В папке .Исходники есть файлы {xls_file[:-4]}.xls и {xls_file[:-4]}.xlsx. Один из них надо удалить или переименовать!"
                 break
             try:
                 self.run_convert_xls_to_xlsx(os.path.join(global_vars.project_folder, '.Исходники', xls_file)) 

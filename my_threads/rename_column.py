@@ -79,8 +79,16 @@ class RenameColumnThread(QtCore.QThread):
         files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
         files_list.sort()
 
-        self.md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
-
+        # self.md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+        self.md_files_opened = []
+        
+        for file_number, file in enumerate(files_list):
+            self.mysignal.emit(
+                f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
+                f"Переименование заголовков. Проверяем не открыт ли на рабочем столе: {file}.")
+            sleep(0.01)
+            if check_excel_file_is_open(file):
+                self.md_files_opened.append(file)
 
         if self.md_files_opened:
             self.warning_message = (
@@ -126,7 +134,11 @@ class RenameColumnThread(QtCore.QThread):
                 f'Сканируем заголовки в книге "{file}" в листе "{ sheet_name }"')
             sleep(0.01)
 
-            ws = wb[sheet_name]
+            if sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+            else:
+                self.info_message = f"Изменено заголовков: {changed_qty}."   
+                continue
                 
             old_header_row = list(ws.iter_rows(values_only=True))[old_header_row_number-1]
             # print(Fore.GREEN, old_header_row, Fore.RESET)

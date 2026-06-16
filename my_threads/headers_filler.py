@@ -45,7 +45,17 @@ class HeadersFillerThread(QtCore.QThread):
         files_list = list({files_sheets[0] for files_sheets in files_sheets_list})
         files_list.sort()
 
-        self.md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+        # self.md_files_opened = [file for file in files_list if check_excel_file_is_open(file)]
+        self.md_files_opened = []
+        
+        for file_number, file in enumerate(files_list):
+            self.mysignal.emit(
+                f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
+                f"Заполнение заголовков. Проверяем не открыт ли на рабочем столе: {file}.")
+            sleep(0.01)
+            if check_excel_file_is_open(file):
+                self.md_files_opened.append(file)
+
         if self.md_files_opened:
             self.warning_message = (
                 f"Некоторые размеченные файлы открыты на рабочем столе!\n"
@@ -93,7 +103,12 @@ class HeadersFillerThread(QtCore.QThread):
         
 
             sheet_name = file_sheet_list[1]
-            ws = wb[sheet_name]
+
+            if sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+            else:
+                self.info_message = "Заголовки заполнены."
+                continue
 
             self.mysignal.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_sheet_number} из {len(files_sheets_list)}. "
@@ -114,8 +129,17 @@ class HeadersFillerThread(QtCore.QThread):
             # Если заголовок уже есть, то пропускаем
             header_df = df.iloc[:2, 2:]
             header_df = header_df.fillna("")
-            if not (header_df.applymap(lambda x: isinstance(x, str) and len(x) == 0)).all().all():
-                print('Заголовок уже есть!')
+
+            for t in header_df.itertuples():
+                print(t)
+                not_empty_header = [i for i in t[1:] if i!='' and not pd.isnull(i)]
+                print(not_empty_header)
+                if not_empty_header:
+                    break
+
+
+            if not_empty_header:
+                print("Заголовок уже есть!")
                 continue
                 
             print(f"Файл {file} лист {file_sheet_list} Заголовка нет. будем заполнять")          

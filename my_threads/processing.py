@@ -10,6 +10,7 @@ from openpyxl.utils.cell import get_column_letter
 from openpyxl import load_workbook, styles
 from openpyxl.utils.cell import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidationList
+from openpyxl.workbook.views import BookView  
 
 from datetime import datetime
 from my_threads.functions import all_control_elements_off, all_control_elements_on
@@ -263,10 +264,14 @@ class ProcessingThread(QtCore.QThread):
                     letter = get_column_letter(i) # преобразовываем индекс столбца в его букву
                     # получаем ширину столбца и добавляем в список
                     cw = ws.column_dimensions[letter].width
-                    if cw:
-                        columns_width.append(cw)
+                    if not cw:
+                        columns_width.append(16)
+                    elif cw<2:
+                        columns_width.append(16)
+                    elif cw>36:
+                        columns_width.append(24)
                     else:
-                        columns_width.append(15)        
+                        columns_width.append(cw)        
 
                 # Записываем высоты строк
                 self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
@@ -344,6 +349,21 @@ class ProcessingThread(QtCore.QThread):
                     #     f'Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. '
                     #     f'Сохраняем после отмены объединения ячеек. Книга: "{prc_file}", лист: "{sheet}"')
                     # wb.save(os.path.join(project_folder,'.Обработка', prc_file)) 
+
+                # Сохраняем текст, но удаляем ссылку
+                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                                   f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Удаляем гиперссылки {prc_file} {sheet}")   
+
+                for row in ws.iter_rows():
+                    for cell in row:
+                        if cell.hyperlink:
+                            # Сохраняем значение ячейки (текст)
+                            text = cell.value
+                            # Удаляем гиперссылку
+                            cell.hyperlink = None
+                            # Восстанавливаем текст (если он был равен URL)
+                            if cell.value == cell.hyperlink.target if cell.hyperlink else None:
+                                cell.value = text    
 
  
                 # Сдвигаем вниз
@@ -430,6 +450,16 @@ class ProcessingThread(QtCore.QThread):
             # Сохраняем размеченную книгу.'
             self.mysignal.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
                                f'Книга {source_file_number} из {len(source_files)}. Сохраняем после разметки книгу "{prc_file}"')  
+            
+            
+            view = BookView ()
+            view.showHorizontalScroll = True  # скрыть горизонтальный ползунок
+            view.showVerticalScroll = True    # скрыть вертикальный ползунок
+            view.showSheetTabs = True         # скрыть вкладки листов
+
+
+            wb.views = [view]
+            
 
             wb.save(os.path.join(project_folder,'.Обработка', prc_file))            
             wb.close()
@@ -513,8 +543,8 @@ class ProcessingThread(QtCore.QThread):
                         s_f_check_dict = {
                             '_file_': file,
                             '_sheet_': sheet,
-                            's': '-',
-                            'f': '-',
+                            '_s_': '-',
+                            '_f_': '-',
                             'Ошибки маркировки':'Пустой лист'}
                         # continue 
 
@@ -532,8 +562,8 @@ class ProcessingThread(QtCore.QThread):
                         s_f_check_dict = {
                             '_file_': file,
                             '_sheet_':sheet,
-                            's': s,
-                            'f': f,
+                            '_s_': s,
+                            '_f_': f,
                             'Ошибки маркировки': marking_errors
                             }   
                                 
@@ -551,7 +581,7 @@ class ProcessingThread(QtCore.QThread):
                         cell_in_second_line = headers_df.iloc[1].loc[column]
 
                         if pd.notna(cell_in_first_line):
-                            if cell_in_first_line in ('_file_', '_sheet_'):
+                            if cell_in_first_line in ('_file_', '_sheet_','_s_','_f_'):
                                 first_and_second_line_dict[f"<<< колонка md-файла >>> { cell_in_first_line }"] = cell_in_first_line
                             else:
                                 first_and_second_line_dict[cell_in_first_line] = cell_in_first_line
