@@ -2,13 +2,12 @@ import pendulum
 from dateutil.relativedelta import relativedelta
 import pyperclip
 
-user_name = 'Дмитрий Сергеевич'
+user_name = 'Стяжкин Богдан Александрович'
 
 letter = f"""{user_name}, добрый день!
 
 Благодарю Вас за интерес проявленный к ExcelComber.
 Файл лицензии во вложении.
-Саму программу можно загрузить по ссылке.
 
 Пробный период - до {(pendulum.now('Europe/Moscow') + relativedelta(months=1)).format('D MMMM YYYY', locale='ru')}г.
 

@@ -5,12 +5,14 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.backends import default_backend
 import os
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QMessageBox
 from PySide6.QtCore import QFile, QIODevice
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 import base64
+from letter import user_name
 
 def load_public_key_from_pem(filename):
     """Загружает публичный ключ из PEM файла"""
@@ -90,8 +92,8 @@ def save_encrypted_dict_to_file(encrypted_data, filename="encrypted_data.bin"):
 if __name__ == "__main__":
 
     data_dict = {
-        'user': 'Пантелеев Дмитрий Сергеевич',
-        'trial_finish': f"{datetime(2026, 7, 8)}"}
+        'user': user_name,
+        'trial_finish': f"{datetime.date(datetime.now())+relativedelta(months=1)}"}
 
     public_key_pem = os.path.join(os.getcwd(),'keys_manager', 'public_key.pem')
     license_file = os.path.join(os.getcwd(), 'license_manager', 'license')
