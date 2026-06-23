@@ -89,6 +89,12 @@ def save_encrypted_dict_to_file(encrypted_data, filename="encrypted_data.bin"):
     return filename
 
 
+
+data_dict = {
+    'user': 'Андрей',
+    'trial_finish': f"{datetime(2026, 7, 16)}"}
+
+
 if __name__ == "__main__":
 
     data_dict = {
