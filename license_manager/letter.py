@@ -1,16 +1,12 @@
-import pendulum
-from dateutil.relativedelta import relativedelta
 import pyperclip
 from license_maker import data_dict
 
-# user_name = 'Дмитрий Сергеевич'
-user_name = data_dict['user']
 
-letter = f"""{user_name}, добрый день!
+letter = f"""{data_dict['user']}, добрый день!
 
 Благодарю Вас за интерес проявленный к ExcelComber.
 Файл лицензии во вложении.
-Пробный период - до {(pendulum.now('Europe/Moscow') + relativedelta(months=1)).format('D MMMM YYYY', locale='ru')}г.\n\n
+Пробный период до {data_dict['trial_finish']}г.\n\n
 Если ExcelComber не подходит для задач, которые Вы собирались с его помощью решить, напишите мне -
 я обязательно предложу решение, которое подойдёт именно в Вашем случае.\n\n
 Если Вы захотите использовать ExcelComber по истечении пробного периода, свяжитесь со мной ещё раз и я вышлю Вам постоянную лицензию.
