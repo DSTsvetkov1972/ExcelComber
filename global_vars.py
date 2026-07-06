@@ -5,7 +5,7 @@ interface_enabled = False
 
 project_folder = ''
 
-version = 'ver.2026-02-01' # 1
+version = 'ver.2026-07-06' # 1
 title = ''
 
 dev_info = """Приложение работает не так как ожидалось?

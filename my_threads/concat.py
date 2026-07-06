@@ -91,7 +91,7 @@ class ConcatThread(QtCore.QThread):
                     # file_df_with_ffill = file_df.fillna(method='ffill')     
                     file_df_with_ffill = file_df.iloc[2:]
                     file_df_with_ffill = file_df_with_ffill.ffill()                       
-                    file_df_with_ffill = file_df_with_ffill.iloc[s-2:f]
+                    file_df_with_ffill = file_df_with_ffill.iloc[s-2:f-2]
                     file_df_with_ffill.columns = file_df.iloc[1]
                     column_names_with_ffill = [column_name for column_name in file_df.iloc[1] if pd.notna(column_name)]
                     file_df_with_ffill = file_df_with_ffill[column_names_with_ffill]           
