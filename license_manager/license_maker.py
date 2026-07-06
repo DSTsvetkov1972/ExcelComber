@@ -90,8 +90,8 @@ def save_encrypted_dict_to_file(encrypted_data, filename="encrypted_data.bin"):
 
 
 data_dict = {
-    'user': 'Сергей',
-    'trial_finish': f"{datetime.date(datetime.now())+relativedelta(months=1)}"}
+    'user': 'Кристина',
+    'trial_finish': f"{(datetime.now())+relativedelta(months=1)}"[:19]}
 
 
 if __name__ == "__main__":

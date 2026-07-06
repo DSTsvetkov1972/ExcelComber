@@ -77,13 +77,14 @@ class ConcatThread(QtCore.QThread):
                 if not file_info.empty:
                     s = int(file_info['_s_'].iloc[0])-1
                     f = int(file_info['_f_'].iloc[0])
-
+                    print(s, f)
                     print(Fore.YELLOW,  os.path.join(marked_folder,file), Fore.RESET)
 
                     file_df = pd.read_excel(os.path.join(marked_folder, file), sheet_name=sheet, header=None).iloc[:,2:]
                     print(Fore.MAGENTA, file_df, Fore.RESET)
         
                     file_df_without_ffill = file_df.iloc[s:f]
+                    print(Fore.YELLOW, file_df_without_ffill, Fore.RESET)
                     file_df_without_ffill.columns = file_df.iloc[0]
                     column_names_without_ffill = [column_name for column_name in file_df.iloc[0] if pd.notna(column_name)]
                     file_df_without_ffill = file_df_without_ffill[column_names_without_ffill]
@@ -91,7 +92,8 @@ class ConcatThread(QtCore.QThread):
                     # file_df_with_ffill = file_df.fillna(method='ffill')     
                     file_df_with_ffill = file_df.iloc[2:]
                     file_df_with_ffill = file_df_with_ffill.ffill()                       
-                    file_df_with_ffill = file_df_with_ffill.iloc[s-2:f]
+                    file_df_with_ffill = file_df_with_ffill.iloc[s-2:f-2]
+                    print(Fore.CYAN, file_df_with_ffill, Fore.RESET)
                     file_df_with_ffill.columns = file_df.iloc[1]
                     column_names_with_ffill = [column_name for column_name in file_df.iloc[1] if pd.notna(column_name)]
                     file_df_with_ffill = file_df_with_ffill[column_names_with_ffill]           
