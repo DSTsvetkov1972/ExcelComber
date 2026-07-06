@@ -5,6 +5,7 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.backends import default_backend
 import os
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QMessageBox
 from PySide6.QtCore import QFile, QIODevice
@@ -85,6 +86,12 @@ def save_encrypted_dict_to_file(encrypted_data, filename="encrypted_data.bin"):
     
     print(f"✓ Зашифрованные данные сохранены в {filename}")
     return filename
+
+
+
+data_dict = {
+    'user': 'Кристина',
+    'trial_finish': f"{(datetime.now())+relativedelta(months=1)}"[:19]}
 
 
 if __name__ == "__main__":
