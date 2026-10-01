@@ -29,6 +29,29 @@ class MyWindow(QtWidgets.QWidget):
     def __init__ (self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
 
+####################################################################################
+####################################################################################   
+
+        self.choose_project_folder_thread = ChooseProjectFolderThread() 
+        self.xls_to_xlsx_thread = XLS_TO_xlsxThread()
+        self.interface_thread = InterfaceThread()
+        #self.interface_thread.start()
+        self.processing_thread = ProcessingThread()
+        self.headers_filler_thread = HeadersFillerThread()     
+        self.open_choosed_files_thread = OpenChoosedFilesThread(md_files = False)  
+        self.open_choosed_mdfiles_thread = OpenChoosedFilesThread(md_files = True)      
+        self.del_choosed_md_files_thread = DelChoosedMDFilesThread()
+        self.concat_thread = ConcatThread()
+        self.make_files_thread = MakeFilesThread()   
+        self.change_rems_thread = ChangeRemThread()
+        self.rename_column_thread = RenameColumnThread()
+        self.mark_empty_columns_thread = MarkEmptyColumnsThread()
+        self.clean_empty_columns_thread = CleanEmptyColumnsThread()
+        self.get_release_thread = GetReleaseThread()
+        #self.get_release_thread.start()
+
+
+
         global_vars.ui = main_window.Ui_MainWindow()
         global_vars.ui.setupUi(self)   
 
@@ -115,30 +138,20 @@ class MyWindow(QtWidgets.QWidget):
             QtWidgets.QMessageBox.critical(None, "Нет соединения с интернетом", f"Инструкция опубликована на сайте {global_vars.manual_url}")
             
 
-
-
+    def closeEvent(self, event):
+        for thread in (
+            self.interface_thread,
+            self.get_release_thread,
+            # добавьте сюда остальные долгоживущие потоки, если нужно
+        ):
+            if thread.isRunning():
+                thread.quit()
+                thread.wait(3000)  # ждём до 3 секунд
+        event.accept()
 
      
-####################################################################################
-####################################################################################   
 
-    choose_project_folder_thread = ChooseProjectFolderThread() 
-    xls_to_xlsx_thread = XLS_TO_xlsxThread()
-    interface_thread = InterfaceThread()
-    interface_thread.start()
-    processing_thread = ProcessingThread()
-    headers_filler_thread = HeadersFillerThread()     
-    open_choosed_files_thread = OpenChoosedFilesThread(md_files = False)  
-    open_choosed_mdfiles_thread = OpenChoosedFilesThread(md_files = True)      
-    del_choosed_md_files_thread = DelChoosedMDFilesThread()
-    concat_thread = ConcatThread()
-    make_files_thread = MakeFilesThread()   
-    change_rems_thread = ChangeRemThread()
-    rename_column_thread = RenameColumnThread()
-    mark_empty_columns_thread = MarkEmptyColumnsThread()
-    clean_empty_columns_thread = CleanEmptyColumnsThread()
-    get_release_thread = GetReleaseThread()
-    get_release_thread.start()
+    
 
 ####################################################################################
 ####################################################################################         
@@ -159,8 +172,9 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle('Fusion')
     window = MyWindow()
+    window.get_release_thread.start()
+    window.interface_thread.start()
     window.show()
 
     sys.exit(app.exec())
   
-    
