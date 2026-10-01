@@ -97,8 +97,8 @@ data_dict = {
 if __name__ == "__main__":
 
     data_dict = {
-        'user': 'Соня',
-        'trial_finish': f"{datetime(2026, 8, 7)}"}
+        'user': 'Дмитрий Сергеевич Цветков',
+        'trial_finish': f"{datetime(2026, 12, 31)}"}
 
     public_key_pem = os.path.join(os.getcwd(),'keys_manager', 'public_key.pem')
     license_file = os.path.join(os.getcwd(), 'license_manager', 'license')
