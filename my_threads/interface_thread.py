@@ -18,7 +18,7 @@ class InterfaceThread(QtCore.QThread):
     # Передаёт в главный поток данные о выбранных файлах/листах.
     # Формат: list[tuple[str, ...]] — тот же, что возвращает
     # get_files_and_sheets_from_pyperclip()
-    files_updated = QtCore.Signal(object)
+    files_sheet_to_show_signal = QtCore.Signal(object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -36,4 +36,4 @@ class InterfaceThread(QtCore.QThread):
 
             # Единственное, что делает поток — испускает сигнал.
             # Вся работа с GUI будет в главном потоке.
-            self.files_updated.emit(files_sheet_to_show)
+            self.files_sheet_to_show_signal.emit(files_sheet_to_show)

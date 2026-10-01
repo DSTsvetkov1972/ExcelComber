@@ -57,7 +57,7 @@ class MyWindow(QtWidgets.QWidget):
         global_vars.ui = main_window.Ui_MainWindow()
         global_vars.ui.setupUi(self)   
 
-        self.interface_thread.files_updated.connect(self.on_clipboard_updated, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.interface_thread.files_sheet_to_show_signal.connect(self.on_clipboard_updated, QtCore.Qt.ConnectionType.QueuedConnection)
         self.open_choosed_files_thread.mysignal.connect(self.open_choosed_files_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
         self.open_choosed_mdfiles_thread.mysignal.connect(self.open_choosed_mdfiles_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)        
         self.processing_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
