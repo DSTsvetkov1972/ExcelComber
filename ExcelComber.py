@@ -28,6 +28,7 @@ from my_threads.change_rem import ChangeRemThread
 class MyWindow(QtWidgets.QWidget):
     def __init__ (self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
+        self._last_clipboard_data = None
 
 ####################################################################################
 ####################################################################################   
@@ -283,19 +284,20 @@ class MyWindow(QtWidgets.QWidget):
             
     def poll_clipboard(self):
         files_sheet_to_show = get_files_and_sheets_from_pyperclip()
+        if files_sheet_to_show == self._last_clipboard_data:
+            return
         fill_in_md_files_table(files_sheet_to_show)
         fill_in_md_files_table_title(files_sheet_to_show)
         toggle_buttons(files_sheet_to_show)
 
+
     def closeEvent(self, event):
-        for thread in (
-            self.interface_thread,
-            self.get_release_thread,
-            # добавьте сюда остальные долгоживущие потоки, если нужно
-        ):
+        threads = [self.get_release_thread]
+
+        for thread in threads:
             if thread.isRunning():
                 thread.quit()
-                thread.wait(3000)  # ждём до 3 секунд
+                thread.wait(3000)
         event.accept()
 
      
