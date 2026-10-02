@@ -21,12 +21,8 @@ class ChangeRemThread(QtCore.QThread):
         self.message_title = "Замена примечаний на выбранных листах."
         self.md_files = md_files
 
-    mysignal = QtCore.Signal(str)
     mysignal_info_label_blue = QtCore.Signal(str)
 
-    def on_signal(self, mysignal):
-        global_vars.ui.info_label.setStyleSheet('color: blue')            
-        global_vars.ui.info_label.setText(mysignal)
 
     def run(self):
         self.error_message = "Не удалось найти ни одного комментария для изменения!"

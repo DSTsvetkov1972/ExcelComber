@@ -15,9 +15,7 @@ class OpenChoosedFilesThread(QtCore.QThread):
         self.message_title = "Открываем выбранные файлы:"
         self.md_files = md_files
 
-    mysignal = QtCore.Signal(str)
-    def on_signal(self,mysignal):          
-        global_vars.ui.info_label.setText(mysignal)
+    mysignal_info_label_blue = QtCore.Signal(str)
     
     
     def run(self):
@@ -54,7 +52,7 @@ class OpenChoosedFilesThread(QtCore.QThread):
                 print(len(global_vars.project_folder), len(file_to_start))
 
                 global_vars.ui.info_label.setStyleSheet('color: blue') 
-                self.mysignal.emit(
+                self.mysignal_info_label_blue.emit(
                     f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                     f'{file_number} из {len(self.files_to_show)}. '
                     f'Открываем из папки {'.Размеченные' if self.md_files else '.Исходники'}: "{file}"')

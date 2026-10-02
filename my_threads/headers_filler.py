@@ -10,12 +10,12 @@ from openpyxl import load_workbook, styles
 from my_threads.functions import all_control_elements_off, all_control_elements_on, get_files_and_sheets_from_pyperclip, check_excel_file_is_open, on_finsh_change_thread, get_merged_range_headers_from_db
 class HeadersFillerThread(QtCore.QThread):
  
-    mysignal = QtCore.Signal(str)
+    # mysignal = QtCore.Signal(str)
 
     mysignal_info_label_blue = QtCore.Signal(str)
     
-    def on_signal(self,mysignal):          
-        global_vars.ui.info_label.setText(mysignal)
+    # def on_signal(self,mysignal):          
+    #     global_vars.ui.info_label.setText(mysignal)
 
 
     def __init__ (self, parent=None):
