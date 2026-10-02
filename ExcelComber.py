@@ -69,6 +69,14 @@ class MyWindow(QtWidgets.QWidget):
         global_vars.ui.pushButtonChooseProjectFolder.clicked.connect(self.choose_project_folder_thread.on_clicked)
         self.choose_project_folder_thread.started.connect(self.choose_project_folder_thread.on_started)
         self.choose_project_folder_thread.finished.connect(self.choose_project_folder_thread.on_finished)
+        #
+        self.choose_project_folder_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.choose_project_folder_thread.mysignal_info_label_red.connect(self.info_label_red, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.choose_project_folder_thread.mysignal_info_label_green.connect(self.info_label_green, QtCore.Qt.ConnectionType.QueuedConnection)
+        #
+        self.choose_project_folder_thread.mysignal_project_folder_label_blue.connect(self.project_folder_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.choose_project_folder_thread.mysignal_project_folder_label_red.connect(self.project_folder_label_red, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.choose_project_folder_thread.mysignal_project_folder_label_green.connect(self.project_folder_label_green, QtCore.Qt.ConnectionType.QueuedConnection)                       
 
         # Конвертировать xls и xlsm в xlsx
         global_vars.ui.pushButtonXLStoXLSX.clicked.connect(self.xls_to_xlsx_thread.on_clicked)
@@ -238,11 +246,26 @@ class MyWindow(QtWidgets.QWidget):
 
     def info_label_blue (self, value):
         global_vars.ui.info_label.setStyleSheet('color: blue')   
+        global_vars.ui.info_label.setText(value)
+
+    def info_label_red (self, value):
+        global_vars.ui.info_label.setStyleSheet('color: red')   
         global_vars.ui.info_label.setText(value) 
 
+    def info_label_green (self, value):
+        global_vars.ui.info_label.setStyleSheet('color: green')   
+        global_vars.ui.info_label.setText(value)                 
 
-    def project_folder_label (self, value):
+    def project_folder_label_blue (self, value):
+        global_vars.ui.project_folder_label.setStyleSheet('color: blue')   
+        global_vars.ui.project_folder_label.setText(value) 
+
+    def project_folder_label_red (self, value):
         global_vars.ui.project_folder_label.setStyleSheet('color: red')   
+        global_vars.ui.project_folder_label.setText(value)         
+
+    def project_folder_label_green (self, value):
+        global_vars.ui.project_folder_label.setStyleSheet('color: green')   
         global_vars.ui.project_folder_label.setText(value) 
 
 
