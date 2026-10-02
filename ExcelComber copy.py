@@ -6,7 +6,7 @@ import global_vars
 from colorama import Fore
 import resources_rc
 
-from my_threads.functions import clean_process_folder, get_files_and_sheets_from_pyperclip, fill_in_md_files_table, fill_in_md_files_table_title, toggle_buttons
+from my_threads.functions import clean_process_folder, get_files_and_sheets_from_pyperclip, fill_in_md_files_table, fill_in_md_files_table_title, toggle_buttons, all_control_elements_off
 # from my_threads.interface_thread import InterfaceThread
 
 from my_threads.choose_project_folder import ChooseProjectFolderThread
@@ -34,13 +34,7 @@ class MyWindow(QtWidgets.QWidget):
 
         self.choose_project_folder_thread = ChooseProjectFolderThread() 
         self.xls_to_xlsx_thread = XLS_TO_xlsxThread()
-<<<<<<< HEAD
         #elf.interface_thread = InterfaceThread()
-=======
-        self.interface_thread = InterfaceThread()
-
-
->>>>>>> be2efa1c5de1907e4769dcfc44678ffce12805e3
         #self.interface_thread.start()
         self.processing_thread = ProcessingThread()
         self.headers_filler_thread = HeadersFillerThread()     
@@ -66,15 +60,9 @@ class MyWindow(QtWidgets.QWidget):
         global_vars.ui = main_window.Ui_MainWindow()
         global_vars.ui.setupUi(self)   
 
-<<<<<<< HEAD
         self.open_choosed_files_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
         self.open_choosed_mdfiles_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)        
         
-=======
-        self.interface_thread.files_sheet_to_show_signal.connect(self.on_clipboard_updated, QtCore.Qt.ConnectionType.QueuedConnection)
-        self.open_choosed_files_thread.mysignal.connect(self.open_choosed_files_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
-        self.open_choosed_mdfiles_thread.mysignal.connect(self.open_choosed_mdfiles_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)        
->>>>>>> be2efa1c5de1907e4769dcfc44678ffce12805e3
         self.processing_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
         
         # self.headers_filler_thread.mysignal.connect(self.headers_filler_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)        
@@ -92,7 +80,7 @@ class MyWindow(QtWidgets.QWidget):
         # self.mark_empty_columns_thread.mysignal.connect(self.mark_empty_columns_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
         self.mark_empty_columns_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
 
-        self.clean_empty_columns_thread.mysignal.connect(self.clean_empty_columns_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+
         
         self.get_release_thread.mysignal.connect(lambda: self.setWindowTitle(global_vars.title), QtCore.Qt.ConnectionType.QueuedConnection) 
 
@@ -144,8 +132,9 @@ class MyWindow(QtWidgets.QWidget):
 
         
         global_vars.ui.pushButtonCleanEmpty.clicked.connect(self.clean_empty_columns_thread.on_clicked)
-        self.clean_empty_columns_thread.started.connect(self.clean_empty_columns_thread.on_started)
+        self.clean_empty_columns_thread.started.connect(all_control_elements_off)
         self.clean_empty_columns_thread.finished.connect(self.clean_empty_columns_thread.on_finished)
+        self.clean_empty_columns_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
 
         global_vars.ui.pushButtonChangeRem.clicked.connect(self.change_rems_thread.on_clicked)      
         self.change_rems_thread.started.connect(self.change_rems_thread.on_started)
@@ -280,10 +269,6 @@ class MyWindow(QtWidgets.QWidget):
         fill_in_md_files_table_title(files_sheet_to_show)
         toggle_buttons(files_sheet_to_show)
 
-<<<<<<< HEAD
-    
-
-=======
     def closeEvent(self, event):
         for thread in (
             self.interface_thread,
@@ -294,7 +279,6 @@ class MyWindow(QtWidgets.QWidget):
                 thread.quit()
                 thread.wait(3000)  # ждём до 3 секунд
         event.accept()
->>>>>>> be2efa1c5de1907e4769dcfc44678ffce12805e3
 
      
 
@@ -324,7 +308,6 @@ if __name__ == "__main__":
     app.setStyle('Fusion')
     window = MyWindow()
     window.get_release_thread.start()
-    window.interface_thread.start()
     window.show()
 
     sys.exit(app.exec())

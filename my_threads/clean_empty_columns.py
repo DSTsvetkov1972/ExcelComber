@@ -16,7 +16,7 @@ import os
 import pyperclip
 import pandas as pd
 from datetime import datetime
-from my_threads.functions import value_searcher, marking_checker, get_files_and_sheets_from_pyperclip, all_control_elements_on, all_control_elements_off, check_files_modified, check_excel_file_is_open, on_finsh_change_thread
+from my_threads.functions import value_searcher, marking_checker, get_files_and_sheets_from_pyperclip, all_control_elements_on,  check_files_modified, check_excel_file_is_open, on_finsh_change_thread
 from time import sleep
 
 
@@ -27,11 +27,7 @@ class CleanEmptyColumnsThread(QtCore.QThread):
         self.folder = '.Размеченные'
         self.md_files = md_files
 
-    mysignal = QtCore.Signal(str)
-
-    def on_signal(self, mysignal):
-        global_vars.ui.info_label.setStyleSheet('color: blue')            
-        global_vars.ui.info_label.setText(mysignal)
+    mysignal_info_label_blue = QtCore.Signal(str)
 
     def run(self):
         self.error_message = ""
@@ -71,7 +67,7 @@ class CleanEmptyColumnsThread(QtCore.QThread):
         self.md_files_opened = []
         
         for file_number, file in enumerate(files_list):
-            self.mysignal.emit(
+            self.mysignal_info_label_blue.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
                 f"Удаление заголовков пустых колонок. Проверяем не открыт ли на рабочем столе: {file}.")
             sleep(0.01)
@@ -106,7 +102,7 @@ class CleanEmptyColumnsThread(QtCore.QThread):
             if file != file_preceding:
 
                 if need_to_save:
-                    self.mysignal.emit(
+                    self.mysignal_info_label_blue.emit(
                         f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                         f'{files_list.index(file)+1} из {len(files_list)}. '
                         f'Сохраняем с удаленными заголовками пустых колонок: "{file}"')
@@ -116,7 +112,7 @@ class CleanEmptyColumnsThread(QtCore.QThread):
                 file_preceding = file
                 need_to_save = False
 
-                self.mysignal.emit(
+                self.mysignal_info_label_blue.emit(
                     f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {files_list.index(file)+1} из {len(files_list)}. '
                     f'Загружаем для поиска непустых колонок "{file}"')
                 
@@ -126,7 +122,7 @@ class CleanEmptyColumnsThread(QtCore.QThread):
             sheet_name = file_sheet_list[1]
 
 
-            self.mysignal.emit(
+            self.mysignal_info_label_blue.emit(
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_sheet_number} из {len(files_sheets_list)}. '
                 f'Ищем непустые колонки в книге: "{file}" в листе: "{file_sheet_list[0]}"')
             sleep(0.01)
@@ -179,7 +175,7 @@ class CleanEmptyColumnsThread(QtCore.QThread):
 
 
         if need_to_save:
-            self.mysignal.emit(
+            self.mysignal_info_label_blue.emit(
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}.  {files_list.index(file)+1} из {len(files_list)}. ' 
                 f'Сохраняем с помеченными непустыми колонками: "{file}"')
             wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
@@ -190,13 +186,8 @@ class CleanEmptyColumnsThread(QtCore.QThread):
 
 
     def on_clicked(self):
-     
         self.start() # Запускаем поток  
      
-        
-    def on_started(self): # Вызывается при запуске потока
-        all_control_elements_off()
-
 
     def on_finished(self): # Вызывается при завершении потока
         
