@@ -11,6 +11,9 @@ from my_threads.functions import all_control_elements_off, all_control_elements_
 class HeadersFillerThread(QtCore.QThread):
  
     mysignal = QtCore.Signal(str)
+
+    mysignal_info_label_blue = QtCore.Signal(str)
+    
     def on_signal(self,mysignal):          
         global_vars.ui.info_label.setText(mysignal)
 
@@ -56,7 +59,7 @@ class HeadersFillerThread(QtCore.QThread):
         self.md_files_opened = []
         
         for file_number, file in enumerate(files_list):
-            self.mysignal.emit(
+            self.mysignal_info_label_blue.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
                 f"Заполнение заголовков. Проверяем не открыт ли на рабочем столе: {file}.")
             sleep(0.01)
@@ -90,7 +93,7 @@ class HeadersFillerThread(QtCore.QThread):
             if file != file_preceding:
 
                 if need_to_save:
-                    self.mysignal.emit(
+                    self.mysignal_info_label_blue.emit(
                         f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                         f'{files_list.index(file)} из {len(files_list)}. '
                         f'Сохраняем с заполненными заголовками: "{file}"')
@@ -101,7 +104,7 @@ class HeadersFillerThread(QtCore.QThread):
                 file_preceding = file
                 need_to_save = False
 
-                self.mysignal.emit(
+                self.mysignal_info_label_blue.emit(
                     f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                     f'{files_list.index(file)+1} из {len(files_list)}. '
                     f'Загружаем для заполнения заголовков: "{file}"')
@@ -118,7 +121,7 @@ class HeadersFillerThread(QtCore.QThread):
                 self.info_message = "Заголовки заполнены."
                 continue
 
-            self.mysignal.emit(
+            self.mysignal_info_label_blue.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_sheet_number} из {len(files_sheets_list)}. "
                 f"Заполняем заголовки в: {file} в листе: {file_sheet_list[0]}.")
             sleep(0.01)
@@ -219,7 +222,7 @@ class HeadersFillerThread(QtCore.QThread):
                 # wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))                      
 
         if need_to_save:
-            self.mysignal.emit(
+            self.mysignal_info_label_blue.emit(
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                 f'{files_list.index(file)+1} из {len(files_list)}. '
                 f'Сохраняем с заполненными заголовками: "{file}"')

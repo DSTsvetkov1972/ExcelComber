@@ -22,6 +22,7 @@ class ChangeRemThread(QtCore.QThread):
         self.md_files = md_files
 
     mysignal = QtCore.Signal(str)
+    mysignal_info_label_blue = QtCore.Signal(str)
 
     def on_signal(self, mysignal):
         global_vars.ui.info_label.setStyleSheet('color: blue')            
@@ -63,7 +64,7 @@ class ChangeRemThread(QtCore.QThread):
         self.md_files_opened = []
         
         for file_number, file in enumerate(files_list):
-            self.mysignal.emit(
+            self.mysignal_info_label_blue.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
                 f"Изменение комментариев. Проверяем не открыт ли на рабочем столе: {file}.")
             sleep(0.01)
@@ -93,7 +94,7 @@ class ChangeRemThread(QtCore.QThread):
             if file != file_preceding:
 
                 if need_to_save:
-                    self.mysignal.emit(
+                    self.mysignal_info_label_blue.emit(
                         f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. { files_list.index(file)+1 } из {len(files_list)}. '
                         f'Сохраняем с измененными комментариями кнгигу "{file}"')
                     # print(Fore.GREEN, 'Мы тут', Fore.RESET)
@@ -102,7 +103,7 @@ class ChangeRemThread(QtCore.QThread):
                 file_preceding = file
                 need_to_save = False
 
-                self.mysignal.emit(
+                self.mysignal_info_label_blue.emit(
                     f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. { files_list.index(file)+1 } из {len(files_list)}. '
                     f'Загружаем для изменения комментариев кнгигу "{file}"')
                 
@@ -113,7 +114,7 @@ class ChangeRemThread(QtCore.QThread):
             sheet_name = file_sheet_list[1]
 
 
-            self.mysignal.emit(
+            self.mysignal_info_label_blue.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                 f"{file_sheet_number} из {len(files_sheets_list)}. Сканируем примечания в листе { sheet_name } в книге {file}.")
             sleep(0.01)
@@ -142,7 +143,7 @@ class ChangeRemThread(QtCore.QThread):
 
 
         if need_to_save:
-            self.mysignal.emit(
+            self.mysignal_info_label_blue.emit(
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. { files_list.index(file)+1 } из {len(files_list)}. '
                 f'Сохраняем кнгигу "{file}"')
             wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))

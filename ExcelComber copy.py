@@ -63,11 +63,19 @@ class MyWindow(QtWidgets.QWidget):
         self.open_choosed_files_thread.mysignal.connect(self.open_choosed_files_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
         self.open_choosed_mdfiles_thread.mysignal.connect(self.open_choosed_mdfiles_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)        
         self.processing_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
-        self.headers_filler_thread.mysignal.connect(self.headers_filler_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)        
+        
+        # self.headers_filler_thread.mysignal.connect(self.headers_filler_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)        
+        self.headers_filler_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
+
         self.concat_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+        
         self.make_files_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+        
         self.rename_column_thread.mysignal.connect(self.rename_column_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)  
-        self.change_rems_thread.mysignal.connect(self.change_rems_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+        
+        #self.change_rems_thread.mysignal.connect(self.change_rems_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.change_rems_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
+        
         self.mark_empty_columns_thread.mysignal.connect(self.mark_empty_columns_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
         self.clean_empty_columns_thread.mysignal.connect(self.clean_empty_columns_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
         self.get_release_thread.mysignal.connect(lambda: self.setWindowTitle(global_vars.title), QtCore.Qt.ConnectionType.QueuedConnection) 
@@ -131,6 +139,10 @@ class MyWindow(QtWidgets.QWidget):
         self.rename_column_thread.started.connect(self.rename_column_thread.on_started)
         self.rename_column_thread.finished.connect(self.rename_column_thread.on_finished)
 
+
+    def info_label_blue (self, value):
+        global_vars.ui.info_label.setStyleSheet('color: blue')   
+        global_vars.ui.info_label.setText(value) 
 
     def show_dev_info(self):
         QtWidgets.QMessageBox.about(None, "Контакты разработчиков", global_vars.dev_info)
