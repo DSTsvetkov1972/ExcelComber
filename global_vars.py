@@ -5,7 +5,11 @@ interface_enabled = False
 
 project_folder = ''
 
+<<<<<<< HEAD
 version = 'ver.2026-10-02' # 1
+=======
+version = 'ver.2026-10-01' # 1
+>>>>>>> be2efa1c5de1907e4769dcfc44678ffce12805e3
 title = ''
 
 dev_info = """Приложение работает не так как ожидалось?

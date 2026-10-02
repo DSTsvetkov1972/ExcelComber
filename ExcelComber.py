@@ -35,7 +35,11 @@ class MyWindow(QtWidgets.QWidget):
         self.choose_project_folder_thread = ChooseProjectFolderThread() 
         self.xls_to_xlsx_thread = XLS_TO_xlsxThread()
         self.interface_thread = InterfaceThread()
+<<<<<<< HEAD
         self.interface_thread.start()
+=======
+        #self.interface_thread.start()
+>>>>>>> be2efa1c5de1907e4769dcfc44678ffce12805e3
         self.processing_thread = ProcessingThread()
         self.headers_filler_thread = HeadersFillerThread()     
         self.open_choosed_files_thread = OpenChoosedFilesThread(md_files = False)  
@@ -48,7 +52,11 @@ class MyWindow(QtWidgets.QWidget):
         self.mark_empty_columns_thread = MarkEmptyColumnsThread()
         self.clean_empty_columns_thread = CleanEmptyColumnsThread()
         self.get_release_thread = GetReleaseThread()
+<<<<<<< HEAD
         self.get_release_thread.start()
+=======
+        #self.get_release_thread.start()
+>>>>>>> be2efa1c5de1907e4769dcfc44678ffce12805e3
 
 
 
@@ -138,8 +146,16 @@ class MyWindow(QtWidgets.QWidget):
             QtWidgets.QMessageBox.critical(None, "Нет соединения с интернетом", f"Инструкция опубликована на сайте {global_vars.manual_url}")
             
 
-
-
+    def closeEvent(self, event):
+        for thread in (
+            self.interface_thread,
+            self.get_release_thread,
+            # добавьте сюда остальные долгоживущие потоки, если нужно
+        ):
+            if thread.isRunning():
+                thread.quit()
+                thread.wait(3000)  # ждём до 3 секунд
+        event.accept()
 
      
 
@@ -164,8 +180,9 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle('Fusion')
     window = MyWindow()
+    window.get_release_thread.start()
+    window.interface_thread.start()
     window.show()
 
     sys.exit(app.exec())
   
-    

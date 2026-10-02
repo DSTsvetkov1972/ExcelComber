@@ -1,15 +1,12 @@
 from PySide6 import QtWidgets, QtCore
 from colorama import Fore
 from openpyxl import load_workbook
-import openpyxl
 import os
-import pyperclip
 from PySide6 import QtWidgets, QtCore
 from colorama import Fore
 import global_vars 
 import os
 import pyperclip
-import pandas as pd
 from datetime import datetime
 from my_threads.functions import get_files_and_sheets_from_pyperclip, check_files_modified, check_excel_file_is_open, all_control_elements_off, all_control_elements_on, on_finsh_change_thread
 from time import sleep

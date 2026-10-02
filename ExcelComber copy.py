@@ -34,7 +34,13 @@ class MyWindow(QtWidgets.QWidget):
 
         self.choose_project_folder_thread = ChooseProjectFolderThread() 
         self.xls_to_xlsx_thread = XLS_TO_xlsxThread()
+<<<<<<< HEAD
         #elf.interface_thread = InterfaceThread()
+=======
+        self.interface_thread = InterfaceThread()
+
+
+>>>>>>> be2efa1c5de1907e4769dcfc44678ffce12805e3
         #self.interface_thread.start()
         self.processing_thread = ProcessingThread()
         self.headers_filler_thread = HeadersFillerThread()     
@@ -48,7 +54,7 @@ class MyWindow(QtWidgets.QWidget):
         self.mark_empty_columns_thread = MarkEmptyColumnsThread()
         self.clean_empty_columns_thread = CleanEmptyColumnsThread()
         self.get_release_thread = GetReleaseThread()
-        self.get_release_thread.start()
+        #self.get_release_thread.start()
 
         self.timer = QtCore.QTimer(self)
         self.timer.setInterval(500)  # 0.5 сек
@@ -60,9 +66,15 @@ class MyWindow(QtWidgets.QWidget):
         global_vars.ui = main_window.Ui_MainWindow()
         global_vars.ui.setupUi(self)   
 
+<<<<<<< HEAD
         self.open_choosed_files_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
         self.open_choosed_mdfiles_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)        
         
+=======
+        self.interface_thread.files_sheet_to_show_signal.connect(self.on_clipboard_updated, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.open_choosed_files_thread.mysignal.connect(self.open_choosed_files_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.open_choosed_mdfiles_thread.mysignal.connect(self.open_choosed_mdfiles_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)        
+>>>>>>> be2efa1c5de1907e4769dcfc44678ffce12805e3
         self.processing_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
         
         # self.headers_filler_thread.mysignal.connect(self.headers_filler_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)        
@@ -143,6 +155,108 @@ class MyWindow(QtWidgets.QWidget):
         self.rename_column_thread.started.connect(self.rename_column_thread.on_started)
         self.rename_column_thread.finished.connect(self.rename_column_thread.on_finished)
 
+    def on_clipboard_updated(self, files_sheet_to_show):
+        """
+        Выполняется в ГЛАВНОМ потоке. Здесь можно безопасно трогать GUI.
+        """
+        self.fill_in_md_files_table(files_sheet_to_show)
+        self.fill_in_md_files_table_title(files_sheet_to_show)
+        self.update_buttons_state(files_sheet_to_show)
+
+
+    def fill_in_md_files_table_title(self, files_sheet_to_show):
+        ui = global_vars.ui
+        if files_sheet_to_show:
+            if len(files_sheet_to_show[0]) == 2:
+                files_qty = len({file[0] for file in files_sheet_to_show})
+                ui.lineEditInClipboardTitle.setText(
+                    f'Выбрано файлов: {files_qty}. Выбрано листов: {len(files_sheet_to_show)}.'
+                )
+            if len(files_sheet_to_show[0]) == 1:
+                ui.lineEditInClipboardTitle.setText(
+                    f'Выбрано файлов: {len(files_sheet_to_show)}'
+                )
+        else:
+            ui.lineEditInClipboardTitle.setText('')
+
+
+    def fill_in_md_files_table(self, files_sheet_to_show):
+
+        ui = global_vars.ui 
+        table = ui.tableMDFilesInClipboard
+
+        if files_sheet_to_show:
+            if len(files_sheet_to_show[0]) == 2:
+                table.setColumnCount(2)
+                table.setRowCount(len(files_sheet_to_show))
+
+                for row, (file_name, sheet_name) in enumerate(files_sheet_to_show):
+                    item_file = QtWidgets.QTableWidgetItem(file_name)
+                    item_file.setForeground(QtGui.QColor(128, 128, 128))
+                    item_sheet = QtWidgets.QTableWidgetItem(sheet_name)
+                    item_sheet.setForeground(QtGui.QColor(128, 128, 128))
+
+                    table.setItem(row, 0, item_file)
+                    table.setItem(row, 1, item_sheet)
+
+                table.setColumnWidth(0, 240)
+                table.setColumnWidth(1, 60)
+
+            elif len(files_sheet_to_show[0]) == 1:
+                table.setColumnCount(1)
+                table.setRowCount(len(files_sheet_to_show))
+
+                for row, (file_name,) in enumerate(files_sheet_to_show):
+                    item_file = QtWidgets.QTableWidgetItem(file_name)
+                    item_file.setForeground(QtGui.QColor(128, 128, 128))
+                    table.setItem(row, 0, item_file)
+        else:
+            ui.lineEditInClipboardTitle.setText('')
+            table.setRowCount(0)
+
+
+    def update_buttons_state(self, files_sheet_to_show):
+        ui = global_vars.ui
+
+        if files_sheet_to_show and global_vars.interface_enabled:
+            if len(files_sheet_to_show[0]) == 2:
+                ui.pushButtonOpenChoosedFiles.setEnabled(True)
+                ui.pushButtonDelChoosedMDFiles.setEnabled(True)
+                ui.pushButtonOpenChoosedMDFiles.setEnabled(True)
+                ui.pushButtonHeadersFiller.setEnabled(True)
+                ui.pushButtonShowEmpty.setEnabled(True)
+                ui.pushButtonCleanEmpty.setEnabled(True)
+                ui.pushButtonRenameColumn.setEnabled(True)
+                ui.pushButtonChangeRem.setEnabled(True)
+            elif len(files_sheet_to_show[0]) == 1:
+                ui.pushButtonOpenChoosedFiles.setEnabled(True)
+                ui.pushButtonDelChoosedMDFiles.setEnabled(True)
+                ui.pushButtonOpenChoosedMDFiles.setEnabled(True)
+                ui.pushButtonHeadersFiller.setEnabled(False)
+                ui.pushButtonShowEmpty.setEnabled(False)
+                ui.pushButtonCleanEmpty.setEnabled(False)
+                ui.pushButtonRenameColumn.setEnabled(False)
+                ui.pushButtonChangeRem.setEnabled(False)
+        else:
+            ui.pushButtonOpenChoosedFiles.setEnabled(False)
+            ui.pushButtonOpenChoosedMDFiles.setEnabled(False)
+            ui.pushButtonDelChoosedMDFiles.setEnabled(False)
+            ui.pushButtonHeadersFiller.setEnabled(False)
+            ui.pushButtonShowEmpty.setEnabled(False)
+            ui.pushButtonCleanEmpty.setEnabled(False)
+            ui.pushButtonRenameColumn.setEnabled(False)
+            ui.pushButtonChangeRem.setEnabled(False)
+
+
+
+
+
+
+
+
+
+
+
 
     def info_label_blue (self, value):
         global_vars.ui.info_label.setStyleSheet('color: blue')   
@@ -166,8 +280,21 @@ class MyWindow(QtWidgets.QWidget):
         fill_in_md_files_table_title(files_sheet_to_show)
         toggle_buttons(files_sheet_to_show)
 
+<<<<<<< HEAD
     
 
+=======
+    def closeEvent(self, event):
+        for thread in (
+            self.interface_thread,
+            self.get_release_thread,
+            # добавьте сюда остальные долгоживущие потоки, если нужно
+        ):
+            if thread.isRunning():
+                thread.quit()
+                thread.wait(3000)  # ждём до 3 секунд
+        event.accept()
+>>>>>>> be2efa1c5de1907e4769dcfc44678ffce12805e3
 
      
 
@@ -196,8 +323,9 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle('Fusion')
     window = MyWindow()
+    window.get_release_thread.start()
+    window.interface_thread.start()
     window.show()
 
     sys.exit(app.exec())
   
-    
