@@ -37,11 +37,12 @@ no_border = styles.borders.Border(
 
 class ProcessingThread(QtCore.QThread):
  
-    mysignal = QtCore.Signal(str)
 
 
     def __init__ (self, parent=None):
         QtCore.QThread.__init__(self, parent) 
+    
+    mysignal_info_label_blue = QtCore.Signal(str)
 
     def check_path_length(self):
         """
@@ -49,7 +50,7 @@ class ProcessingThread(QtCore.QThread):
         полный путь к любому md_ файлу не првышал 218 символов
         """
 
-        self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+        self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                             f"проверяем чтобы длина пути к самому длинному файлу не превышала 218 символолв")
 
         project_folder_len = len(global_vars.project_folder + '.Размеченные') + 2
@@ -77,7 +78,7 @@ class ProcessingThread(QtCore.QThread):
         открытых исходных файлов
         """
 
-        self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+        self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                             f"Проверяем не изменилось ли содержимое папки .Исходники")
 
         src_files = list(os.walk(os.path.join(global_vars.project_folder,'.Исходники')))[0][2]
@@ -98,7 +99,7 @@ class ProcessingThread(QtCore.QThread):
         информация о нем добавляется в список ошибок.
         """
 
-        self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+        self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                             f"проверяем соответствует ли содержимое папки .Размеченные содержимому папки .Исходники")
 
         source_files = list(os.walk(os.path.join(global_vars.project_folder,'.Исходники')))[0][2]
@@ -223,7 +224,7 @@ class ProcessingThread(QtCore.QThread):
             if md_file in md_files: 
                 continue
 
-            self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+            self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                     f"Книга {source_file_number} из {len(source_files)}. Создаём размеченную книгу для {source_file}")
 
             prc_file = 'prc_' + source_file
@@ -240,7 +241,7 @@ class ProcessingThread(QtCore.QThread):
 
             shutil.copy(os.path.join(global_vars.project_folder, '.Исходники', source_file), os.path.join(global_vars.project_folder, '.Обработка', prc_file))
 
-            self.mysignal.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
+            self.mysignal_info_label_blue.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
                                f'Книга {source_file_number} из {len(source_files)}. Открываем чтобы разметить книгу "{prc_file}"')
             
             # проверяем возможно ли открыть файл и позволяют ли размер данных на листе сдвигать столбцы и строки
@@ -264,7 +265,7 @@ class ProcessingThread(QtCore.QThread):
                 ws.sheet_state = 'visible'
 
                 # Записываем ширины колонок
-                self.mysignal.emit(f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Записываем ширины колонок {prc_file} {sheet}")
+                self.mysignal_info_label_blue.emit(f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Записываем ширины колонок {prc_file} {sheet}")
 
                 columns_width = []
                 for i in range(1, ws_max_column + 1):
@@ -281,7 +282,7 @@ class ProcessingThread(QtCore.QThread):
                         columns_width.append(cw)        
 
                 # Записываем высоты строк
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Записываем высоты строк {prc_file} {sheet}")
 
                 rows_height = []
@@ -298,33 +299,33 @@ class ProcessingThread(QtCore.QThread):
                         rows_height.append(rh)
 
                 # Снимаем пароль с листа
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Снимаем пароль с листа {prc_file} {sheet}")
 
                 ws.protection.disable()
 
                 # Показываем скрытые столбцы и строки
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Показываем скрытые столбцы и строки {prc_file} {sheet}")     
                     
                 ws.column_dimensions.group(start='A', end=get_column_letter(ws_max_column), hidden=False)
                 ws.row_dimensions.group(start=1, end=ws_max_row, hidden=False)
 
                 # Удаляем проверку данных с листа
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Удаляем проверку данных с листа {prc_file} {sheet}")   
 
                 ws.data_validations = DataValidationList()
 
                 # Снимаем группировку колонок и столбцов
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Снимаем группировку колонок и столбцов {md_file} {sheet}")     
 
                 ws.row_dimensions.group(1, ws_max_row, outline_level=0) # for entire sheet
                 ws.column_dimensions.group('A', get_column_letter(ws_max_column), outline_level=0) # for entire sheet
 
                 # Убираем фильтр
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. убираем фильтр {prc_file} {sheet}")   
                 
                 # ws.auto_filter.ref = None
@@ -333,7 +334,7 @@ class ProcessingThread(QtCore.QThread):
 
 
                 # Отменяем объединение ячеек
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Отменяем объединение ячеек {prc_file} {sheet}")
                 
                 merged_cells_info_list = [get_range_info(str(merged_cell_info)) for merged_cell_info in ws.merged_cells.ranges]
@@ -392,7 +393,7 @@ class ProcessingThread(QtCore.QThread):
                     # wb.save(os.path.join(project_folder,'.Обработка', prc_file)) 
 
                 # Сохраняем текст, но удаляем ссылку
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Удаляем гиперссылки {prc_file} {sheet}")   
 
                 for row in ws.iter_rows():
@@ -408,19 +409,19 @@ class ProcessingThread(QtCore.QThread):
 
  
                 # Сдвигаем вниз
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Сдвигаем вниз {prc_file} {sheet}")   
 
                 ws.insert_rows(idx=1, amount=2)
                 
                 # Сдвигаем вправо
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Сдвигаем вправо {prc_file} {sheet}")  
 
                 ws.insert_cols(idx=1, amount=2)
 
                 # Делаем ширины столбцов как в исходнике
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Сдвигаем вправо {prc_file} {sheet}")  
 
                 ws.column_dimensions['A'].width = 5
@@ -439,7 +440,7 @@ class ProcessingThread(QtCore.QThread):
 
 
                 # Очищаем от форматирования верхний ряд и левую колонку
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Сдвигаем вправо {prc_file} {sheet}")            
                 for col in range(1, ws_max_column + 12):
                   
@@ -459,7 +460,7 @@ class ProcessingThread(QtCore.QThread):
                 ws.conditional_formatting = {}    
 
                 # Размечаем разделители
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Размечаем разделители {prc_file} {sheet}")   
             
                 for col in range(1, ws_max_column + 12):
@@ -489,7 +490,7 @@ class ProcessingThread(QtCore.QThread):
 
                     
                 # Замораживаем ячейки
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Книга {source_file_number} из {len(source_files)} лист {sheet_number} из {len(wb.sheetnames)}. Закрепляем диапазон {prc_file} {sheet}") 
                 ws.sheet_view.topLeftCell = 'A1'                
                 freeze_cell = ws['C3']             
@@ -499,7 +500,7 @@ class ProcessingThread(QtCore.QThread):
             # pprint(merged_range_headers)
 
             # Сохраняем размеченную книгу.'
-            self.mysignal.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
+            self.mysignal_info_label_blue.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
                                f'Книга {source_file_number} из {len(source_files)}. Сохраняем после разметки книгу "{prc_file}"')  
             
             
@@ -573,7 +574,7 @@ class ProcessingThread(QtCore.QThread):
                 #    return
 
                 for sheet_number, sheet in enumerate(sheets, 1):        
-                    self.mysignal.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
+                    self.mysignal_info_label_blue.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
                                     f'Книга {file_number} из {len(files)} лист {sheet_number} из {len(sheets)}. '
                                     f'Считываем разметку файла "{file}" из листа "{sheet}"') 
 
@@ -705,10 +706,6 @@ class ProcessingThread(QtCore.QThread):
 
         wb.save(os.path.join(project_folder, "markup.xlsx"))
         global_vars.ui.info_label.setStyleSheet('color: green')  
-
-
-    def on_signal(self,mysignal):          
-        global_vars.ui.info_label.setText(mysignal)
 
 
     def run(self): 

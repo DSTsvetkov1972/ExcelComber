@@ -79,7 +79,7 @@ class MyWindow(QtWidgets.QWidget):
         global_vars.ui.pushButtonProcessing.clicked.connect(self.processing_thread.on_clicked)
         self.processing_thread.started.connect(self.processing_thread.on_started)
         self.processing_thread.finished.connect(self.processing_thread.on_finished)
-        self.processing_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.processing_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
 
         # Открыть выбранные файлы из папки .Исходники
         global_vars.ui.pushButtonOpenChoosedFiles.clicked.connect(self.open_choosed_files_thread.on_clicked)
@@ -102,13 +102,13 @@ class MyWindow(QtWidgets.QWidget):
         global_vars.ui.pushButtonConcat.clicked.connect(self.concat_thread.on_clicked)
         self.concat_thread.started.connect(self.concat_thread.on_started)
         self.concat_thread.finished.connect(self.concat_thread.on_finished)
-        self.concat_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+        # self.concat_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
 
         # Созадать файлы
         global_vars.ui.pushButtonMakeFiles.clicked.connect(self.make_files_thread.on_clicked)
         self.make_files_thread.started.connect(self.make_files_thread.on_started)
         self.make_files_thread.finished.connect(self.make_files_thread.on_finished)
-        self.make_files_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+        # self.make_files_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
 
         # Заполнить заголовки        
         global_vars.ui.pushButtonHeadersFiller.clicked.connect(self.headers_filler_thread.on_clicked)
