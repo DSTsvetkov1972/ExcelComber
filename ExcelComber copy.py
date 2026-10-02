@@ -6,8 +6,8 @@ import global_vars
 from colorama import Fore
 import resources_rc
 
-from my_threads.functions import clean_process_folder
-from my_threads.interface_thread import InterfaceThread
+from my_threads.functions import clean_process_folder, get_files_and_sheets_from_pyperclip, fill_in_md_files_table, fill_in_md_files_table_title, toggle_buttons
+# from my_threads.interface_thread import InterfaceThread
 
 from my_threads.choose_project_folder import ChooseProjectFolderThread
 from my_threads.xls_to_xlsx import XLS_TO_xlsxThread
@@ -34,8 +34,8 @@ class MyWindow(QtWidgets.QWidget):
 
         self.choose_project_folder_thread = ChooseProjectFolderThread() 
         self.xls_to_xlsx_thread = XLS_TO_xlsxThread()
-        self.interface_thread = InterfaceThread()
-        self.interface_thread.start()
+        #elf.interface_thread = InterfaceThread()
+        #self.interface_thread.start()
         self.processing_thread = ProcessingThread()
         self.headers_filler_thread = HeadersFillerThread()     
         self.open_choosed_files_thread = OpenChoosedFilesThread(md_files = False)  
@@ -49,6 +49,11 @@ class MyWindow(QtWidgets.QWidget):
         self.clean_empty_columns_thread = CleanEmptyColumnsThread()
         self.get_release_thread = GetReleaseThread()
         self.get_release_thread.start()
+
+        self.timer = QtCore.QTimer(self)
+        self.timer.setInterval(500)  # 0.5 сек
+        self.timer.timeout.connect(self.poll_clipboard)  # без декоратора
+        self.timer.start()
 
 
 
@@ -130,18 +135,29 @@ class MyWindow(QtWidgets.QWidget):
     def show_dev_info(self):
         QtWidgets.QMessageBox.about(None, "Контакты разработчиков", global_vars.dev_info)
 
+
     def show_manual(self):
         try:
             # 1/0
             QtGui.QDesktopServices.openUrl(QtCore.QUrl(global_vars.manual_url))
         except:
             QtWidgets.QMessageBox.critical(None, "Нет соединения с интернетом", f"Инструкция опубликована на сайте {global_vars.manual_url}")
+
             
+    def poll_clipboard(self):
+        files_sheet_to_show = get_files_and_sheets_from_pyperclip()
+        fill_in_md_files_table(files_sheet_to_show)
+        fill_in_md_files_table_title(files_sheet_to_show)
+        toggle_buttons(files_sheet_to_show)
 
-
+    
 
 
      
+
+
+
+
 
     
 

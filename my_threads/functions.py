@@ -20,6 +20,8 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.backends import default_backend
 import os
 import sys
+
+from PySide6 import QtWidgets, QtGui
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QMessageBox
 from PySide6.QtCore import QFile, QIODevice
 from cryptography.hazmat.primitives import serialization
@@ -887,6 +889,7 @@ def open_or_show_file(file_name='markup.xlsx'):
 
 
 def on_finsh_change_thread(message_title, error_message, warning_message, info_message, md_files_opened, folder = '.Размеченные'):
+        
         if warning_message:
             global_vars.ui.info_label.setStyleSheet('color: red')
             global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {warning_message.replace('\n',' ')}.")
@@ -915,3 +918,106 @@ def on_finsh_change_thread(message_title, error_message, warning_message, info_m
                 message_title,
                 info_message,
                 buttons=QMessageBox.StandardButton.Ok)
+
+
+def fill_in_md_files_table_title(files_sheet_to_show):
+        # print(Fore.MAGENTA, files_sheet_to_show, len(files_sheet_to_show), Fore.RESET)
+
+        if files_sheet_to_show:
+
+            if len(files_sheet_to_show[0]) == 2:
+                files_qty = len({file[0] for file in files_sheet_to_show })
+                global_vars.ui.lineEditInClipboardTitle.setText(f'Выбрано файлов: {files_qty}. Выбрано листов: { len(files_sheet_to_show) }.')
+
+            if len(files_sheet_to_show[0]) == 1:
+                global_vars.ui.lineEditInClipboardTitle.setText(f'Выбрано файлов: { len(files_sheet_to_show) }')
+  
+        else:
+            global_vars.ui.lineEditInClipboardTitle.setText('')
+
+
+
+def fill_in_md_files_table(files_sheet_to_show):
+    # print(Fore.MAGENTA, files_sheet_to_show, len(files_sheet_to_show), Fore.RESET)
+
+    if files_sheet_to_show:
+        # global_vars.ui.tableMDFilesInClipboard.setVisible(True)
+        if len(files_sheet_to_show[0]) == 2:
+            global_vars.ui.tableMDFilesInClipboard.setColumnCount(2)
+            global_vars.ui.tableMDFilesInClipboard.setRowCount(len(files_sheet_to_show))
+            sleep(0.01)               
+            
+
+            for file_sheet_to_show_number,  file_sheet_to_show in enumerate(files_sheet_to_show, 0):
+
+                md_file_name = QtWidgets.QTableWidgetItem(file_sheet_to_show[0])
+                md_file_name.setForeground(QtGui.QColor(128,128,128))
+                md_file_sheet = QtWidgets.QTableWidgetItem(file_sheet_to_show[1])
+                md_file_sheet.setForeground(QtGui.QColor(128,128,128))
+
+                global_vars.ui.tableMDFilesInClipboard.setItem(file_sheet_to_show_number, 0, md_file_name)
+                global_vars.ui.tableMDFilesInClipboard.setItem(file_sheet_to_show_number, 1, md_file_sheet)
+
+            global_vars.ui.tableMDFilesInClipboard.setColumnWidth(0, 240)
+            global_vars.ui.tableMDFilesInClipboard.setColumnWidth(1, 60)
+
+            #global_vars.ui.lineEditInClipboardTitle.setText(f'Выбрано листов для редактирования: { len(files_sheet_to_show) }')
+            #sleep(0.0051)
+            # global_vars.ui.tableMDFilesInClipboard.resizeColumnsToContents()
+
+        if len(files_sheet_to_show[0]) == 1:
+            global_vars.ui.tableMDFilesInClipboard.setColumnCount(1)
+            global_vars.ui.tableMDFilesInClipboard.setRowCount(len(files_sheet_to_show))
+            sleep(0.01)        
+        
+            
+
+            for file_sheet_to_show_number,  file_sheet_to_show in enumerate(files_sheet_to_show, 0):
+                md_file_name = QtWidgets.QTableWidgetItem(file_sheet_to_show[0])
+                md_file_name.setForeground(QtGui.QColor(128,128,128))
+
+                global_vars.ui.tableMDFilesInClipboard.setItem(file_sheet_to_show_number, 0, md_file_name)
+
+            #global_vars.ui.tableMDFilesInClipboard.setColumnWidth(0, 240)
+            #global_vars.ui.lineEditInClipboardTitle.setText(f'Выбрано файлов для показа/удаления: { len(files_sheet_to_show) }')
+
+
+    else:
+        # global_vars.ui.tableMDFilesInClipboard.setVisible(False)
+        global_vars.ui.lineEditInClipboardTitle.setText('')
+        global_vars.ui.tableMDFilesInClipboard.setRowCount(0)
+
+
+def toggle_buttons(files_sheet_to_show):
+    if files_sheet_to_show and global_vars.interface_enabled:
+        if len(files_sheet_to_show[0]) == 2:
+            global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(True)
+            global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(True)
+            global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(True)
+
+            global_vars.ui.pushButtonHeadersFiller.setEnabled(True)
+            global_vars.ui.pushButtonShowEmpty.setEnabled(True)
+            global_vars.ui.pushButtonCleanEmpty.setEnabled(True)
+            global_vars.ui.pushButtonRenameColumn.setEnabled(True)
+            global_vars.ui.pushButtonChangeRem.setEnabled(True)
+
+        elif len(files_sheet_to_show[0]) == 1:
+            global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(True)
+            global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(True)
+            global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(True)
+
+            global_vars.ui.pushButtonHeadersFiller.setEnabled(False)
+            global_vars.ui.pushButtonShowEmpty.setEnabled(False)
+            global_vars.ui.pushButtonCleanEmpty.setEnabled(False)
+            global_vars.ui.pushButtonRenameColumn.setEnabled(False)
+            global_vars.ui.pushButtonChangeRem.setEnabled(False)
+    else:
+        global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(False)
+        global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(False)
+        global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(False)
+
+        global_vars.ui.pushButtonHeadersFiller.setEnabled(False)
+        global_vars.ui.pushButtonShowEmpty.setEnabled(False)
+        global_vars.ui.pushButtonCleanEmpty.setEnabled(False)
+        global_vars.ui.pushButtonRenameColumn.setEnabled(False)
+        global_vars.ui.pushButtonChangeRem.setEnabled(False)

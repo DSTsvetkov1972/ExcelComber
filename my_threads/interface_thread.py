@@ -3,6 +3,7 @@ from colorama import Fore
 import global_vars 
 import os
 import pyperclip
+from datetime import datetime
 from time import sleep
 from my_threads.functions import get_files_and_sheets_from_pyperclip
 
@@ -86,6 +87,7 @@ class InterfaceThread(QtCore.QThread):
 
         while True:
             sleep(0.5)
+            # print(datetime.now(), global_vars.interface_enabled)
             #if not global_vars.interface_enabled:
             #    continue
 
