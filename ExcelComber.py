@@ -67,7 +67,7 @@ class MyWindow(QtWidgets.QWidget):
 
         # Выберите папку проекта    
         global_vars.ui.pushButtonChooseProjectFolder.clicked.connect(self.choose_project_folder_thread.on_clicked)
-        self.choose_project_folder_thread.started.connect(self.choose_project_folder_thread.on_started)
+        self.choose_project_folder_thread.started.connect(all_control_elements_off)
         self.choose_project_folder_thread.finished.connect(self.choose_project_folder_thread.on_finished)
         #
         self.choose_project_folder_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
