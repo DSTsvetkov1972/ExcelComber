@@ -237,13 +237,6 @@ class HeadersFillerThread(QtCore.QThread):
 
     def on_clicked(self):
         self.start() # Запускаем поток  
-     
-
-
-    def on_started(self): # Вызывается при запуске потока
-        all_control_elements_off()
-        # global_vars.ui.pushButtonChooseProjectFolder.setEnabled(False)   
-        global_vars.ui.info_label.setStyleSheet('color: blue')        
 
 
     def on_finished(self): # Вызывается при завершении потока

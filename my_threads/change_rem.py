@@ -148,16 +148,10 @@ class ChangeRemThread(QtCore.QThread):
 
 
     def on_clicked(self):
-     
-        self.start() # Запускаем поток  
-     
-        
-    def on_started(self): # Вызывается при запуске потока
         self.old_rem = global_vars.ui.lineEditOldRem.text()
         self.new_rem = global_vars.ui.lineEditNewRem.text()
-
-        all_control_elements_off()
-
+        self.start() # Запускаем поток  
+     
 
 
     def on_finished(self): # Вызывается при завершении потока

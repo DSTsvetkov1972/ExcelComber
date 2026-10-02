@@ -216,12 +216,6 @@ class MakeFilesThread(QtCore.QThread):
         self.start() # Запускаем поток  
     
 
-
-    def on_started(self): # Вызывается при запуске потока
-        #global_vars.interface_enabled = False
-        all_control_elements_off()
-
-
     def on_finished(self): # Вызывается при завершении потока
 
         #global_vars.interface_enabled = True

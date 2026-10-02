@@ -12,14 +12,11 @@ from my_threads.functions import all_control_elements_off, all_control_elements_
 
 class ConcatThread(QtCore.QThread):
  
-    mysignal = QtCore.Signal(str)
-
-
     def __init__ (self, parent=None):
         QtCore.QThread.__init__(self, parent) 
         self.message_title = "Объединение"
         
-        
+    mysignal_info_label_blue = QtCore.Signal(str)    
 
     def clean_folder_marked(self, project_folder):
 
@@ -31,7 +28,7 @@ class ConcatThread(QtCore.QThread):
      
         for file in marked_files:
             sleep(0.0001)
-            self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+            self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                f"Проверяем наличие файла {file} из ./Размеченные в .Исходники/")             
             if file[3:] not in source_files: # file[3:] чтобы откусить приставку md_ в начале
                 try:
@@ -65,7 +62,7 @@ class ConcatThread(QtCore.QThread):
             for sheet_number, sheet in enumerate(sheets, 1):
                 # sleep(0.0001)
                 print(file, sheet)
-                self.mysignal.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
+                self.mysignal_info_label_blue.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
                                    f'Книга {file_number} из {len(files)} лист {sheet_number} из {len(sheets)}. ' 
                                    f'Подготавливаем к объединению файл "{file}" лист "{sheet}"')  
                 file_info = columns_info_df[(columns_info_df['_file_'] == file) &
@@ -109,7 +106,7 @@ class ConcatThread(QtCore.QThread):
                     print(Fore.RED, 'Странно', Fore.RESET)
 
         if dfs_to_concat:
-            self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+            self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                f"Создаём итоговую таблицу") 
             # sleep(0.0001) 
             result_df = pd.concat(dfs_to_concat)
@@ -128,7 +125,7 @@ class ConcatThread(QtCore.QThread):
             
 
             if  self.result_df_len < 1048576: 
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Записываем результат в result.xlsx")   
                 sleep(0.0001)   
                 res_file_name = os.path.join(project_folder,'result.xlsx')           
@@ -138,19 +135,19 @@ class ConcatThread(QtCore.QThread):
                 wb = load_workbook(res_file_name)
                 ws = wb.active
 
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Подгоняем ширину столбцов под длины заголовков")
 
                 for n, column in enumerate(list(result_df.columns), 1):
                     ws.column_dimensions[get_column_letter(n)].width = len(str(column))*1.1 + 5
 
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Замораживаем строку заголовков")
                 ws.auto_filter.ref = ws.dimensions    
                 
                 ws.freeze_panes = ws.cell(column=1, row=2)
 
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Задаём цвет строки заголовков")
                 for col, column in enumerate(list(result_df.columns), start=1):
                     cell = ws.cell(column=col, row = 1)
@@ -162,20 +159,15 @@ class ConcatThread(QtCore.QThread):
                                                     horizontal='center') 
                     #cell.style.alignment.wrap_text=True
 
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                     f"Сохраняем файл")    
                 wb.save(res_file_name)
                 os.startfile(os.path.join(project_folder,'result.xlsx'))
             else:
-                self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                self.mysignal_info_label_blue.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                    f"Записываем результат в result.csv")                 
                 result_df.to_csv(os.path.join(project_folder,'result.csv', sep = '\t'), index=False)
                 os.startfile(os.path.join(project_folder,'result.csv'))                
-
-    def on_signal(self,mysignal):
-        global_vars.ui.info_label.setStyleSheet('color: blue')            
-        global_vars.ui.info_label.setText(mysignal)
-
 
     def run(self): 
         self.message_title = "Объединяем таблицы"
@@ -252,12 +244,6 @@ class ConcatThread(QtCore.QThread):
     def on_clicked(self):     
         self.start() # Запускаем поток  
     
-
-
-    def on_started(self): # Вызывается при запуске потока
-        #global_vars.interface_enabled = False
-        all_control_elements_off()
-
 
     def on_finished(self): # Вызывается при завершении потока
 

@@ -789,18 +789,9 @@ class ProcessingThread(QtCore.QThread):
 
 
     def on_clicked(self):
-        init_project()
-
-              
+        init_project()         
         self.start() # Запускаем поток  
-     
-
-
-    def on_started(self): # Вызывается при запуске потока
-        global_vars.ui.pushButtonChooseProjectFolder.setEnabled(False)   
-        all_control_elements_off()
-
-       
+           
 
 
     def on_finished(self): # Вызывается при завершении потока

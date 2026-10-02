@@ -75,16 +75,7 @@ class DelChoosedMDFilesThread(QtCore.QThread):
         button = confirm.exec()
         if button == 1024:  
             self.start() # Запускаем поток  
-
-    def on_started(self):
-        global_vars.ui.pushButtonChooseProjectFolder.setEnabled(False)  
-        global_vars.ui.pushButtonXLStoXLSX.setEnabled(False)     
-        global_vars.ui.pushButtonProcessing.setEnabled(False)
-        global_vars.ui.pushButtonHeadersFiller.setEnabled(False)          
-        global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(False) 
-        global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(False)                
-        global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(False)
-     
+   
 
     def on_finished(self): # Вызывается при завершении потока
         all_control_elements_on()

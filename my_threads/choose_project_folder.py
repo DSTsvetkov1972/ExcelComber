@@ -15,6 +15,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
         QtCore.QThread.__init__(self, parent)
         self.message_title = "Выбор папки проекта:"
 
+    mysignal_project_folder_label_red = QtCore.Signal(str)
 
     def run(self): 
         self.error_message = ""
@@ -116,17 +117,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
         else:
             global_vars.ui.info_label.setStyleSheet('color: green')          
             global_vars.ui.info_label.setText('Папка проекта выбрана. Нажмите кнопку Просмотреть разметку')
-
-        '''
-        global_vars.ui.pushButtonXLStoXLSX.setEnabled(False)
-        global_vars.ui.pushButtonProcessing.setEnabled(True)
-        global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(True)      
-        global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(True)
-        global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(True)          
-        sleep(0.01)
-        '''
-
-   
+  
                       
         print(f'run {self.message_title}')   
 

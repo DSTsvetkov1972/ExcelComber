@@ -77,48 +77,49 @@ class MyWindow(QtWidgets.QWidget):
 
         # Просмотреть разметку 
         global_vars.ui.pushButtonProcessing.clicked.connect(self.processing_thread.on_clicked)
-        self.processing_thread.started.connect(self.processing_thread.on_started)
+        self.processing_thread.started.connect(all_control_elements_off)
         self.processing_thread.finished.connect(self.processing_thread.on_finished)
         self.processing_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
 
         # Открыть выбранные файлы из папки .Исходники
         global_vars.ui.pushButtonOpenChoosedFiles.clicked.connect(self.open_choosed_files_thread.on_clicked)
-        self.open_choosed_files_thread.started.connect(self.open_choosed_files_thread.on_started)
+        self.open_choosed_files_thread.started.connect(all_control_elements_off)
         self.open_choosed_files_thread.finished.connect(self.open_choosed_files_thread.on_finished)
         self.open_choosed_files_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
  
         # Открыть выбранные файлы из папки .Размеченные
         global_vars.ui.pushButtonOpenChoosedMDFiles.clicked.connect(self.open_choosed_mdfiles_thread.on_clicked)
-        self.open_choosed_mdfiles_thread.started.connect(self.open_choosed_mdfiles_thread.on_started)
+        self.open_choosed_mdfiles_thread.started.connect(all_control_elements_off)
         self.open_choosed_mdfiles_thread.finished.connect(self.open_choosed_mdfiles_thread.on_finished)
         self.open_choosed_mdfiles_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)  
 
         # Удалить выбранные файлы из папки .Размеченные
         global_vars.ui.pushButtonDelChoosedMDFiles.clicked.connect(self.del_choosed_md_files_thread.on_clicked)
-        self.del_choosed_md_files_thread.started.connect(self.del_choosed_md_files_thread.on_started)
+        self.del_choosed_md_files_thread.started.connect(all_control_elements_off)
         self.del_choosed_md_files_thread.finished.connect(self.del_choosed_md_files_thread.on_finished)
+        # self.del_choosed_mdfiles_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)          
 
         # Объединить
         global_vars.ui.pushButtonConcat.clicked.connect(self.concat_thread.on_clicked)
-        self.concat_thread.started.connect(self.concat_thread.on_started)
+        self.concat_thread.started.connect(all_control_elements_off)
         self.concat_thread.finished.connect(self.concat_thread.on_finished)
-        # self.concat_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.concat_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
 
         # Созадать файлы
         global_vars.ui.pushButtonMakeFiles.clicked.connect(self.make_files_thread.on_clicked)
-        self.make_files_thread.started.connect(self.make_files_thread.on_started)
+        self.make_files_thread.started.connect(all_control_elements_off)
         self.make_files_thread.finished.connect(self.make_files_thread.on_finished)
         # self.make_files_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
 
         # Заполнить заголовки        
         global_vars.ui.pushButtonHeadersFiller.clicked.connect(self.headers_filler_thread.on_clicked)
-        self.headers_filler_thread.started.connect(self.headers_filler_thread.on_started)
+        self.headers_filler_thread.started.connect(all_control_elements_off)
         self.headers_filler_thread.finished.connect(self.headers_filler_thread.on_finished)
         self.headers_filler_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)   
 
         # Пометить непустые колонки
         global_vars.ui.pushButtonShowEmpty.clicked.connect(self.mark_empty_columns_thread.on_clicked)
-        self.mark_empty_columns_thread.started.connect(self.mark_empty_columns_thread.on_started)
+        self.mark_empty_columns_thread.started.connect(all_control_elements_off)
         self.mark_empty_columns_thread.finished.connect(self.mark_empty_columns_thread.on_finished) 
         self.mark_empty_columns_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection) 
 
@@ -130,13 +131,13 @@ class MyWindow(QtWidgets.QWidget):
 
         # Переименовать заголовки
         global_vars.ui.pushButtonRenameColumn.clicked.connect(self.rename_column_thread.on_clicked)      
-        self.rename_column_thread.started.connect(self.rename_column_thread.on_started)
+        self.rename_column_thread.started.connect(all_control_elements_off)
         self.rename_column_thread.finished.connect(self.rename_column_thread.on_finished)
-        self.rename_column_thread.mysignal.connect(self.rename_column_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection) 
+        self.rename_column_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection) 
 
         # Изменить примечание
         global_vars.ui.pushButtonChangeRem.clicked.connect(self.change_rems_thread.on_clicked)      
-        self.change_rems_thread.started.connect(self.change_rems_thread.on_started)
+        self.change_rems_thread.started.connect(all_control_elements_off)
         self.change_rems_thread.finished.connect(self.change_rems_thread.on_finished)
         self.change_rems_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
  
@@ -235,18 +236,15 @@ class MyWindow(QtWidgets.QWidget):
 
 
 
-
-
-
-
-
-
-
-
-
     def info_label_blue (self, value):
         global_vars.ui.info_label.setStyleSheet('color: blue')   
         global_vars.ui.info_label.setText(value) 
+
+
+    def project_folder_label (self, value):
+        global_vars.ui.project_folder_label.setStyleSheet('color: red')   
+        global_vars.ui.project_folder_label.setText(value) 
+
 
     def show_dev_info(self):
         QtWidgets.QMessageBox.about(None, "Контакты разработчиков", global_vars.dev_info)

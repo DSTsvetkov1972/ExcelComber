@@ -25,11 +25,8 @@ class RenameColumnThread(QtCore.QThread):
         self.message_title = "Изменение заголовков в выбранных листах."
         self.md_files = md_files
 
-    mysignal = QtCore.Signal(str)
+    mysignal_info_label_blue = QtCore.Signal(str)
 
-    def on_signal(self, mysignal):
-        global_vars.ui.info_label.setStyleSheet('color: blue')            
-        global_vars.ui.info_label.setText(mysignal)
 
     def run(self):
 
@@ -83,7 +80,7 @@ class RenameColumnThread(QtCore.QThread):
         self.md_files_opened = []
         
         for file_number, file in enumerate(files_list):
-            self.mysignal.emit(
+            self.mysignal_info_label_blue.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
                 f"Переименование заголовков. Проверяем не открыт ли на рабочем столе: {file}.")
             sleep(0.01)
@@ -110,7 +107,7 @@ class RenameColumnThread(QtCore.QThread):
             if file != file_preceding:
 
                 if need_to_save:
-                    self.mysignal.emit(
+                    self.mysignal_info_label_blue.emit(
                         f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. { files_list.index(file)+1 } из {len(files_list)}. '
                         f'Сохраняем с измененными заголовками книгу "{file}"')
                     # print(Fore.GREEN, 'Мы тут', Fore.RESET)
@@ -119,7 +116,7 @@ class RenameColumnThread(QtCore.QThread):
                 file_preceding = file
                 need_to_save = False
 
-                self.mysignal.emit(
+                self.mysignal_info_label_blue.emit(
                         f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. { files_list.index(file)+1 } из {len(files_list)}. '
                         f'Загружаем для переименования заголовков книгу "{file}"')
                 wb = load_workbook(os.path.join(global_vars.project_folder, '.Размеченные', file))
@@ -128,7 +125,7 @@ class RenameColumnThread(QtCore.QThread):
             sheet_name = file_sheet_list[1]
 
 
-            self.mysignal.emit(
+            self.mysignal_info_label_blue.emit(
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                 f'{file_sheet_number} из {len(files_sheets_list)}. '
                 f'Сканируем заголовки в книге "{file}" в листе "{ sheet_name }"')
@@ -160,7 +157,7 @@ class RenameColumnThread(QtCore.QThread):
 
 
         if need_to_save:
-            self.mysignal.emit(
+            self.mysignal_info_label_blue.emit(
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. { files_list.index(file)+1 } из {len(files_list)}. '
                 f'Сохраняем с измененными заголовками книгу "{file}"')
             wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
@@ -175,10 +172,6 @@ class RenameColumnThread(QtCore.QThread):
      
         self.start() # Запускаем поток  
      
-        
-    def on_started(self): # Вызывается при запуске потока
-        all_control_elements_off()
-
 
     def on_finished(self): # Вызывается при завершении потока
         on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
