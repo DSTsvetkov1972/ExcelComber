@@ -123,7 +123,7 @@ class HeadersFillerThread(QtCore.QThread):
 
             self.mysignal_info_label_blue.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_sheet_number} из {len(files_sheets_list)}. "
-                f"Заполняем заголовки в: {file} в листе: {file_sheet_list[0]}.")
+                f"Заполняем заголовки в: {file} в листе: {file_sheet_list[1]}.")
             sleep(0.01)
 
             # Загружаем данные с листа в датафрейм
