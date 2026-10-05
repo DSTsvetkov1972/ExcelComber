@@ -134,10 +134,10 @@ class ProcessingThread(QtCore.QThread):
             ws_max_row = ws.max_row
 
             ws_max_rows = 1048574-vertical_offset-1
-            ws_mas_columns = 16384-horizontal_offset-1
+            ws_max_columns = 16384-horizontal_offset-1
 
-            if ws_max_column > ws_mas_columns:
-                sheets_exceeding_dict[sheet] += f' колонок больше {ws_mas_columns}'
+            if ws_max_column > ws_max_columns:
+                sheets_exceeding_dict[sheet] += f' колонок больше {ws_max_columns}'
 
             if ws_max_row > ws_max_rows:               
                 sheets_exceeding_dict[sheet] += f'строк больше {ws_max_rows}'                    
