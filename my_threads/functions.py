@@ -21,11 +21,10 @@ from cryptography.hazmat.backends import default_backend
 import os
 import sys
 
-from PySide6 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QMessageBox
 from PySide6.QtCore import QFile, QIODevice
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.backends import default_backend
+
 import base64
 from time import sleep 
 
@@ -889,6 +888,7 @@ def open_or_show_file(file_name='markup.xlsx'):
 
 
 def on_finsh_change_thread(message_title, error_message, warning_message, info_message, md_files_opened, folder = '.Размеченные'):
+        
         
         if warning_message:
             global_vars.ui.info_label.setStyleSheet('color: red')

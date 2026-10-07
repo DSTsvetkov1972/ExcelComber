@@ -111,8 +111,8 @@ class MyWindow(QtWidgets.QWidget):
         # Объединить
         global_vars.ui.pushButtonConcat.clicked.connect(self.concat_thread.on_clicked)
         self.concat_thread.started.connect(all_control_elements_off)
-        self.concat_thread.finished.connect(self.concat_thread.on_finished)
-        self.concat_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.concat_thread.finished.connect(all_control_elements_on)
+        self.concat_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)
 
         # Созадать файлы
         global_vars.ui.pushButtonMakeFiles.clicked.connect(self.make_files_thread.on_clicked)
