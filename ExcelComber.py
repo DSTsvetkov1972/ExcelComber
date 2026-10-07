@@ -124,8 +124,8 @@ class MyWindow(QtWidgets.QWidget):
         # Заполнить заголовки        
         global_vars.ui.pushButtonHeadersFiller.clicked.connect(self.headers_filler_thread.on_clicked)
         self.headers_filler_thread.started.connect(all_control_elements_off)
-        self.headers_filler_thread.finished.connect(self.headers_filler_thread.on_finished)
-        self.headers_filler_thread.mysignal_info_label_blue.connect(self.info_label_blue)   
+        self.headers_filler_thread.mysignal_finished.connect(self.on_thread_finished)
+        self.headers_filler_thread.mysignal_info_label.connect(self.info_label)   
 
         # Пометить непустые колонки
         global_vars.ui.pushButtonShowEmpty.clicked.connect(self.mark_empty_columns_thread.on_clicked)
@@ -246,19 +246,7 @@ class MyWindow(QtWidgets.QWidget):
 
     def info_label (self, value, style = None):
         global_vars.ui.info_label.setStyleSheet(style)
-        global_vars.ui.info_label.setText(value)
-
-    def info_label_blue (self, value):
-        global_vars.ui.info_label.setStyleSheet('color: blue')   
-        global_vars.ui.info_label.setText(value)
-
-    def info_label_red (self, value):
-        global_vars.ui.info_label.setStyleSheet('color: red')   
-        global_vars.ui.info_label.setText(value) 
-
-    def info_label_green (self, value):
-        global_vars.ui.info_label.setStyleSheet('color: green')   
-        global_vars.ui.info_label.setText(value)                 
+        global_vars.ui.info_label.setText(value)               
 
     def project_folder_label_blue (self, value):
         global_vars.ui.project_folder_label.setStyleSheet('color: blue')   

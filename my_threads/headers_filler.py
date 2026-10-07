@@ -10,13 +10,10 @@ from openpyxl import load_workbook, styles
 from my_threads.functions import all_control_elements_off, all_control_elements_on, get_files_and_sheets_from_pyperclip, check_excel_file_is_open, on_finsh_change_thread, get_merged_range_headers_from_db
 class HeadersFillerThread(QtCore.QThread):
  
-    # mysignal = QtCore.Signal(str)
 
-    mysignal_info_label_blue = QtCore.Signal(str)
-    
-    # def on_signal(self,mysignal):          
-    #     global_vars.ui.info_label.setText(mysignal)
 
+    mysignal_info_label = QtCore.Signal(str, str)
+    mysignal_finished = QtCore.Signal(str, str, str, str, list)
 
     def __init__ (self, parent=None):
         QtCore.QThread.__init__(self, parent)
@@ -59,9 +56,10 @@ class HeadersFillerThread(QtCore.QThread):
         self.md_files_opened = []
         
         for file_number, file in enumerate(files_list):
-            self.mysignal_info_label_blue.emit(
+            self.mysignal_info_label.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
-                f"Заполнение заголовков. Проверяем не открыт ли на рабочем столе: {file}.")
+                f"Заполнение заголовков. Проверяем не открыт ли на рабочем столе: {file}.",
+                'color: blue')
             #sleep(0.01)
             if check_excel_file_is_open(file):
                 self.md_files_opened.append(file)
@@ -93,10 +91,11 @@ class HeadersFillerThread(QtCore.QThread):
             if file != file_preceding:
 
                 if need_to_save:
-                    self.mysignal_info_label_blue.emit(
+                    self.mysignal_info_label.emit(
                         f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                         f'{files_list.index(file)} из {len(files_list)}. '
-                        f'Сохраняем с заполненными заголовками: "{file}"')
+                        f'Сохраняем с заполненными заголовками: "{file}"',
+                        'color: blue')
                     #sleep(0.01)
 
                     wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
@@ -104,10 +103,11 @@ class HeadersFillerThread(QtCore.QThread):
                 file_preceding = file
                 need_to_save = False
 
-                self.mysignal_info_label_blue.emit(
+                self.mysignal_info_label.emit(
                     f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                     f'{files_list.index(file)+1} из {len(files_list)}. '
-                    f'Загружаем для заполнения заголовков: "{file}"')
+                    f'Загружаем для заполнения заголовков: "{file}"',
+                    'color: blue')
                 #sleep(0.01)
                 
                 wb = load_workbook(os.path.join(global_vars.project_folder, '.Размеченные', file))
@@ -121,9 +121,10 @@ class HeadersFillerThread(QtCore.QThread):
                 self.info_message = "Заголовки заполнены."
                 continue
 
-            self.mysignal_info_label_blue.emit(
+            self.mysignal_info_label.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_sheet_number} из {len(files_sheets_list)}. "
-                f"Заполняем заголовки в: {file} в листе: {file_sheet_list[1]}.")
+                f"Заполняем заголовки в: {file} в листе: {file_sheet_list[1]}.",
+                'color: blue')
             #sleep(0.01)
 
             # Загружаем данные с листа в датафрейм
@@ -222,15 +223,18 @@ class HeadersFillerThread(QtCore.QThread):
                 # wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))                      
 
         if need_to_save:
-            self.mysignal_info_label_blue.emit(
+            self.mysignal_info_label.emit(
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                 f'{files_list.index(file)+1} из {len(files_list)}. '
-                f'Сохраняем с заполненными заголовками: "{file}"')
+                f'Сохраняем с заполненными заголовками: "{file}"',
+                'color: blue')
             wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
         else:
             wb.close()
 
-        self.info_message = "Заголовки заполнены."    
+        self.info_message = "Заголовки заполнены." 
+
+        self.on_finished()   
 
            
 
@@ -240,7 +244,7 @@ class HeadersFillerThread(QtCore.QThread):
 
 
     def on_finished(self): # Вызывается при завершении потока
-        on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
+        
 
         if self.err_list:
             df = pd.DataFrame(self.err_list, index=None)
@@ -248,4 +252,11 @@ class HeadersFillerThread(QtCore.QThread):
 
             os.startfile(os.path.join(global_vars.project_folder, "errors.xlsx"))
             
-        all_control_elements_on()
+        self.mysignal_finished.emit(
+            self.message_title,
+            self.error_message,
+            self.warning_message,
+            self.info_message,
+            self.md_files_opened
+        )
+        
