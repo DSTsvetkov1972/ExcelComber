@@ -7,6 +7,7 @@ from colorama import Fore
 import resources_rc
 
 from my_threads.functions import (clean_process_folder, get_files_and_sheets_from_pyperclip, fill_in_md_files_table, fill_in_md_files_table_title,
+                                  on_finsh_change_thread,
                                   toggle_buttons, all_control_elements_off, all_control_elements_on )
 
 # from my_threads.interface_thread import InterfaceThread
@@ -141,13 +142,12 @@ class MyWindow(QtWidgets.QWidget):
         # Переименовать заголовки
         global_vars.ui.pushButtonRenameColumn.clicked.connect(self.rename_column_thread.on_clicked)      
         self.rename_column_thread.started.connect(all_control_elements_off)
-        self.rename_column_thread.finished.connect(self.rename_column_thread.on_finished)
+        self.rename_column_thread.mysignal_finished.connect(self.on_thread_finished)
         self.rename_column_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection) 
 
         # Изменить примечание
         global_vars.ui.pushButtonChangeRem.clicked.connect(self.change_rems_thread.on_clicked)      
         self.change_rems_thread.started.connect(all_control_elements_off)
-        self.change_rems_thread.finished.connect(self.change_rems_thread.on_finished)
         self.change_rems_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
  
 
@@ -303,7 +303,10 @@ class MyWindow(QtWidgets.QWidget):
         event.accept()
 
      
-
+    def on_thread_finished(self, title, error, warning, info, md_files_opened):
+        # ЭТО ГЛАВНЫЙ ПОТОК — можно менять интерфейс
+        on_finsh_change_thread(title, error, warning, info, md_files_opened)
+        all_control_elements_on()
 
 
 

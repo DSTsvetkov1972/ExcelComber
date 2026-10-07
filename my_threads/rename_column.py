@@ -26,6 +26,7 @@ class RenameColumnThread(QtCore.QThread):
         self.md_files = md_files
 
     mysignal_info_label_blue = QtCore.Signal(str)
+    mysignal_finished = QtCore.Signal(str, str, str, str, list)
 
 
     def run(self):
@@ -143,7 +144,10 @@ class RenameColumnThread(QtCore.QThread):
             for col_number, old_header_cell in enumerate(old_header_row, 1):
                 if col_number in (1,2): continue
 
-                #print('i:', str(global_vars.ui.lineEditOldColumnNameInHeader.text()), 'e:', str(old_header_cell), str(global_vars.ui.lineEditOldColumnNameInHeader.text()) == str(old_header_cell))
+                if str(old_header_cell) == str(global_vars.ui.lineEditOldColumnNameInHeader.text()):
+                    changed_qty += 1
+
+                    
                 if (str(old_header_cell) == str(global_vars.ui.lineEditOldColumnNameInHeader.text()) or
                     old_header_cell == None and str(global_vars.ui.lineEditOldColumnNameInHeader.text()) == ''):
                     
@@ -152,7 +156,6 @@ class RenameColumnThread(QtCore.QThread):
                     ws.cell(row=old_header_row_number, column=col_number, value='')                
                     ws.cell(row=new_header_row_number, column=col_number, value=global_vars.ui.lineEditNewColumnNameInHeader.text())
                     need_to_save = True
-                    changed_qty += 1
                     self.error_message = ""
 
 
@@ -167,15 +170,23 @@ class RenameColumnThread(QtCore.QThread):
         self.info_message = f"Изменено заголовков: {changed_qty}."     
 
 
+        self.mysignal_finished.emit(
+            self.message_title,
+            self.error_message,
+            self.warning_message,
+            self.info_message,
+            self.md_files_opened
+        )
+
 
     def on_clicked(self):
      
         self.start() # Запускаем поток  
      
 
-    def on_finished(self): # Вызывается при завершении потока
-        on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
-        all_control_elements_on()
+    #def on_finished(self): # Вызывается при завершении потока
+    #    on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
+    #    all_control_elements_on()
 
 
 
