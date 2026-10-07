@@ -27,7 +27,7 @@ class ConcatThread(QtCore.QThread):
         marked_files = [file for file in list(os.walk(os.path.join(global_vars.project_folder,'.Размеченные')))[0][2] if file[0] != '~']
      
         for file in marked_files:
-            sleep(0.0001)
+            # sleep(0.0001)
             self.mysignal_info_label.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                 f"Проверяем наличие файла {file} из ./Размеченные в .Исходники/",
@@ -136,7 +136,7 @@ class ConcatThread(QtCore.QThread):
                     f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                     f"Записываем результат в result.xlsx",
                     'color: blue')   
-                sleep(0.0001)   
+                # sleep(0.0001)   
                 res_file_name = os.path.join(project_folder,'result.xlsx')           
                 result_df.to_excel(res_file_name, index=False)
 

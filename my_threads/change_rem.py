@@ -9,7 +9,6 @@ import os
 import pyperclip
 from datetime import datetime
 from my_threads.functions import get_files_and_sheets_from_pyperclip, check_files_modified, check_excel_file_is_open, all_control_elements_off, all_control_elements_on, on_finsh_change_thread
-from time import sleep
 
 
 class ChangeRemThread(QtCore.QThread):
@@ -18,7 +17,8 @@ class ChangeRemThread(QtCore.QThread):
         self.message_title = "Замена примечаний на выбранных листах."
         self.md_files = md_files
 
-    mysignal_info_label_blue = QtCore.Signal(str)
+    mysignal_info_label = QtCore.Signal(str)
+    mysignal_finished = QtCore.Signal(str, str, str, str, list)
 
 
     def run(self):
@@ -57,10 +57,11 @@ class ChangeRemThread(QtCore.QThread):
         self.md_files_opened = []
         
         for file_number, file in enumerate(files_list):
-            self.mysignal_info_label_blue.emit(
+            self.mysignal_info_label.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
-                f"Изменение комментариев. Проверяем не открыт ли на рабочем столе: {file}.")
-            sleep(0.01)
+                f"Изменение комментариев. Проверяем не открыт ли на рабочем столе: {file}.",
+                'color: blue')
+
             if check_excel_file_is_open(file):
                 self.md_files_opened.append(file)
                 
@@ -87,18 +88,20 @@ class ChangeRemThread(QtCore.QThread):
             if file != file_preceding:
 
                 if need_to_save:
-                    self.mysignal_info_label_blue.emit(
+                    self.mysignal_info_label.emit(
                         f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. { files_list.index(file)+1 } из {len(files_list)}. '
-                        f'Сохраняем с измененными комментариями кнгигу "{file}"')
+                        f'Сохраняем с измененными комментариями кнгигу "{file}"',
+                        'color: blue')
                     # print(Fore.GREEN, 'Мы тут', Fore.RESET)
                     wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
 
                 file_preceding = file
                 need_to_save = False
 
-                self.mysignal_info_label_blue.emit(
+                self.mysignal_info_label.emit(
                     f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. { files_list.index(file)+1 } из {len(files_list)}. '
-                    f'Загружаем для изменения комментариев кнгигу "{file}"')
+                    f'Загружаем для изменения комментариев кнгигу "{file}"',
+                    'color: blue')
                 
                 wb = load_workbook(os.path.join(global_vars.project_folder, '.Размеченные', file))
                 wb = load_workbook(os.path.join(global_vars.project_folder, '.Размеченные', file))
@@ -107,10 +110,10 @@ class ChangeRemThread(QtCore.QThread):
             sheet_name = file_sheet_list[1]
 
 
-            self.mysignal_info_label_blue.emit(
+            self.mysignal_info_label.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                f"{file_sheet_number} из {len(files_sheets_list)}. Сканируем примечания в листе { sheet_name } в книге {file}.")
-            sleep(0.01)
+                f"{file_sheet_number} из {len(files_sheets_list)}. Сканируем примечания в листе { sheet_name } в книге {file}.",
+                'color: blue')
 
             if sheet_name in wb.sheetnames:
                 ws = wb[sheet_name]
@@ -136,14 +139,23 @@ class ChangeRemThread(QtCore.QThread):
 
 
         if need_to_save:
-            self.mysignal_info_label_blue.emit(
+            self.mysignal_info_label.emit(
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. { files_list.index(file)+1 } из {len(files_list)}. '
-                f'Сохраняем кнгигу "{file}"')
+                f'Сохраняем кнгигу "{file}"',
+                'color: blue')
             wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
         else:
             wb.close()
 
         self.info_message = f"Изменено примечаний: {changed_qty}."            
+
+        self.mysignal_finished.emit(
+            self.message_title,
+            self.error_message,
+            self.warning_message,
+            self.info_message,
+            self.md_files_opened
+        )
 
 
 
@@ -154,6 +166,7 @@ class ChangeRemThread(QtCore.QThread):
      
 
 
-    def on_finished(self): # Вызывается при завершении потока
-        on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
-        all_control_elements_on()
+#    def on_finished(self): # Вызывается при завершении потока
+#        on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
+#        all_control_elements_on()
+

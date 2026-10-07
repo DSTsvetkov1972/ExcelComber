@@ -62,7 +62,7 @@ class HeadersFillerThread(QtCore.QThread):
             self.mysignal_info_label_blue.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
                 f"Заполнение заголовков. Проверяем не открыт ли на рабочем столе: {file}.")
-            sleep(0.01)
+            #sleep(0.01)
             if check_excel_file_is_open(file):
                 self.md_files_opened.append(file)
 
@@ -97,7 +97,7 @@ class HeadersFillerThread(QtCore.QThread):
                         f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                         f'{files_list.index(file)} из {len(files_list)}. '
                         f'Сохраняем с заполненными заголовками: "{file}"')
-                    sleep(0.01)
+                    #sleep(0.01)
 
                     wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
 
@@ -108,7 +108,7 @@ class HeadersFillerThread(QtCore.QThread):
                     f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                     f'{files_list.index(file)+1} из {len(files_list)}. '
                     f'Загружаем для заполнения заголовков: "{file}"')
-                sleep(0.01)
+                #sleep(0.01)
                 
                 wb = load_workbook(os.path.join(global_vars.project_folder, '.Размеченные', file))
         
@@ -124,7 +124,7 @@ class HeadersFillerThread(QtCore.QThread):
             self.mysignal_info_label_blue.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_sheet_number} из {len(files_sheets_list)}. "
                 f"Заполняем заголовки в: {file} в листе: {file_sheet_list[1]}.")
-            sleep(0.01)
+            #sleep(0.01)
 
             # Загружаем данные с листа в датафрейм
             data = []

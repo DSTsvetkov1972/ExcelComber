@@ -30,7 +30,7 @@ class MakeFilesThread(QtCore.QThread):
         marked_files = [file for file in list(os.walk(os.path.join(global_vars.project_folder,'.Размеченные')))[0][2] if file[0] != '~']
      
         for file in marked_files:
-            sleep(0.0001)
+            #sleep(0.0001)
             self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                                f"Проверяем наличие файла {file} из ./Размеченные в .Исходники/")             
             if file[3:] not in source_files: # file[3:] чтобы откусить приставку md_ в начале
@@ -162,7 +162,7 @@ class MakeFilesThread(QtCore.QThread):
                     self.mysignal.emit(
                         f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
                         f"Создание файлов. Проверяем не открыт ли на рабочем столе: {file}.")
-                    sleep(0.01)
+                    #sleep(0.01)
                     if check_excel_file_is_open(file):
                         self.res_folder_files_opened.append(file)
                     else:

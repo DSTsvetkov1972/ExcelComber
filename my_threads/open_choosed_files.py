@@ -56,7 +56,7 @@ class OpenChoosedFilesThread(QtCore.QThread):
                     f'{file_number} из {len(self.files_to_show)}. '
                     f'Открываем из папки {'.Размеченные' if self.md_files else '.Исходники'}: "{file}"',
                     'color: blue')
-                sleep(0.01)
+                #sleep(0.01)
                 os.startfile(file_to_start)
                 
                 while True:

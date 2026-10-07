@@ -769,7 +769,7 @@ class ProcessingThread(QtCore.QThread):
         self.error_message = ""
         self.warning_message = ""
 
-        sleep(0.01) 
+        #sleep(0.01) 
 
         if (not os.path.exists(os.path.join(global_vars.project_folder, "markup.xlsx")) and
             os.path.exists(os.path.join(global_vars.project_folder, "~$markup.xlsx"))):

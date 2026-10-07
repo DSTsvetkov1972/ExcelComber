@@ -30,19 +30,8 @@ class InterfaceThread(QtCore.QThread):
         self._running = False
 
     def run(self):
-<<<<<<< HEAD
-        # clipboard_preceding = ''
-        # project_folder_preceding = ''
-
-        while True:
-            sleep(0.5)
-            # print(datetime.now(), global_vars.interface_enabled)
-            #if not global_vars.interface_enabled:
-            #    continue
-=======
         while self._running:
             self.msleep(500)  # прерываемое ожидание вместо sleep(0.5)
->>>>>>> be2efa1c5de1907e4769dcfc44678ffce12805e3
 
             files_sheet_to_show = get_files_and_sheets_from_pyperclip()
 

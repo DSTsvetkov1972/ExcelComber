@@ -85,7 +85,7 @@ class RenameColumnThread(QtCore.QThread):
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
                 f"Переименование заголовков. Проверяем не открыт ли на рабочем столе: {file}.",
                 'color: blue')
-            sleep(0.01)
+            #sleep(0.01)
             if check_excel_file_is_open(file):
                 self.md_files_opened.append(file)
 
@@ -134,7 +134,7 @@ class RenameColumnThread(QtCore.QThread):
                 f'{file_sheet_number} из {len(files_sheets_list)}. '
                 f'Сканируем заголовки в книге "{file}" в листе "{ sheet_name }"',
                 'color_blue')
-            sleep(0.01)
+            #sleep(0.01)
 
             if sheet_name in wb.sheetnames:
                 ws = wb[sheet_name]

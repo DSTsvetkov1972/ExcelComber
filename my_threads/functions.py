@@ -878,7 +878,7 @@ def open_or_show_file(file_name='markup.xlsx'):
         os.startfile(os.path.join(global_vars.project_folder, file_name))
 
     while True:
-        sleep(0.1)
+        #sleep(0.1)
         if os.path.exists(os.path.join(global_vars.project_folder, f'~${file_name}')):
             break
 
@@ -945,7 +945,7 @@ def fill_in_md_files_table(files_sheet_to_show):
         if len(files_sheet_to_show[0]) == 2:
             global_vars.ui.tableMDFilesInClipboard.setColumnCount(2)
             global_vars.ui.tableMDFilesInClipboard.setRowCount(len(files_sheet_to_show))
-            sleep(0.01)               
+            #sleep(0.01)               
             
 
             for file_sheet_to_show_number,  file_sheet_to_show in enumerate(files_sheet_to_show, 0):
@@ -968,7 +968,7 @@ def fill_in_md_files_table(files_sheet_to_show):
         if len(files_sheet_to_show[0]) == 1:
             global_vars.ui.tableMDFilesInClipboard.setColumnCount(1)
             global_vars.ui.tableMDFilesInClipboard.setRowCount(len(files_sheet_to_show))
-            sleep(0.01)        
+            #sleep(0.01)        
         
             
 

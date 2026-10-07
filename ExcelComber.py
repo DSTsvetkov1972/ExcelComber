@@ -143,12 +143,13 @@ class MyWindow(QtWidgets.QWidget):
         global_vars.ui.pushButtonRenameColumn.clicked.connect(self.rename_column_thread.on_clicked)      
         self.rename_column_thread.started.connect(all_control_elements_off)
         self.rename_column_thread.mysignal_finished.connect(self.on_thread_finished)
-        self.rename_column_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection) 
+        self.rename_column_thread.mysignal_info_label.connect(self.info_label) 
 
         # Изменить примечание
         global_vars.ui.pushButtonChangeRem.clicked.connect(self.change_rems_thread.on_clicked)      
         self.change_rems_thread.started.connect(all_control_elements_off)
-        self.change_rems_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.rename_column_thread.mysignal_finished.connect(self.on_thread_finished)        
+        self.change_rems_thread.mysignal_info_label.connect(self.info_label)
  
 
     def on_clipboard_updated(self, files_sheet_to_show):
