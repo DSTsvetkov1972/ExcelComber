@@ -6,7 +6,9 @@ import global_vars
 from colorama import Fore
 import resources_rc
 
-from my_threads.functions import clean_process_folder, get_files_and_sheets_from_pyperclip, fill_in_md_files_table, fill_in_md_files_table_title, toggle_buttons, all_control_elements_off
+from my_threads.functions import (clean_process_folder, get_files_and_sheets_from_pyperclip, fill_in_md_files_table, fill_in_md_files_table_title,
+                                  toggle_buttons, all_control_elements_off, all_control_elements_on )
+
 # from my_threads.interface_thread import InterfaceThread
 
 from my_threads.choose_project_folder import ChooseProjectFolderThread
@@ -72,9 +74,6 @@ class MyWindow(QtWidgets.QWidget):
         self.choose_project_folder_thread.finished.connect(self.choose_project_folder_thread.on_finished)
         #
         self.choose_project_folder_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)
-        self.choose_project_folder_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
-        self.choose_project_folder_thread.mysignal_info_label_red.connect(self.info_label_red, QtCore.Qt.ConnectionType.QueuedConnection)
-        self.choose_project_folder_thread.mysignal_info_label_green.connect(self.info_label_green, QtCore.Qt.ConnectionType.QueuedConnection)
         #
         self.choose_project_folder_thread.mysignal_project_folder_label_blue.connect(self.project_folder_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
         self.choose_project_folder_thread.mysignal_project_folder_label_red.connect(self.project_folder_label_red, QtCore.Qt.ConnectionType.QueuedConnection)
@@ -88,8 +87,8 @@ class MyWindow(QtWidgets.QWidget):
         # Просмотреть разметку 
         global_vars.ui.pushButtonProcessing.clicked.connect(self.processing_thread.on_clicked)
         self.processing_thread.started.connect(all_control_elements_off)
-        self.processing_thread.finished.connect(self.processing_thread.on_finished)
-        self.processing_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.processing_thread.finished.connect(all_control_elements_on)
+        self.processing_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)
 
         # Открыть выбранные файлы из папки .Исходники
         global_vars.ui.pushButtonOpenChoosedFiles.clicked.connect(self.open_choosed_files_thread.on_clicked)
