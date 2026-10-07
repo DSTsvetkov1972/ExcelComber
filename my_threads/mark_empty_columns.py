@@ -27,7 +27,8 @@ class MarkEmptyColumnsThread(QtCore.QThread):
         self.folder = '.Размеченные'
         self.md_files = md_files
 
-    mysignal_info_label_blue = QtCore.Signal(str)
+    mysignal_info_label = QtCore.Signal(str, str)
+    mysignal_finished = QtCore.Signal(str, str, str, str, list)
 
     def run(self):
         self.error_message = ""
@@ -67,9 +68,10 @@ class MarkEmptyColumnsThread(QtCore.QThread):
         self.md_files_opened = []
         
         for file_number, file in enumerate(files_list):
-            self.mysignal_info_label_blue.emit(
+            self.mysignal_info_label.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
-                f"Маркировка непустых колонок. Проверяем не открыт ли на рабочем столе: {file}.")
+                f"Маркировка непустых колонок. Проверяем не открыт ли на рабочем столе: {file}.",
+                'color: blue')
             #sleep(0.01)
             if check_excel_file_is_open(file):
                 self.md_files_opened.append(file)
@@ -102,19 +104,21 @@ class MarkEmptyColumnsThread(QtCore.QThread):
             if file != file_preceding:
 
                 if need_to_save:
-                    self.mysignal_info_label_blue.emit(
+                    self.mysignal_info_label.emit(
                         f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                         f'{files_list.index(file)+1} из {len(files_list)}. '
-                        f'Сохраняем с помеченными непустыми колонками: "{file}"')
+                        f'Сохраняем с помеченными непустыми колонками: "{file}"',
+                        'color: blue')
                     # print(Fore.GREEN, 'Мы тут', Fore.RESET)
                     wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
 
                 file_preceding = file
                 need_to_save = False
 
-                self.mysignal_info_label_blue.emit(
+                self.mysignal_info_label.emit(
                     f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {files_list.index(file)+1} из {len(files_list)}. '
-                    f'Загружаем для поиска непустых колонок "{file}"')
+                    f'Загружаем для поиска непустых колонок "{file}"',
+                    'color: blue')
                 
                 wb = load_workbook(os.path.join(global_vars.project_folder, '.Размеченные', file))
 
@@ -122,9 +126,10 @@ class MarkEmptyColumnsThread(QtCore.QThread):
             sheet_name = file_sheet_list[1]
 
 
-            self.mysignal_info_label_blue.emit(
+            self.mysignal_info_label.emit(
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_sheet_number} из {len(files_sheets_list)}. '
-                f'Ищем непустые колонки в книге: "{file}" в листе: "{file_sheet_list[0]}"')
+                f'Ищем непустые колонки в книге: "{file}" в листе: "{file_sheet_list[0]}"',
+                'color: blue')
             #sleep(0.01)
 
             if sheet_name in wb.sheetnames:
@@ -173,12 +178,15 @@ class MarkEmptyColumnsThread(QtCore.QThread):
 
 
         if need_to_save:
-            self.mysignal_info_label_blue.emit(
+            self.mysignal_info_label.emit(
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}.  {files_list.index(file)+1} из {len(files_list)}. ' 
-                f'Сохраняем с помеченными непустыми колонками: "{file}"')
+                f'Сохраняем с помеченными непустыми колонками: "{file}"',
+                'color: blue')
             wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
         else:
             wb.close()
+
+        self.on_finished()    
 
 
 
@@ -197,9 +205,7 @@ class MarkEmptyColumnsThread(QtCore.QThread):
                                     "из-за ошибок маркировки строк!")
             else:
                 self.error_message = "Все выбранные Вами листы содержат ошибки маркировки."
-            
-        on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened, folder=self.folder)
-        
+
         if self.error_list:
             # print(Fore.RED, self.error_list, Fore.RESET)
             errors_df = pd.DataFrame(self.error_list, columns=['file', 'sheet', 'Ошибки маркировки строк'])
@@ -210,6 +216,12 @@ class MarkEmptyColumnsThread(QtCore.QThread):
                 sleep(0.1)
                 if os.path.exists(os.path.join(global_vars.project_folder, '~$errors.xlsx')):
                     break
-            
-                
-        all_control_elements_on()
+                    
+        self.mysignal_finished.emit(
+            self.message_title,
+            self.error_message,
+            self.warning_message,
+            self.info_message,
+            self.md_files_opened
+        )
+        

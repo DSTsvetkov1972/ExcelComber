@@ -130,8 +130,8 @@ class MyWindow(QtWidgets.QWidget):
         # Пометить непустые колонки
         global_vars.ui.pushButtonShowEmpty.clicked.connect(self.mark_empty_columns_thread.on_clicked)
         self.mark_empty_columns_thread.started.connect(all_control_elements_off)
-        self.mark_empty_columns_thread.finished.connect(self.mark_empty_columns_thread.on_finished) 
-        self.mark_empty_columns_thread.mysignal_info_label_blue.connect(self.info_label_blue) 
+        self.mark_empty_columns_thread.mysignal_finished.connect(self.on_thread_finished)
+        self.mark_empty_columns_thread.mysignal_info_label.connect(self.info_label) 
 
         # Удалить заголовки пустых колонок
         global_vars.ui.pushButtonCleanEmpty.clicked.connect(self.clean_empty_columns_thread.on_clicked)
