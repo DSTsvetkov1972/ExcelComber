@@ -14,14 +14,19 @@ class DelChoosedMDFilesThread(QtCore.QThread):
         QtCore.QThread.__init__(self, parent)
         self.message_title = "Удаляем выбранные md-файлы:"
 
+    mysignal_info_label = QtCore.Signal(str, str)    
+
     def run(self): 
         self.error_message = ""
         self.warning_message = ""
         self.info_message = ""   
 
         if check_excel_file_is_open("errors.xlsx"):
-            global_vars.ui.info_label.setStyleSheet('color: red')             
-            global_vars.ui.info_label.setText('Закройте файл errors.xlsx перед тем как запустить обработку.')   
+       
+            self.mysignal_info_label.emit(
+                'Закройте файл errors.xlsx перед тем как запустить обработку.',
+                'color: red')   
+            
             self.warning_message =('Файл errors.xlsx открыт на рабочем столе.\n'
                                    'Закройте его и снова попробуйте удалить файлы!')
             return 
@@ -56,7 +61,7 @@ class DelChoosedMDFilesThread(QtCore.QThread):
             df = pd.DataFrame(self.err_list, index=None)
             df.to_excel(os.path.join(global_vars.project_folder, 'errors.xlsx'), index=None, header=None)
 
-            
+        self.on_finished()    
 
     def on_clicked(self): 
         self.files_list_in_pyperclip = get_files_and_sheets_from_pyperclip()
@@ -78,31 +83,37 @@ class DelChoosedMDFilesThread(QtCore.QThread):
    
 
     def on_finished(self): # Вызывается при завершении потока
-        all_control_elements_on()
+        
 
         # print(Fore.MAGENTA, self.error_message, Fore.RESET)
         if self.error_message:
-            global_vars.ui.info_label.setStyleSheet('color: red')             
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                                              f"{self.error_message.replace('\n',' ')}")
+           
+            self.mysignal_info_label.emit(
+                f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                f"{self.error_message.replace('\n',' ')}",
+                'color: red')
+            
             QtWidgets.QMessageBox.critical(None,
                                            self.message_title,
                                            self.error_message,
                                            buttons=QtWidgets.QMessageBox.StandardButton.Ok)
             os.startfile(os.path.join(global_vars.project_folder, "errors.xlsx"))
         elif self.warning_message:
-            global_vars.ui.info_label.setStyleSheet('color: red')             
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                                              f"{self.warning_message.replace('\n',' ')}")
+        
+            self.mysignal_info_label.emit(
+                f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                f"{self.warning_message.replace('\n',' ')}",
+                'color: red')
             
             QtWidgets.QMessageBox.warning(None,
                                            self.message_title,
                                            self.warning_message,
                                            buttons=QtWidgets.QMessageBox.StandardButton.Ok)    
         else:
-            global_vars.ui.info_label.setStyleSheet('color: green')             
-            global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                                              f"Файлы удалены.")
+        
+            self.mysignal_info_label.emit(
+                f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} Файлы удалены.",
+                'color: green')
 
 
 

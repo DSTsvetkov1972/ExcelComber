@@ -105,8 +105,8 @@ class MyWindow(QtWidgets.QWidget):
         # Удалить выбранные файлы из папки .Размеченные
         global_vars.ui.pushButtonDelChoosedMDFiles.clicked.connect(self.del_choosed_md_files_thread.on_clicked)
         self.del_choosed_md_files_thread.started.connect(all_control_elements_off)
-        self.del_choosed_md_files_thread.finished.connect(self.del_choosed_md_files_thread.on_finished)
-        # self.del_choosed_mdfiles_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)          
+        self.del_choosed_md_files_thread.finished.connect(all_control_elements_on)
+        self.del_choosed_md_files_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)          
 
         # Объединить
         global_vars.ui.pushButtonConcat.clicked.connect(self.concat_thread.on_clicked)
