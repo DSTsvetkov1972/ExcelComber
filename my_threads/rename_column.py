@@ -25,7 +25,7 @@ class RenameColumnThread(QtCore.QThread):
         self.message_title = "Изменение заголовков в выбранных листах."
         self.md_files = md_files
 
-    mysignal_info_label_blue = QtCore.Signal(str)
+    mysignal_info_label = QtCore.Signal(str)
     mysignal_finished = QtCore.Signal(str, str, str, str, list)
 
 
@@ -81,9 +81,10 @@ class RenameColumnThread(QtCore.QThread):
         self.md_files_opened = []
         
         for file_number, file in enumerate(files_list):
-            self.mysignal_info_label_blue.emit(
+            self.mysignal_info_label.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
-                f"Переименование заголовков. Проверяем не открыт ли на рабочем столе: {file}.")
+                f"Переименование заголовков. Проверяем не открыт ли на рабочем столе: {file}.",
+                'color: blue')
             sleep(0.01)
             if check_excel_file_is_open(file):
                 self.md_files_opened.append(file)
@@ -108,28 +109,31 @@ class RenameColumnThread(QtCore.QThread):
             if file != file_preceding:
 
                 if need_to_save:
-                    self.mysignal_info_label_blue.emit(
+                    self.mysignal_info_label.emit(
                         f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. { files_list.index(file)+1 } из {len(files_list)}. '
-                        f'Сохраняем с измененными заголовками книгу "{file}"')
+                        f'Сохраняем с измененными заголовками книгу "{file}"',
+                        'color: blue')
                     # print(Fore.GREEN, 'Мы тут', Fore.RESET)
                     wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
 
                 file_preceding = file
                 need_to_save = False
 
-                self.mysignal_info_label_blue.emit(
+                self.mysignal_info_label.emit(
                         f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. { files_list.index(file)+1 } из {len(files_list)}. '
-                        f'Загружаем для переименования заголовков книгу "{file}"')
+                        f'Загружаем для переименования заголовков книгу "{file}"',
+                        'color: blue')
                 wb = load_workbook(os.path.join(global_vars.project_folder, '.Размеченные', file))
 
             
             sheet_name = file_sheet_list[1]
 
 
-            self.mysignal_info_label_blue.emit(
+            self.mysignal_info_label.emit(
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                 f'{file_sheet_number} из {len(files_sheets_list)}. '
-                f'Сканируем заголовки в книге "{file}" в листе "{ sheet_name }"')
+                f'Сканируем заголовки в книге "{file}" в листе "{ sheet_name }"',
+                'color_blue')
             sleep(0.01)
 
             if sheet_name in wb.sheetnames:
@@ -144,10 +148,7 @@ class RenameColumnThread(QtCore.QThread):
             for col_number, old_header_cell in enumerate(old_header_row, 1):
                 if col_number in (1,2): continue
 
-                if str(old_header_cell) == str(global_vars.ui.lineEditOldColumnNameInHeader.text()):
-                    changed_qty += 1
-
-                    
+                
                 if (str(old_header_cell) == str(global_vars.ui.lineEditOldColumnNameInHeader.text()) or
                     old_header_cell == None and str(global_vars.ui.lineEditOldColumnNameInHeader.text()) == ''):
                     
@@ -156,13 +157,15 @@ class RenameColumnThread(QtCore.QThread):
                     ws.cell(row=old_header_row_number, column=col_number, value='')                
                     ws.cell(row=new_header_row_number, column=col_number, value=global_vars.ui.lineEditNewColumnNameInHeader.text())
                     need_to_save = True
+                    changed_qty += 1
                     self.error_message = ""
 
 
         if need_to_save:
-            self.mysignal_info_label_blue.emit(
+            self.mysignal_info_label.emit(
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. { files_list.index(file)+1 } из {len(files_list)}. '
-                f'Сохраняем с измененными заголовками книгу "{file}"')
+                f'Сохраняем с измененными заголовками книгу "{file}"',
+                'color: blue')
             wb.save(os.path.join(global_vars.project_folder, '.Размеченные', file_preceding))
         else:
             wb.close()
