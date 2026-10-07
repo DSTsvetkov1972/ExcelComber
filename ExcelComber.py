@@ -63,7 +63,7 @@ class MyWindow(QtWidgets.QWidget):
         global_vars.ui.setupUi(self)   
 
         
-        self.get_release_thread.mysignal.connect(lambda: self.setWindowTitle(global_vars.title), QtCore.Qt.ConnectionType.QueuedConnection) 
+        self.get_release_thread.mysignal.connect(lambda: self.setWindowTitle(global_vars.title)) 
         
         # Инструкция on-line, Связь с разработчиками
         global_vars.ui.action_show_manual.triggered.connect(self.show_manual)   
@@ -74,11 +74,11 @@ class MyWindow(QtWidgets.QWidget):
         self.choose_project_folder_thread.started.connect(all_control_elements_off)
         self.choose_project_folder_thread.finished.connect(all_control_elements_on)
         #
-        self.choose_project_folder_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.choose_project_folder_thread.mysignal_info_label.connect(self.info_label)
         #
-        self.choose_project_folder_thread.mysignal_project_folder_label_blue.connect(self.project_folder_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
-        self.choose_project_folder_thread.mysignal_project_folder_label_red.connect(self.project_folder_label_red, QtCore.Qt.ConnectionType.QueuedConnection)
-        self.choose_project_folder_thread.mysignal_project_folder_label_green.connect(self.project_folder_label_green, QtCore.Qt.ConnectionType.QueuedConnection)                       
+        self.choose_project_folder_thread.mysignal_project_folder_label_blue.connect(self.project_folder_label_blue)
+        self.choose_project_folder_thread.mysignal_project_folder_label_red.connect(self.project_folder_label_red)
+        self.choose_project_folder_thread.mysignal_project_folder_label_green.connect(self.project_folder_label_green)                       
 
         # Конвертировать xls и xlsm в xlsx
         global_vars.ui.pushButtonXLStoXLSX.clicked.connect(self.xls_to_xlsx_thread.on_clicked)
@@ -89,55 +89,55 @@ class MyWindow(QtWidgets.QWidget):
         global_vars.ui.pushButtonProcessing.clicked.connect(self.processing_thread.on_clicked)
         self.processing_thread.started.connect(all_control_elements_off)
         self.processing_thread.finished.connect(all_control_elements_on)
-        self.processing_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.processing_thread.mysignal_info_label.connect(self.info_label)
 
         # Открыть выбранные файлы из папки .Исходники
         global_vars.ui.pushButtonOpenChoosedFiles.clicked.connect(self.open_choosed_files_thread.on_clicked)
         self.open_choosed_files_thread.started.connect(all_control_elements_off)
         self.open_choosed_files_thread.finished.connect(all_control_elements_on)
-        self.open_choosed_files_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.open_choosed_files_thread.mysignal_info_label.connect(self.info_label)
  
         # Открыть выбранные файлы из папки .Размеченные
         global_vars.ui.pushButtonOpenChoosedMDFiles.clicked.connect(self.open_choosed_mdfiles_thread.on_clicked)
         self.open_choosed_mdfiles_thread.started.connect(all_control_elements_off)
         self.open_choosed_mdfiles_thread.finished.connect(all_control_elements_on)
-        self.open_choosed_mdfiles_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)  
+        self.open_choosed_mdfiles_thread.mysignal_info_label.connect(self.info_label)  
 
         # Удалить выбранные файлы из папки .Размеченные
         global_vars.ui.pushButtonDelChoosedMDFiles.clicked.connect(self.del_choosed_md_files_thread.on_clicked)
         self.del_choosed_md_files_thread.started.connect(all_control_elements_off)
         self.del_choosed_md_files_thread.finished.connect(all_control_elements_on)
-        self.del_choosed_md_files_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)          
+        self.del_choosed_md_files_thread.mysignal_info_label.connect(self.info_label)          
 
         # Объединить
         global_vars.ui.pushButtonConcat.clicked.connect(self.concat_thread.on_clicked)
         self.concat_thread.started.connect(all_control_elements_off)
         self.concat_thread.finished.connect(all_control_elements_on)
-        self.concat_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.concat_thread.mysignal_info_label.connect(self.info_label)
 
         # Созадать файлы
         global_vars.ui.pushButtonMakeFiles.clicked.connect(self.make_files_thread.on_clicked)
         self.make_files_thread.started.connect(all_control_elements_off)
         self.make_files_thread.finished.connect(self.make_files_thread.on_finished)
-        # self.make_files_thread.mysignal.connect(self.processing_thread.on_signal, QtCore.Qt.ConnectionType.QueuedConnection)
+        # self.make_files_thread.mysignal.connect(self.processing_thread.on_signal)
 
         # Заполнить заголовки        
         global_vars.ui.pushButtonHeadersFiller.clicked.connect(self.headers_filler_thread.on_clicked)
         self.headers_filler_thread.started.connect(all_control_elements_off)
         self.headers_filler_thread.finished.connect(self.headers_filler_thread.on_finished)
-        self.headers_filler_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)   
+        self.headers_filler_thread.mysignal_info_label_blue.connect(self.info_label_blue)   
 
         # Пометить непустые колонки
         global_vars.ui.pushButtonShowEmpty.clicked.connect(self.mark_empty_columns_thread.on_clicked)
         self.mark_empty_columns_thread.started.connect(all_control_elements_off)
         self.mark_empty_columns_thread.finished.connect(self.mark_empty_columns_thread.on_finished) 
-        self.mark_empty_columns_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection) 
+        self.mark_empty_columns_thread.mysignal_info_label_blue.connect(self.info_label_blue) 
 
         # Удалить заголовки пустых колонок
         global_vars.ui.pushButtonCleanEmpty.clicked.connect(self.clean_empty_columns_thread.on_clicked)
         self.clean_empty_columns_thread.started.connect(all_control_elements_off)
-        self.clean_empty_columns_thread.finished.connect(self.clean_empty_columns_thread.on_finished)
-        self.clean_empty_columns_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.clean_empty_columns_thread.mysignal_finished.connect(self.on_thread_finished)
+        self.clean_empty_columns_thread.mysignal_info_label.connect(self.info_label)
 
         # Переименовать заголовки
         global_vars.ui.pushButtonRenameColumn.clicked.connect(self.rename_column_thread.on_clicked)      
