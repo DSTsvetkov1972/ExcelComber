@@ -19,6 +19,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
     mysignal_project_folder_label_red = QtCore.Signal(str)
     mysignal_project_folder_label_green = QtCore.Signal(str)
 
+    mysignal_info_label = QtCore.Signal(str, str)
     mysignal_info_label_blue = QtCore.Signal(str)
     mysignal_info_label_red = QtCore.Signal(str)
     mysignal_info_label_green = QtCore.Signal(str)
@@ -32,7 +33,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
         if not global_vars.project_folder:
 
             self.mysignal_project_folder_label_red.emit('Папка проекта: не выбрана') 
-            self.mysignal_info_label_red.emit('Выберите папку проекта')
+            self.mysignal_info_label.emit('Выберите папку проекта', 'color: red')
                 
             self.error_message = ('Папка проекта: не выбрана')
             return
@@ -44,7 +45,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
 
         else:
             self.mysignal_project_folder_label_red.emit(f'Папка проекта: {global_vars.project_folder}') 
-            self.mysignal_info_label_red.emit(f'В папке проекта нет папки .Исходники/.')
+            self.mysignal_info_label.emit(f'В папке проекта нет папки .Исходники/.', 'color: red')
                 
             self.error_message = ('В папке проекта нет папки .Исходники!\n'
                                   'Создайте в папке проекта папку .Исходники\n'
@@ -57,7 +58,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
         
         if not source_files_list:
             self.mysignal_project_folder_label_red.emit(f'Папка проекта: {global_vars.project_folder}') 
-            self.mysignal_info_label_red.emit(f'В папке проекта есть папка .Исходники/, но она не содержит файлов.')
+            self.mysignal_info_label.emit(f'В папке проекта есть папка .Исходники/, но она не содержит файлов.', 'color: red')
                              
             self.error_message = f'Папка .Исходники/ не содержит файлов!\nСкопируйте в папку .Исходники/ файлы для обработки и снова нажмите кнопку "Выберите папку проекта"!'
 
@@ -68,7 +69,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
         if source_old_excels_list:       
 
             self.mysignal_project_folder_label_red.emit(f'Папка проекта: {global_vars.project_folder}') 
-            self.mysignal_info_label_red.emit('В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm')
+            self.mysignal_info_label.emit('В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm', 'color: red')
                              
             self.error_message = 'В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm'
             print('Мы тут! Странно!')
@@ -80,7 +81,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
 
         if not source_excels_list:
             self.mysignal_project_folder_label_red.emit(f'Папка проекта: {global_vars.project_folder}') 
-            self.mysignal_info_label_red.emit('В папке проекта есть папка .Исходники/, но в ней нет файлов .xlsx')
+            self.mysignal_info_label.emit('В папке проекта есть папка .Исходники/, но в ней нет файлов .xlsx', 'color: red')
                              
             self.error_message = 'В папке проекта есть папка .Исходники/, но в ней нет файлов .xlsx'
 
@@ -101,9 +102,9 @@ class ChooseProjectFolderThread(QtCore.QThread):
         trial_finish = license_data['trial_finish']
 
         if datetime.now()>datetime.strptime(trial_finish, "%Y-%m-%d %H:%M:%S"):
-            self.mysignal_info_label_red.emit('Срок действия лицензии закончился!')  
+            self.mysignal_info_label.emit('Срок действия лицензии закончился!', 'color: red')  
         else:
-            self.mysignal_info_label_green.emit('Папка проекта выбрана. Нажмите кнопку Просмотреть разметку')
+            self.mysignal_info_label.emit('Папка проекта выбрана. Нажмите кнопку Просмотреть разметку', 'color: green')
   
                       
         print(f'run {self.message_title}')   
@@ -112,7 +113,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
         
         if check_excel_file_is_open("markup.xlsx"):
          
-            self.mysignal_info_label_red.emit('Закройте файл markup.xlsx перед тем как выбирать папку проекта.')   
+            self.mysignal_info_label.emit('Закройте файл markup.xlsx перед тем как выбирать папку проекта.', 'color: red')   
             self.error_message ='Файл markup.xlsx уже открыт на рабочем столе.\nЗакройте его и заново нажмите кнопку "Выбрать папку проекта"'
             
             QtWidgets.QMessageBox.critical(None,
@@ -155,8 +156,10 @@ class ChooseProjectFolderThread(QtCore.QThread):
         
         if self.warning_message:
           
-            self.mysignal_info_label_red.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                                              f"{self.warning_message.replace('\n',' ')}")
+            self.mysignal_info_label.emit(
+                f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                f"{self.warning_message.replace('\n',' ')}",
+                'color: red')
             QtWidgets.QMessageBox.warning(None,
                 self.message_title,
                 self.warning_message,

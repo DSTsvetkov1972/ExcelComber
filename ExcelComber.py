@@ -71,6 +71,7 @@ class MyWindow(QtWidgets.QWidget):
         self.choose_project_folder_thread.started.connect(all_control_elements_off)
         self.choose_project_folder_thread.finished.connect(self.choose_project_folder_thread.on_finished)
         #
+        self.choose_project_folder_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)
         self.choose_project_folder_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
         self.choose_project_folder_thread.mysignal_info_label_red.connect(self.info_label_red, QtCore.Qt.ConnectionType.QueuedConnection)
         self.choose_project_folder_thread.mysignal_info_label_green.connect(self.info_label_green, QtCore.Qt.ConnectionType.QueuedConnection)
@@ -243,7 +244,9 @@ class MyWindow(QtWidgets.QWidget):
             ui.pushButtonRenameColumn.setEnabled(False)
             ui.pushButtonChangeRem.setEnabled(False)
 
-
+    def info_label (self, value, style = None):
+        global_vars.ui.info_label.setStyleSheet(style)
+        global_vars.ui.info_label.setText(value)
 
     def info_label_blue (self, value):
         global_vars.ui.info_label.setStyleSheet('color: blue')   
