@@ -860,12 +860,12 @@ class ProcessingThread(QtCore.QThread):
                 f"{self.error_message.replace('\n',' ')}",
                 'color: red')
             
-            QtWidgets.QMessageBox.critical(
-                None,
-                self.message_title,
-                self.error_message,
-                buttons=QtWidgets.QMessageBox.StandardButton.Ok
-                )
+            #QtWidgets.QMessageBox.critical(
+            #    None,
+            #    self.message_title,
+            #    self.error_message,
+            #    buttons=QtWidgets.QMessageBox.StandardButton.Ok
+            #    )
             
             refresh_files_info('.Исходники')        
             refresh_files_info('.Размеченные')
@@ -885,12 +885,12 @@ class ProcessingThread(QtCore.QThread):
                 f"{self.warning_message.replace('\n',' ')}",
                 'color: red')
             
-            QtWidgets.QMessageBox.warning(
-                None,
-                self.message_title,
-                self.warning_message,
-                buttons=QtWidgets.QMessageBox.StandardButton.Ok
-                )  
+            #QtWidgets.QMessageBox.warning(
+            #    None,
+            #    self.message_title,
+            #    self.warning_message,
+            #    buttons=QtWidgets.QMessageBox.StandardButton.Ok
+            #    )  
             
             open_or_show_file(file_name='markup.xlsx')
             
