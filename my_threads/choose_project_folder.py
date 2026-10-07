@@ -14,6 +14,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
     def __init__ (self, parent=None):
         QtCore.QThread.__init__(self, parent)
         self.message_title = "Выбор папки проекта:"
+
     
     source_old_excels_list = []
         
@@ -23,100 +24,95 @@ class ChooseProjectFolderThread(QtCore.QThread):
     mysignal_project_folder_label_green = QtCore.Signal(str)
 
     mysignal_info_label = QtCore.Signal(str, str)
-    mysignal_info_label_blue = QtCore.Signal(str)
-    mysignal_info_label_red = QtCore.Signal(str)
-    mysignal_info_label_green = QtCore.Signal(str)
+
 
     
-    def run(self): 
+    def run(self):
         self.error_message = ""
-        self.warning_message = ""
+        self.warning_message = "" 
 
-        print(Fore.YELLOW, os.path.exists(os.path.join(global_vars.project_folder,'.Исходники')), Fore.RESET)
+        try:
+            global_vars.processing_enabled = False
+            if not global_vars.project_folder:
 
-        if not global_vars.project_folder:
+                self.mysignal_project_folder_label_red.emit('Папка проекта: не выбрана') 
+                self.mysignal_info_label.emit('Выберите папку проекта', 'color: red')
+                    
+                self.error_message = ('Папка проекта: не выбрана')
+                return
+    
+            if os.path.exists(os.path.join(global_vars.project_folder,'.Исходники')):
+                source_files_list = list(os.walk(os.path.join(global_vars.project_folder,'.Исходники')))[0][2]
+                source_excels_list = [file for file in source_files_list if file[-4:].lower() == 'xlsx']            
+                source_old_excels_list = [file for file in source_files_list if file[-4:].lower() in ['.xls', 'xlsm']]
 
-            self.mysignal_project_folder_label_red.emit('Папка проекта: не выбрана') 
-            self.mysignal_info_label.emit('Выберите папку проекта', 'color: red')
-                
-            self.error_message = ('Папка проекта: не выбрана')
-            return
- 
-        if os.path.exists(os.path.join(global_vars.project_folder,'.Исходники')):
-            source_files_list = list(os.walk(os.path.join(global_vars.project_folder,'.Исходники')))[0][2]
-            source_excels_list = [file for file in source_files_list if file[-4:].lower() == 'xlsx']            
-            source_old_excels_list = [file for file in source_files_list if file[-4:].lower() in ['.xls', 'xlsm']]
+            else:
+                self.mysignal_project_folder_label_red.emit(f'Папка проекта: {global_vars.project_folder}') 
+                self.mysignal_info_label.emit(f'В папке проекта нет папки .Исходники/.', 'color: red')
+                    
+                self.error_message = ('В папке проекта нет папки .Исходники!\n'
+                                    'Создайте в папке проекта папку .Исходники\n'
+                                    'и скопируйте в неё файлы, которые нужно обработать,\n'
+                                    'затем снова нажмите кнопку "Выбирете папку проекта"!')
 
-        else:
-            self.mysignal_project_folder_label_red.emit(f'Папка проекта: {global_vars.project_folder}') 
-            self.mysignal_info_label.emit(f'В папке проекта нет папки .Исходники/.', 'color: red')
-                
-            self.error_message = ('В папке проекта нет папки .Исходники!\n'
-                                  'Создайте в папке проекта папку .Исходники\n'
-                                  'и скопируйте в неё файлы, которые нужно обработать,\n'
-                                  'затем снова нажмите кнопку "Выбирете папку проекта"!')
+                #all_control_elements_off()
+                #global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)                 
+                return 
+            
+            if not source_files_list:
+                self.mysignal_project_folder_label_red.emit(f'Папка проекта: {global_vars.project_folder}') 
+                self.mysignal_info_label.emit(f'В папке проекта есть папка .Исходники/, но она не содержит файлов.', 'color: red')
+                                
+                self.error_message = f'Папка .Исходники/ не содержит файлов!\nСкопируйте в папку .Исходники/ файлы для обработки и снова нажмите кнопку "Выберите папку проекта"!'
 
-            #all_control_elements_off()
-            #global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)                 
-            return 
-        
-        if not source_files_list:
-            self.mysignal_project_folder_label_red.emit(f'Папка проекта: {global_vars.project_folder}') 
-            self.mysignal_info_label.emit(f'В папке проекта есть папка .Исходники/, но она не содержит файлов.', 'color: red')
-                             
-            self.error_message = f'Папка .Исходники/ не содержит файлов!\nСкопируйте в папку .Исходники/ файлы для обработки и снова нажмите кнопку "Выберите папку проекта"!'
+                #all_control_elements_off()
+                #global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)     
+                return                  
 
-            #all_control_elements_off()
-            #global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)     
-            return                  
+            if source_old_excels_list:       
 
-        if source_old_excels_list:       
-
-            self.mysignal_project_folder_label_red.emit(f'Папка проекта: {global_vars.project_folder}') 
-            self.mysignal_info_label.emit('В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm', 'color: red')
-                             
-            self.error_message = 'В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm'
-            print('Мы тут! Странно!')
-            global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)
-            sleep(0.01)
-            print('Мы тут! Странно!')
-            return                
-
-
-        if not source_excels_list:
-            self.mysignal_project_folder_label_red.emit(f'Папка проекта: {global_vars.project_folder}') 
-            self.mysignal_info_label.emit('В папке проекта есть папка .Исходники/, но в ней нет файлов .xlsx', 'color: red')
-                             
-            self.error_message = 'В папке проекта есть папка .Исходники/, но в ней нет файлов .xlsx'
-
-            return
-        
-        self.length_err_list = check_path_length()
-        
-        if self.length_err_list:
-            self.warning_message = (
-                f"Длина пути к размеченным файлам {len(global_vars.project_folder + '.Размеченные') + 2},\n"
-                f"полная длина пути к некоторым размеченным файлам превышает 218 символов.\n"
-                f"Переименуйте файлы с длинными названиями или перенесите проект в папку с более коротким путём!\n")
-
-        self.mysignal_project_folder_label_green.emit(f'Папка проекта: {global_vars.project_folder}') 
+                self.mysignal_project_folder_label_red.emit(f'Папка проекта: {global_vars.project_folder}') 
+                self.mysignal_info_label.emit('В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm', 'color: red')
+                                
+                self.error_message = 'В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm'
+                print('Мы тут! Странно!')
+                global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)
+                sleep(0.01)
+                print('Мы тут! Странно!')
+                return                
 
 
-        license_data = get_license_data()
-        trial_finish = license_data['trial_finish']
+            if not source_excels_list:
+                self.mysignal_project_folder_label_red.emit(f'Папка проекта: {global_vars.project_folder}') 
+                self.mysignal_info_label.emit('В папке проекта есть папка .Исходники/, но в ней нет файлов .xlsx', 'color: red')
+                                
+                self.error_message = 'В папке проекта есть папка .Исходники/, но в ней нет файлов .xlsx'
 
-        if datetime.now()>datetime.strptime(trial_finish, "%Y-%m-%d %H:%M:%S"):
-            self.mysignal_info_label.emit('Срок действия лицензии закончился!', 'color: red')  
-        else:
-            self.mysignal_info_label.emit('Папка проекта выбрана. Нажмите кнопку Просмотреть разметку', 'color: green')
-  
-                      
-        print(f'run {self.message_title}') 
+                return
+            
+            self.length_err_list = check_path_length()
+            
+            if self.length_err_list:
+                self.warning_message = (
+                    f"Длина пути к размеченным файлам {len(global_vars.project_folder + '.Размеченные') + 2},\n"
+                    f"полная длина пути к некоторым размеченным файлам превышает 218 символов.\n"
+                    f"Переименуйте файлы с длинными названиями или перенесите проект в папку с более коротким путём!\n")
 
-        self.on_finished()  
+            self.mysignal_project_folder_label_green.emit(f'Папка проекта: {global_vars.project_folder}') 
+
+
+            license_data = get_license_data()
+            trial_finish = license_data['trial_finish']
+
+            if datetime.now()>datetime.strptime(trial_finish, "%Y-%m-%d %H:%M:%S"):
+                self.mysignal_info_label.emit('Срок действия лицензии закончился!', 'color: red')  
+            else:
+                self.mysignal_info_label.emit('Папка проекта выбрана. Нажмите кнопку Просмотреть разметку', 'color: green')
+        finally:
+            self.on_finished()  
 
     def on_clicked(self):
-        
+                
         if check_excel_file_is_open("markup.xlsx"):
          
             self.mysignal_info_label.emit('Закройте файл markup.xlsx перед тем как выбирать папку проекта.', 'color: red')   
@@ -150,32 +146,41 @@ class ChooseProjectFolderThread(QtCore.QThread):
 
         global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)
 
+
         if self.error_message == 'В папке проекта есть папка .Исходники/, но в ней некоторые файлы в формате .xls или .xlsm':
             global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)
+
         
         if self.error_message:
-            QtWidgets.QMessageBox.critical(None,
-                self.message_title,
-                self.error_message,
-                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
+            print(Fore.RED +self.error_message + Fore.RESET)
+            #QtWidgets.QMessageBox.critical(None,
+            #    self.message_title,
+            #    self.error_message,
+            #    buttons=QtWidgets.QMessageBox.StandardButton.Ok)
             return 
         
         if self.warning_message:
+            print(self.warning_message)
           
             self.mysignal_info_label.emit(
                 f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
                 f"{self.warning_message.replace('\n',' ')}",
                 'color: red')
-            QtWidgets.QMessageBox.warning(None,
-                self.message_title,
-                self.warning_message,
-                buttons=QtWidgets.QMessageBox.StandardButton.Ok)
+            
+            #QtWidgets.QMessageBox.warning(None,
+            #    self.message_title,
+            #    self.warning_message,
+            #    buttons=QtWidgets.QMessageBox.StandardButton.Ok)
             
             df = pd.DataFrame(self.length_err_list)
             df.to_excel(os.path.join(global_vars.project_folder, 'markup.xlsx'), index=None, header=None)
             os.startfile(os.path.join(global_vars.project_folder, 'markup.xlsx'))
+
             while True:
                 sleep(0.1)
                 if os.path.exists(os.path.join(global_vars.project_folder, f'{os.path.join(global_vars.project_folder, '~$markup.xlsx')}')):
                     break
             return 
+
+        global_vars.processing_enabled = True
+        print('global_vars.processing_enabled', global_vars.processing_enabled)

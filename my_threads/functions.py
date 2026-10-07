@@ -451,6 +451,11 @@ def all_control_elements_on():
         print(Fore.GREEN, license_data, Fore.RESET)
         trial_finish = license_data['trial_finish']
 
+        if global_vars.processing_enabled:
+            global_vars.ui.pushButtonProcessing.setEnabled(True)
+        else:
+            global_vars.ui.pushButtonProcessing.setEnabled(False)
+
 
         if datetime.now()<=datetime.strptime(trial_finish, "%Y-%m-%d %H:%M:%S"):
             global_vars.interface_enabled = True
@@ -466,7 +471,8 @@ def all_control_elements_on():
             if source_old_excels_list:
                 global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)
                 
-            global_vars.ui.pushButtonProcessing.setEnabled(True)       
+
+     
             # global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(True) 
             # global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(True)                
             # global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(True)

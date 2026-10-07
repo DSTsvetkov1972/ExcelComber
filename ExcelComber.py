@@ -244,17 +244,22 @@ class MyWindow(QtWidgets.QWidget):
             ui.pushButtonRenameColumn.setEnabled(False)
             ui.pushButtonChangeRem.setEnabled(False)
 
+
+
     def info_label (self, value, style = None):
         global_vars.ui.info_label.setStyleSheet(style)
         global_vars.ui.info_label.setText(value)               
+
 
     def project_folder_label_blue (self, value):
         global_vars.ui.project_folder_label.setStyleSheet('color: blue')   
         global_vars.ui.project_folder_label.setText(value) 
 
+
     def project_folder_label_red (self, value):
         global_vars.ui.project_folder_label.setStyleSheet('color: red')   
         global_vars.ui.project_folder_label.setText(value)         
+
 
     def project_folder_label_green (self, value):
         global_vars.ui.project_folder_label.setStyleSheet('color: green')   

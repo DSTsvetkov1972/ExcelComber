@@ -133,7 +133,7 @@ class RenameColumnThread(QtCore.QThread):
                 f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                 f'{file_sheet_number} из {len(files_sheets_list)}. '
                 f'Сканируем заголовки в книге "{file}" в листе "{ sheet_name }"',
-                'color_blue')
+                'color: blue')
             #sleep(0.01)
 
             if sheet_name in wb.sheetnames:
