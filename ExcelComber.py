@@ -71,7 +71,7 @@ class MyWindow(QtWidgets.QWidget):
         # Выберите папку проекта    
         global_vars.ui.pushButtonChooseProjectFolder.clicked.connect(self.choose_project_folder_thread.on_clicked)
         self.choose_project_folder_thread.started.connect(all_control_elements_off)
-        self.choose_project_folder_thread.finished.connect(self.choose_project_folder_thread.on_finished)
+        self.choose_project_folder_thread.finished.connect(all_control_elements_on)
         #
         self.choose_project_folder_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)
         #
@@ -93,14 +93,14 @@ class MyWindow(QtWidgets.QWidget):
         # Открыть выбранные файлы из папки .Исходники
         global_vars.ui.pushButtonOpenChoosedFiles.clicked.connect(self.open_choosed_files_thread.on_clicked)
         self.open_choosed_files_thread.started.connect(all_control_elements_off)
-        self.open_choosed_files_thread.finished.connect(self.open_choosed_files_thread.on_finished)
-        self.open_choosed_files_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)
+        self.open_choosed_files_thread.finished.connect(all_control_elements_on)
+        self.open_choosed_files_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)
  
         # Открыть выбранные файлы из папки .Размеченные
         global_vars.ui.pushButtonOpenChoosedMDFiles.clicked.connect(self.open_choosed_mdfiles_thread.on_clicked)
         self.open_choosed_mdfiles_thread.started.connect(all_control_elements_off)
-        self.open_choosed_mdfiles_thread.finished.connect(self.open_choosed_mdfiles_thread.on_finished)
-        self.open_choosed_mdfiles_thread.mysignal_info_label_blue.connect(self.info_label_blue, QtCore.Qt.ConnectionType.QueuedConnection)  
+        self.open_choosed_mdfiles_thread.finished.connect(all_control_elements_on)
+        self.open_choosed_mdfiles_thread.mysignal_info_label.connect(self.info_label, QtCore.Qt.ConnectionType.QueuedConnection)  
 
         # Удалить выбранные файлы из папки .Размеченные
         global_vars.ui.pushButtonDelChoosedMDFiles.clicked.connect(self.del_choosed_md_files_thread.on_clicked)

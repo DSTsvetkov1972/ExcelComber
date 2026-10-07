@@ -15,7 +15,7 @@ class OpenChoosedFilesThread(QtCore.QThread):
         self.message_title = "Открываем выбранные файлы:"
         self.md_files = md_files
 
-    mysignal_info_label_blue = QtCore.Signal(str)
+    mysignal_info_label = QtCore.Signal(str, str)
     
     
     def run(self):
@@ -51,11 +51,11 @@ class OpenChoosedFilesThread(QtCore.QThread):
                     return
                 print(len(global_vars.project_folder), len(file_to_start))
 
-                global_vars.ui.info_label.setStyleSheet('color: blue') 
-                self.mysignal_info_label_blue.emit(
+                self.mysignal_info_label.emit(
                     f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. '
                     f'{file_number} из {len(self.files_to_show)}. '
-                    f'Открываем из папки {'.Размеченные' if self.md_files else '.Исходники'}: "{file}"')
+                    f'Открываем из папки {'.Размеченные' if self.md_files else '.Исходники'}: "{file}"',
+                    'color: blue')
                 sleep(0.01)
                 os.startfile(file_to_start)
                 
@@ -68,27 +68,29 @@ class OpenChoosedFilesThread(QtCore.QThread):
         else:
             self.error_message = "Файлы которые нужно открыть не были выбраны"
 
+        self.on_finished()    
+
 
     def on_clicked(self):      
         self.start() # Запускаем поток  
      
 
     def on_finished(self): # Вызывается при завершении потока
-        all_control_elements_on()
 
-        if self.error_message:
-      
-            global_vars.ui.info_label.setStyleSheet('color: red')            
-            global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
+
+        if self.error_message:       
+            self.mysignal_info_label.emit(
+                self.error_message.replace('\n',' '),
+                'color: red')
 
             QtWidgets.QMessageBox.critical(None,
                 self.message_title,
                 self.error_message,
                 buttons=QtWidgets.QMessageBox.StandardButton.Ok)
-        else:
-            sleep(0.1)
-            global_vars.ui.info_label.setStyleSheet('color: green')            
-            global_vars.ui.info_label.setText(f'Из папки {".Размеченные" if self.md_files else ".Исходники"} на рабочем столе открыли файлов: {len(self.files_to_show)}.')
+        else:         
+            self.mysignal_info_label.emit(
+                f'Из папки {".Размеченные" if self.md_files else ".Исходники"} на рабочем столе открыли файлов: {len(self.files_to_show)}.',
+                'color: green')
             
         if self.warning_message:
             QtWidgets.QMessageBox.warning(None,

@@ -107,7 +107,9 @@ class ChooseProjectFolderThread(QtCore.QThread):
             self.mysignal_info_label.emit('Папка проекта выбрана. Нажмите кнопку Просмотреть разметку', 'color: green')
   
                       
-        print(f'run {self.message_title}')   
+        print(f'run {self.message_title}') 
+
+        self.on_finished()  
 
     def on_clicked(self):
         
@@ -172,7 +174,4 @@ class ChooseProjectFolderThread(QtCore.QThread):
                 sleep(0.1)
                 if os.path.exists(os.path.join(global_vars.project_folder, f'{os.path.join(global_vars.project_folder, '~$markup.xlsx')}')):
                     break
-            return
-        
-        all_control_elements_on()
- 
+            return 
