@@ -12,16 +12,17 @@ from my_threads.functions import all_control_elements_off, all_control_elements_
 
 class MakeFilesThread(QtCore.QThread):
  
-    mysignal = QtCore.Signal(str)
-
+    mysignal_info_label = QtCore.Signal(str, str)
 
     def __init__ (self, parent=None):
         QtCore.QThread.__init__(self, parent) 
-        self.message_title = "Объединение"
-        
-        
+        self.message_title = "Создаём файлы"
+        self.error_message = ""
+        self.warning_message = ""
+        self.result_df_len = 0
 
-    def clean_folder_marked(self, project_folder):
+        
+    def clean_folder_marked(self):
 
         errors_list = []
 
@@ -31,8 +32,11 @@ class MakeFilesThread(QtCore.QThread):
      
         for file in marked_files:
             #sleep(0.0001)
-            self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                               f"Проверяем наличие файла {file} из ./Размеченные в .Исходники/")             
+            self.mysignal_info_label.emit(
+                f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                f"Проверяем наличие файла {file} из ./Размеченные в .Исходники/",
+                'color: blue')  
+                       
             if file[3:] not in source_files: # file[3:] чтобы откусить приставку md_ в начале
                 try:
                     os.remove(os.path.join(global_vars.project_folder, '.Размеченные', file))
@@ -44,7 +48,6 @@ class MakeFilesThread(QtCore.QThread):
         return ("\n" + ">" + "\n").join(errors_list)
 
     def make_files(self):
-        global_vars.ui.info_label.setStyleSheet('color: blue')
 
         marked_folder = os.path.join(global_vars.project_folder, r".Размеченные")
         files = [file for file in list(os.walk(os.path.join(global_vars.project_folder, '.Размеченные')))[0][2] if file[0] != "~"]
@@ -59,9 +62,11 @@ class MakeFilesThread(QtCore.QThread):
                 # sleep(0.0001)
                 print(file, sheet)
                 
-                self.mysignal.emit(f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
-                                   f'Книга {file_number} из {len(files)} лист {sheet_number} из {len(sheets)}. ' 
-                                   f'Подготавливаем к созданию файл "{file}" лист "{sheet}"')
+                self.mysignal_info_label.emit(
+                    f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
+                    f'Книга {file_number} из {len(files)} лист {sheet_number} из {len(sheets)}. ' 
+                    f'Подготавливаем к созданию файл для: "{file}" лист "{sheet}"',
+                    'color: blue')
                  
                 file_info = columns_info_df[(columns_info_df['_file_'] == file) &
                                             (columns_info_df['_sheet_'] == sheet) &
@@ -100,20 +105,27 @@ class MakeFilesThread(QtCore.QThread):
                     wb = load_workbook(res_file_name)
                     ws = wb.active
 
-                    self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                                    f"Подгоняем ширину столбцов под длины заголовков")
+                    self.mysignal_info_label.emit(
+                        f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                        f"Подгоняем ширину столбцов под длины заголовков",
+                        'color: blue')
 
                     for n, column in enumerate(list(file_df .columns), 1):
                         ws.column_dimensions[get_column_letter(n)].width = len(str(column))*1.1 + 5
 
-                    self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                                    f"Замораживаем строку заголовков")
+                    self.mysignal_info_label.emit(
+                        f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                        f"Замораживаем строку заголовков",
+                        'color: blue')
                     ws.auto_filter.ref = ws.dimensions    
                     
                     ws.freeze_panes = ws.cell(column=1, row=2)
 
-                    self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                                    f"Задаём цвет строки заголовков")
+                    self.mysignal_info_label.emit(
+                        f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
+                        f"Задаём цвет строки заголовков",
+                        'color: blue')
+                    
                     for col, column in enumerate(list(file_df .columns), start=1):
                         cell = ws.cell(column=col, row = 1)
                         # cell.fill = styles.PatternFill(start_color='FFFFC7CE', fill_type='solid')
@@ -124,26 +136,36 @@ class MakeFilesThread(QtCore.QThread):
                                                         horizontal='center') 
                         #cell.style.alignment.wrap_text=True
 
-                    self.mysignal.emit(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                        f"Сохраняем файл")    
+                    self.mysignal_info_label.emit(
+                        f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
+                        f'Книга {file_number} из {len(files)} лист {sheet_number} из {len(sheets)}. '
+                        f'Сохраняем в файл "{file[3:-4]}_{sheet}.xlsx"',
+                        'color: blue')    
                     wb.save(res_file_name)
                     self.res_folder_files_qty += 1
 
         os.startfile(os.path.join(global_vars.project_folder,'.Результат'))                
 
-    def on_signal(self,mysignal):
-        global_vars.ui.info_label.setStyleSheet('color: blue')            
-        global_vars.ui.info_label.setText(mysignal)
-
 
     def run(self): 
-        self.message_title = "Создаём файлы"
-        self.error_message = ""
-        self.warning_message = ""
-        self.result_df_len = 0
 
+
+        self.mysignal_info_label.emit(
+            f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. "
+            f"Проверяем не менялись ли файлы в папке .Исходники",
+            'color: blue'
+        )
         self.is_src_files_modifyed = check_files_modified('.Исходники')
+
+        self.mysignal_info_label.emit(
+            f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. "
+            f"Проверяем не менялись ли файлы в папке .Размеченные",
+            'color: blue'
+        )
+
         self.is_md_files_modifyed = check_files_modified('.Размеченные')
+        print('self.is_md_files_modifyed', self.is_md_files_modifyed)
+
 
         # проверяем, чтобы если существует папка .Результат, чтобы не было открытых файлов на рабочем столе
         result_folder = os.path.join(global_vars.project_folder, '.Результат')
@@ -159,9 +181,11 @@ class MakeFilesThread(QtCore.QThread):
                 self.res_folder_files_opened = []
             
                 for file_number, file in enumerate(files_list):
-                    self.mysignal.emit(
+                    self.mysignal_info_label.emit(
                         f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. {file_number} из {len(files_list)}. "
-                        f"Создание файлов. Проверяем не открыт ли на рабочем столе: {file}.")
+                        f"Создание файлов. Проверяем не открыт ли на рабочем столе: {file}.",
+                        'color: blue')
+                    
                     #sleep(0.01)
                     if check_excel_file_is_open(file):
                         self.res_folder_files_opened.append(file)
@@ -174,13 +198,8 @@ class MakeFilesThread(QtCore.QThread):
                         f"{'\n'.join(self.res_folder_files_opened)}"
                         )
 
-                    #for md_file in md_files_opened:
-                    #    os.startfile(os.path.join(global_vars.project_folder, '.Размеченные', md_file))
-                    #    while True:
-                    #        sleep(0.05)
-                    #        if os.path.exists(os.path.join(global_vars.project_folder, '.Размеченные', f"~${md_file}")):
-                    #            break                                     
-                    return
+                                  
+                    #return
                 
         else:
 
@@ -190,26 +209,26 @@ class MakeFilesThread(QtCore.QThread):
 
 
         if self.is_src_files_modifyed:
-            global_vars.ui.info_label.setStyleSheet('color: red')
+
             self.error_message = ('В папку .Исходники были добавлены новые файлы или\n'
                                   'некоторые файлы в ней были пересохранены или удалены.\n'
                                   'Нажмите кнопку "Просмотерь разметку"!')
-
-            # global_vars.ui.info_label.setText(self.error_message)
-            return
+            #return
         if self.is_md_files_modifyed:
-            global_vars.ui.info_label.setStyleSheet('color: red')
+
             self.error_message = ('Файлы в папке .Размеченные были изменены.\n'
                                   'Нажмите кнопку "Просмотерь разметку"!!')  
-            # global_vars.ui.info_label.setText(self.error_message)
-            return
+            #return
 
 
         self.error_message = ""
         self.warning_message = ""        
-        self.error_message = self.clean_folder_marked(global_vars.project_folder)
+        self.error_message = self.clean_folder_marked()
+
         if not self.error_message:  
             self.make_files()
+
+        self.on_finished()
 
 
     def on_clicked(self):     
@@ -218,33 +237,11 @@ class MakeFilesThread(QtCore.QThread):
 
     def on_finished(self): # Вызывается при завершении потока
 
-        #global_vars.interface_enabled = True
-        all_control_elements_on()
-
-        """
-        global_vars.ui.pushButtonChooseProjectFolder.setEnabled(True)
-
-        if os.path.exists(os.path.join(global_vars.project_folder,'.Исходники')):
-            source_files_list = list(os.walk(os.path.join(global_vars.project_folder,'.Исходники')))[0][2]
-            source_old_excels_list = [file for file in source_files_list if file[-4:] in ['.xls', 'xlsm']]
-        if source_old_excels_list:
-            global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)        
-        global_vars.ui.pushButtonProcessing.setEnabled(True)
-        global_vars.ui.pushButtonHeadersFiller.setEnabled(True)          
-        global_vars.ui.pushButtonOpenChoosedFiles.setEnabled(True)        
-        global_vars.ui.pushButtonOpenChoosedMDFiles.setEnabled(True)
-        global_vars.ui.pushButtonDelChoosedMDFiles.setEnabled(True)           
-
-        if self.is_src_files_modifyed or self.is_md_files_modifyed:
-            global_vars.ui.pushButtonConcat.setEnabled(False)      
-        else:
-            global_vars.ui.pushButtonConcat.setEnabled(True) 
-
-        """
-
-        if self.error_message:
-            global_vars.ui.info_label.setStyleSheet('color: red')             
-            global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
+        if self.error_message:        
+            self.mysignal_info_label.emit(
+                self.error_message.replace('\n',' '),
+                'color: red')
+            
             QtWidgets.QMessageBox.critical(None,
                                            self.message_title,
                                            self.error_message,
@@ -253,16 +250,17 @@ class MakeFilesThread(QtCore.QThread):
         
         elif self.warning_message:
             pop_up_files(self.message_title, self.warning_message, self.res_folder_files_opened, folder = '.Результат')
-            global_vars.ui.info_label.setStyleSheet('color: red')             
-            global_vars.ui.info_label.setText(self.warning_message.replace('\n',' '))
+            
+            self.mysignal_info_label.emit(
+                self.warning_message.replace('\n',' '),
+                'color: red')
            
         else:
-            #print('AAAA')
-            #sleep(0.1)
-            global_vars.ui.info_label.setStyleSheet('color: green')          
-            global_vars.ui.info_label.setText(f'В папке .Результат создано { self.res_folder_files_qty } файлов.')
+
+            self.mysignal_info_label.emit(
+                f'В папке .Результат создано { self.res_folder_files_qty } файлов.',
+                'color: green')
 
         
         global_vars.ui.pushButtonConcat.setEnabled(True)
-        global_vars.ui.pushButtonMakeFiles.setEnabled(True)        
-
+        global_vars.ui.pushButtonMakeFiles.setEnabled(True)

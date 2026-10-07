@@ -14,6 +14,9 @@ class ChooseProjectFolderThread(QtCore.QThread):
     def __init__ (self, parent=None):
         QtCore.QThread.__init__(self, parent)
         self.message_title = "Выбор папки проекта:"
+    
+    source_old_excels_list = []
+        
 
     mysignal_project_folder_label_blue = QtCore.Signal(str)
     mysignal_project_folder_label_red = QtCore.Signal(str)
@@ -24,6 +27,7 @@ class ChooseProjectFolderThread(QtCore.QThread):
     mysignal_info_label_red = QtCore.Signal(str)
     mysignal_info_label_green = QtCore.Signal(str)
 
+    
     def run(self): 
         self.error_message = ""
         self.warning_message = ""

@@ -118,8 +118,8 @@ class MyWindow(QtWidgets.QWidget):
         # Созадать файлы
         global_vars.ui.pushButtonMakeFiles.clicked.connect(self.make_files_thread.on_clicked)
         self.make_files_thread.started.connect(all_control_elements_off)
-        self.make_files_thread.finished.connect(self.make_files_thread.on_finished)
-        # self.make_files_thread.mysignal.connect(self.processing_thread.on_signal)
+        self.make_files_thread.finished.connect(all_control_elements_on)
+        self.make_files_thread.mysignal_info_label.connect(self.info_label)
 
         # Заполнить заголовки        
         global_vars.ui.pushButtonHeadersFiller.clicked.connect(self.headers_filler_thread.on_clicked)

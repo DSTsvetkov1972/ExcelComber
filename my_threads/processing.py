@@ -777,7 +777,7 @@ class ProcessingThread(QtCore.QThread):
 
         if check_excel_file_is_open("markup.xlsx"):
             global_vars.ui.info_label.setStyleSheet('color: red')             
-            self.mysignal_info_label(
+            self.mysignal_info_label.emit(
                 'Закройте файл markup.xlsx перед тем как запустить обработку.',
                 'color: red')   
             self.warning_message ='Файл markup.xlsx уже открыт на рабочем столе.\nЗакройте его и заново нажмите кнопку "Просмотреть разметку"'

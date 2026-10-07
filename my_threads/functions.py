@@ -341,8 +341,6 @@ def refresh_files_info (folder):
 def check_files_modified(folder):
     print(f'check_files_modified {folder}')
 
-    global_vars.ui.info_label.setStyleSheet('color: blue')
-    global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. Проверяем не менялись ли файлы в папке .Исходники")
 
     if folder=='.Размеченные':
         table='md_files_info'
@@ -462,6 +460,9 @@ def all_control_elements_on():
             if os.path.exists(os.path.join(global_vars.project_folder,'.Исходники')):
                 source_files_list = list(os.walk(os.path.join(global_vars.project_folder,'.Исходники')))[0][2]
                 source_old_excels_list = [file for file in source_files_list if file[-4:] in ['.xls', 'xlsm']]
+            else:
+                source_old_excels_list=[]
+
             if source_old_excels_list:
                 global_vars.ui.pushButtonXLStoXLSX.setEnabled(True)
                 

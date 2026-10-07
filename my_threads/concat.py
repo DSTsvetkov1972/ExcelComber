@@ -8,17 +8,23 @@ from time import sleep
 from my_threads.functions import check_files_modified, pop_up_files
 from openpyxl import load_workbook, styles
 from openpyxl.utils.cell import get_column_letter
-from my_threads.functions import all_control_elements_off, all_control_elements_on, check_excel_file_is_open
+from my_threads.functions import check_excel_file_is_open
+
 
 class ConcatThread(QtCore.QThread):
  
     def __init__ (self, parent=None):
         QtCore.QThread.__init__(self, parent) 
-        self.message_title = "Объединение"
+
+        self.message_title = "Объединяем таблицы"
+        self.error_message = ""
+        self.warning_message = ""
+        self.result_df_len = 0
         
     mysignal_info_label = QtCore.Signal(str, str)    
 
-    def clean_folder_marked(self, project_folder):
+
+    def clean_folder_marked(self):
 
         errors_list = []
 
@@ -42,6 +48,7 @@ class ConcatThread(QtCore.QThread):
                                        потому что она открыта в Эксель!")
 
         return ("\n" + ">" + "\n").join(errors_list)
+
 
     def concat_dfs(self, project_folder):
 
@@ -192,24 +199,33 @@ class ConcatThread(QtCore.QThread):
                 os.startfile(os.path.join(project_folder,'result.csv'))                
 
     def run(self): 
-        self.message_title = "Объединяем таблицы"
-        self.error_message = ""
-        self.warning_message = ""
-        self.result_df_len = 0
 
+
+        self.mysignal_info_label.emit(
+            f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. Проверяем не менялись ли файлы в папке .Исходники",
+            'color: blue'
+        )
         self.is_src_files_modifyed = check_files_modified('.Исходники')
+
+        #print('self.is_src_files_modifyed', self.is_src_files_modifyed)
+
+        self.mysignal_info_label.emit(
+            f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")}. Проверяем не менялись ли файлы в папке .Размеченные",
+            'color: blue'
+        )
         self.is_md_files_modifyed = check_files_modified('.Размеченные')
+        #print('self.is_md_files_modifyed', self.is_md_files_modifyed)
 
         if check_excel_file_is_open("result.xlsx"):
             self.warning_message = 'Закройте файл result.xlsx и снова нажмите "Объединить"'
             self.result_file =  "result.xlsx"                                
-            return
+            #return
         
         # if os.path.exists(os.path.join(global_vars.project_folder, "~$result.csv")):
         if check_excel_file_is_open("result.csv"):            
             self.warning_message = 'Файл result.csv занят другим приложением и не может быть перезаприсан!'  
             self.result_file =  "result.csv"                             
-            return
+            #return
 
 
 
@@ -218,13 +234,13 @@ class ConcatThread(QtCore.QThread):
                                   'некоторые файлы в ней были пересохранены или удалены.\n'
                                   'Нажмите кнопку "Просмотерь разметку"!')
 
-            return
+            #return
         if self.is_md_files_modifyed:
 
             self.error_message = ('Файлы в папке .Размеченные были изменены.\n'
                                   'Нажмите кнопку "Просмотерь разметку"!!')  
 
-            return
+            #return
            
         if os.path.exists(os.path.join(global_vars.project_folder, "result.xlsx")):
             try:
@@ -232,7 +248,7 @@ class ConcatThread(QtCore.QThread):
             except PermissionError:
                 self.warning_message = 'Закройте файл result.xlsx и снова нажмите "Объединить"'
                 self.result_file =  "result.xlsx"                               
-                return
+                #return
 
         if os.path.exists(os.path.join(global_vars.project_folder, "result.csv")):
             try:
@@ -240,13 +256,15 @@ class ConcatThread(QtCore.QThread):
             except PermissionError:
                 self.result_file =  "result.csv"
                 self.warning_message = 'Файл result.csv занят другим приложением и не может быть перезаписан!'                                   
-                return
+                #return
 
         self.error_message = ""
         self.warning_message = ""        
-        self.error_message = self.clean_folder_marked(global_vars.project_folder)
-        if not self.error_message:  
+        self.error_message = self.clean_folder_marked()
+        if not self.error_message:
+
             self.concat_dfs(global_vars.project_folder)
+
 
         self.on_finished()
 
@@ -254,7 +272,7 @@ class ConcatThread(QtCore.QThread):
         self.start() # Запускаем поток  
     
 
-    def on_finished(self): # Вызывается при завершении потока
+    def on_finished(self): 
 
         if self.error_message:
          
