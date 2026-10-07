@@ -44,7 +44,7 @@ class ConcatThread(QtCore.QThread):
         return ("\n" + ">" + "\n").join(errors_list)
 
     def concat_dfs(self, project_folder):
-        global_vars.ui.info_label.setStyleSheet('color: blue')
+
         #project_folder = os.path.join(r'C:\Users\TsvetkovDS\Documents\Оперативная папка\.Тест')
         random_suffix = random.randrange(0,1000000)
         file_field_name = f"file_({random_suffix})"
@@ -201,59 +201,45 @@ class ConcatThread(QtCore.QThread):
         self.is_md_files_modifyed = check_files_modified('.Размеченные')
 
         if check_excel_file_is_open("result.xlsx"):
-            global_vars.ui.info_label.setStyleSheet('color: red') 
             self.warning_message = 'Закройте файл result.xlsx и снова нажмите "Объединить"'
-            self.result_file =  "result.xlsx"                
-            #global_vars.ui.info_label.setText(self.error_message)
-            #os.startfile(os.path.join(global_vars.project_folder, "result.xlsx"))                   
+            self.result_file =  "result.xlsx"                                
             return
         
         # if os.path.exists(os.path.join(global_vars.project_folder, "~$result.csv")):
         if check_excel_file_is_open("result.csv"):            
-            global_vars.ui.info_label.setStyleSheet('color: red') 
             self.warning_message = 'Файл result.csv занят другим приложением и не может быть перезаприсан!'  
-            self.result_file =  "result.csv"             
-            #global_vars.ui.info_label.setText(self.error_message)
-            # os.startfile(os.path.join(global_vars.project_folder, "result.csv"))                   
+            self.result_file =  "result.csv"                             
             return
 
 
 
         if self.is_src_files_modifyed:
-            global_vars.ui.info_label.setStyleSheet('color: red')
             self.error_message = ('В папку .Исходники были добавлены новые файлы или\n'
                                   'некоторые файлы в ней были пересохранены или удалены.\n'
                                   'Нажмите кнопку "Просмотерь разметку"!')
 
-            # global_vars.ui.info_label.setText(self.error_message)
             return
         if self.is_md_files_modifyed:
-            global_vars.ui.info_label.setStyleSheet('color: red')
+
             self.error_message = ('Файлы в папке .Размеченные были изменены.\n'
                                   'Нажмите кнопку "Просмотерь разметку"!!')  
-            # global_vars.ui.info_label.setText(self.error_message)
+
             return
            
         if os.path.exists(os.path.join(global_vars.project_folder, "result.xlsx")):
             try:
                 os.remove(os.path.join(global_vars.project_folder, "result.xlsx"))
             except PermissionError:
-                global_vars.ui.info_label.setStyleSheet('color: red') 
                 self.warning_message = 'Закройте файл result.xlsx и снова нажмите "Объединить"'
-                self.result_file =  "result.xlsx"               
-                #global_vars.ui.info_label.setText(self.error_message)
-                #os.startfile(os.path.join(global_vars.project_folder, "result.xlsx"))                
+                self.result_file =  "result.xlsx"                               
                 return
 
         if os.path.exists(os.path.join(global_vars.project_folder, "result.csv")):
             try:
                 os.remove(os.path.join(global_vars.project_folder, "result.csv"))
             except PermissionError:
-                global_vars.ui.info_label.setStyleSheet('color: red')
                 self.result_file =  "result.csv"
-                self.warning_message = 'Файл result.csv занят другим приложением и не может быть перезаписан!'                
-                #global_vars.ui.info_label.setText(self.error_message)
-                # os.startfile(os.path.join(global_vars.project_folder, "result.#sv"))                   
+                self.warning_message = 'Файл result.csv занят другим приложением и не может быть перезаписан!'                                   
                 return
 
         self.error_message = ""
@@ -271,8 +257,11 @@ class ConcatThread(QtCore.QThread):
     def on_finished(self): # Вызывается при завершении потока
 
         if self.error_message:
-            global_vars.ui.info_label.setStyleSheet('color: red')             
-            global_vars.ui.info_label.setText(self.error_message.replace('\n',' '))
+         
+            self.mysignal_info_label.emit(
+                self.error_message.replace('\n',' '),
+                'color: red')
+            
             QtWidgets.QMessageBox.critical(None,
                                            self.message_title,
                                            self.error_message,
