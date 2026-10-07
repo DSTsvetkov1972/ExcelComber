@@ -140,8 +140,8 @@ class ConcatThread(QtCore.QThread):
 
             if  self.result_df_len < 1048576: 
                 self.mysignal_info_label.emit(
-                    f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                    f"Записываем результат в result.xlsx",
+                    f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
+                    f'Записываем результат в "result.xlsx" (строк: {self.result_df_len})',
                     'color: blue')   
                 # sleep(0.0001)   
                 res_file_name = os.path.join(project_folder,'result.xlsx')           
@@ -184,15 +184,15 @@ class ConcatThread(QtCore.QThread):
 
                 self.mysignal_info_label.emit(
                     f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                    f"Сохраняем файл",
+                    f"Сохраняем файл (строк: {self.result_df_len})",
                     'color: blue')  
                   
                 wb.save(res_file_name)
                 os.startfile(os.path.join(project_folder,'result.xlsx'))
             else:
                 self.mysignal_info_label.emit(
-                    f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} "
-                    f"Записываем результат в result.csv",
+                    f'{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} '
+                    f'Записываем в "result.csv" (строк: {self.result_df_len})',
                     'color: blue')
                                  
                 result_df.to_csv(os.path.join(project_folder,'result.csv', sep = '\t'), index=False)
