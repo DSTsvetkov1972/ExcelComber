@@ -148,7 +148,7 @@ class MyWindow(QtWidgets.QWidget):
         # Изменить примечание
         global_vars.ui.pushButtonChangeRem.clicked.connect(self.change_rems_thread.on_clicked)      
         self.change_rems_thread.started.connect(all_control_elements_off)
-        self.rename_column_thread.mysignal_finished.connect(self.on_thread_finished)        
+        self.change_rems_thread.mysignal_finished.connect(self.on_thread_finished)        
         self.change_rems_thread.mysignal_info_label.connect(self.info_label)
  
 

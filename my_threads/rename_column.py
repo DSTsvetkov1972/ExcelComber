@@ -25,7 +25,7 @@ class RenameColumnThread(QtCore.QThread):
         self.message_title = "Изменение заголовков в выбранных листах."
         self.md_files = md_files
 
-    mysignal_info_label = QtCore.Signal(str)
+    mysignal_info_label = QtCore.Signal(str, str)
     mysignal_finished = QtCore.Signal(str, str, str, str, list)
 
 

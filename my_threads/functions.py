@@ -889,14 +889,11 @@ def open_or_show_file(file_name='markup.xlsx'):
 
 def on_finsh_change_thread(message_title, error_message, warning_message, info_message, md_files_opened, folder = '.Размеченные'):
         
-        
         if warning_message:
             global_vars.ui.info_label.setStyleSheet('color: red')
             global_vars.ui.info_label.setText(f"{datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")} {warning_message.replace('\n',' ')}.")
 
             pop_up_files(message_title, warning_message, md_files_opened, folder=folder)
-
-
 
         elif error_message:
             global_vars.ui.info_label.setStyleSheet('color: red')            
@@ -906,8 +903,6 @@ def on_finsh_change_thread(message_title, error_message, warning_message, info_m
                 message_title,
                 error_message,
                 buttons=QMessageBox.StandardButton.Ok)
-            
-
 
         elif info_message:
             global_vars.ui.info_label.setStyleSheet('color: green')

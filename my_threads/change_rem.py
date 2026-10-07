@@ -17,7 +17,7 @@ class ChangeRemThread(QtCore.QThread):
         self.message_title = "Замена примечаний на выбранных листах."
         self.md_files = md_files
 
-    mysignal_info_label = QtCore.Signal(str)
+    mysignal_info_label = QtCore.Signal(str, str)
     mysignal_finished = QtCore.Signal(str, str, str, str, list)
 
 
