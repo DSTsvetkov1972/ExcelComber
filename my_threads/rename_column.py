@@ -46,16 +46,37 @@ class RenameColumnThread(QtCore.QThread):
                                   'Нажмите кнопку "Просмотерь разметку"!')
 
             # global_vars.ui.info_label.setText(self.error_message)
+            print('self.is_src_files_modifyed')
             return
         
 
         if global_vars.ui.lineEditOldColumnNameInHeader.text() == '' and global_vars.ui.lineEditNewColumnNameInHeader.text() == '':
             self.error_message = "Выберите что на что нужно поменять!"
+            print("global_vars.ui.lineEditOldColumnNameInHeader.text() == '' and global_vars.ui.lineEditNewColumnNameInHeader.text() == ''")
+            self.mysignal_finished.emit(
+                self.message_title,
+                self.error_message,
+                self.warning_message,
+                self.info_message,
+                self.md_files_opened)
             return
+        
         if (
             global_vars.ui.lineEditOldColumnNameInHeader.text() == global_vars.ui.lineEditNewColumnNameInHeader.text() and
             global_vars.ui.radioButtonOldInTopHeader.isChecked() == global_vars.ui.radioButtonNewInTopHeader.isChecked()
             ):
+            print(
+                "global_vars.ui.lineEditOldColumnNameInHeader.text() == global_vars.ui.lineEditNewColumnNameInHeader.text() and "
+                "global_vars.ui.radioButtonOldInTopHeader.isChecked() == global_vars.ui.radioButtonNewInTopHeader.isChecked()"
+                )
+
+            self.mysignal_finished.emit(
+                self.message_title,
+                self.error_message,
+                self.warning_message,
+                self.info_message,
+                self.md_files_opened)
+
             self.error_message = "Новое значение такое же как старое в той же строке заголовка!"
             return
         
@@ -96,6 +117,13 @@ class RenameColumnThread(QtCore.QThread):
                 f"{'\n'.join(self.md_files_opened)}"
                 )
             print('B')
+            self.mysignal_finished.emit(
+                self.message_title,
+                self.error_message,
+                self.warning_message,
+                self.info_message,
+                self.md_files_opened)
+
             return
 
         file_preceding = ""
@@ -187,9 +215,9 @@ class RenameColumnThread(QtCore.QThread):
         self.start() # Запускаем поток  
      
 
-    #def on_finished(self): # Вызывается при завершении потока
-    #    on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
-    #    all_control_elements_on()
+#    def on_finished(self): # Вызывается при завершении потока
+#        on_finsh_change_thread(self.message_title, self.error_message, self.warning_message, self.info_message, self.md_files_opened)
+#        all_control_elements_on()
 
 
 
