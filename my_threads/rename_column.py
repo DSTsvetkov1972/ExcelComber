@@ -70,6 +70,7 @@ class RenameColumnThread(QtCore.QThread):
                 "global_vars.ui.radioButtonOldInTopHeader.isChecked() == global_vars.ui.radioButtonNewInTopHeader.isChecked()"
                 )
 
+            self.error_message = "Новое значение такое же как старое в той же строке заголовка!"
             self.mysignal_finished.emit(
                 self.message_title,
                 self.error_message,
@@ -77,7 +78,6 @@ class RenameColumnThread(QtCore.QThread):
                 self.info_message,
                 self.md_files_opened)
 
-            self.error_message = "Новое значение такое же как старое в той же строке заголовка!"
             return
         
         
