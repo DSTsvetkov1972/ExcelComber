@@ -176,8 +176,8 @@ class RenameColumnThread(QtCore.QThread):
             for col_number, old_header_cell in enumerate(old_header_row, 1):
                 if col_number in (1,2): continue
 
-                
-                if (str(old_header_cell) == str(global_vars.ui.lineEditOldColumnNameInHeader.text()) or
+               
+                if (str(old_header_cell).replace(chr(10), '').replace(chr(8233), '') == str(global_vars.ui.lineEditOldColumnNameInHeader.text().replace(chr(10), '').replace(chr(8233), '')) or
                     old_header_cell == None and str(global_vars.ui.lineEditOldColumnNameInHeader.text()) == ''):
                     
                     # print(Fore.YELLOW, old_header_cell == global_vars.ui.lineEditOldColumnNameInHeader.text(), Fore.RESET)
